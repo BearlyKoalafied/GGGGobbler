@@ -10,7 +10,8 @@ rpathofexile = r.get_subreddit('pathofexile')
 for submission in rpathofexile.get_hot(limit = 5):
     print(submission.domain)
 
-
+def run():
+    pass
 
 if __name__ == "__main__":
-    pass
+    run()
