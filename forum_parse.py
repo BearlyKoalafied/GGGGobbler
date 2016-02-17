@@ -1,4 +1,3 @@
-
 import requests
 import bs4
 
@@ -13,7 +12,9 @@ def get_page_soup(page_url):
 
 
 def get_page_count(thread_url):
-    # get number of pages from the page navbar
+    """
+    get number of pages from the page navbar
+    """
     soup = get_page_soup(thread_url)
     pagination = soup.find("div", {"class": "pagination"})
     page_buttons = pagination.find_all("a")
@@ -25,13 +26,14 @@ def get_page_count(thread_url):
     return int(target_button_contents)
 
 
-def get_staff_forum_rows(thread_url):
+def get_staff_forum_post_rows(thread_url, search_start=1):
     """
     returns a list of BSoup Table Rows for each tr that contains a staff post in the page
+    search_start is the page nubmer to begin the search from
     """
     rows = []
     page_count = get_page_count(thread_url)
-    for i in range(1, page_count + 1):
+    for i in range(search_start, page_count + 1):
         soup = get_page_soup(thread_url + "/page/" + str(i))
         # get the table of forum rows
         post_table = soup.find("table", class_="forumPostListTable")
@@ -59,11 +61,11 @@ def get_news_post(page):
     return page.find("tr", class_="newsPost").find("td").find("div", class_="content")
 
 
-def get_post_author_from_row(row):
+def get_post_author_from_row(post_row):
     """
     returns the name of the author of the post the given row from forumPostListTable contains
     """
-    tag_contents = row.find("td", class_="post_info")\
+    tag_contents = post_row.find("td", class_="post_info")\
                     .find("div")\
                     .find("div", class_="posted-by")\
                     .find("span", class_="profile-link")\
@@ -74,9 +76,6 @@ def get_post_author_from_row(row):
         return tag_contents[0]
     else:
         return tag_contents[1]
-
-def convert_html_news_post_to_markdown(post):
-    pass
 
 
 def convert_html_to_markdown(html):

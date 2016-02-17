@@ -71,5 +71,9 @@ target/
 # ide
 .idea
 
+# db
+*.sqlite
+
 # config
 settings.py
+tester.py
