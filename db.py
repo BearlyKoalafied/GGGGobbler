@@ -3,10 +3,10 @@ import sqlite3
 
 class DAO:
     def __init__(self):
-        self.db = sqlite3.connect("GGGGrabber.sqlite")
+        self.db = sqlite3.connect("GGGGobbler.sqlite")
 
     def open(self):
-        self.db = sqlite3.connect("GGGGrabber.sqlite")
+        self.db = sqlite3.connect("GGGGobbler.sqlite")
 
     def close(self):
         self.db.close()
@@ -18,43 +18,41 @@ class DAO:
         cur = self.db.cursor()
         try:
             cur.execute("""CREATE TABLE poethread (
-                                    poethread_id INTEGER PRIMARY KEY,
+                                    poethread_id TEXT PRIMARY KEY,
                                     poethread_page_count INTEGER)""")
 
             cur.execute("""CREATE TABLE redthread (
-                                    redthread_id VARCHAR(10) PRIMARY KEY,
-                                    poethread_id INTEGER,
-                                    redthread_comment_permalink, VARCHAR(10),
-                                    redthread_is_commented TINYINT,
+                                    redthread_id TEXT PRIMARY KEY,
+                                    poethread_id TEXT,
+                                    redthread_comment_id TEXT,
+                                    redthread_comment_text TEXT,
                                     FOREIGN KEY(poethread_id) REFERENCES poethread(poethread_id))""")
         finally:
             self.db.commit()
             cur.close()
 
-    def has_bot_comment(self, thread_id):
+    def get_bot_comment_(self, thread_id):
         """
         checks whether the given reddit thread has been commented on by this bot
-        if the thread id does not exist, this will return False
         """
         cur = self.db.cursor()
         try:
-            cur.execute("SELECT 1 FROM redthread WHERE redthread_id = ? "
-                        "AND redthread_is_commented = 1",
-                        (thread_id,))
+            cur.execute("")
             return True if cur.fetchone() is None else False
         finally:
             cur.close()
 
     def poe_thread_page_count(self, thread_id):
         """
-        gets the current page counter of given thread
+        gets the recorded page counter of given thread
         """
         cur = self.db.cursor()
         try:
             cur.execute("SELECT poethread_page_count FROM poethread WHERE poethread_id = ?",
-                       (thread_id))
+                       thread_id)
             row = cur.fetchone()
-            return row['poethread_page_count']
+
+            return None if row is None else row["poethread_page_count"]
         finally:
             cur.close()
 
@@ -69,7 +67,7 @@ class DAO:
         finally:
             cur.close()
 
-    def add_poe_thread(self, thread_id, url, page_count):
+    def add_poe_thread(self, thread_id, page_count):
         """
         adds a new pathofexile.com thread reacord
         """
@@ -92,27 +90,27 @@ class DAO:
         finally:
             self.db.commit()
             cur.close()
-    def add_reddit_thread(self, reddit_thread_id, poe_thread_id, is_commented, comment_link=""):
+    def add_reddit_thread(self, reddit_thread_id, poe_thread_id, comment_id, comment_text):
         """
         adds a new reddit post record
         """
         cur = self.db.cursor()
         try:
-            cur.execute("INSERT INTO redthread (redthread_id, redthread_comment_permalink, "
-                        "poethread_id, redthread_is_commented), VALUES (?, ?, ?, ?)",
-                        (reddit_thread_id, comment_link, poe_thread_id, is_commented))
+            cur.execute("INSERT INTO redthread (redthread_id, poethread_id, "
+                        "redthread_comment_id, redthread_comment_text), VALUES (?, ?, ?, ?)",
+                        (reddit_thread_id, poe_thread_id, comment_id, comment_text))
         finally:
             self.db.commit()
             cur.close()
 
-    def update_reddit_thread(self, thread_id, is_commented):
+    def update_reddit_thread(self, thread_id, comment_text):
         """
-        updates the status of whether a reddit thread has been commented by the bot
+        updates a reddit thread's comment with new text
         """
         cur = self.db.cursor()
         try:
-            cur.execute("UPDATE redthread SET redthread_is_commented = ? "
-                             "WHERE redthread_id = ?", (is_commented, thread_id))
+            cur.execute("UPDATE redthread SET redthread_comment_text = ? "
+                             "WHERE redthread_id = ?", (comment_text, thread_id))
         finally:
             self.db.commit()
             cur.close()

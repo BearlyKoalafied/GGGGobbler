@@ -9,9 +9,10 @@ import settings
 TARGET_URLS = "https://www.pathofexile.com/forum/view-thread"
 
 def task(next_sched):
-    bot = GGGGrabberBot()
+    print("starting next run...")
+    bot = GGGGobblerBot()
     bot.parse_reddit()
-
+    print("run over...")
     # do it again later
     next_sched.enter(settings.WAIT_TIME, 1, task, (next_sched,))
 
@@ -22,7 +23,7 @@ def run():
     scheduler.run()
 
 
-class GGGGrabberBot:
+class GGGGobblerBot:
     def __init__(self):
         self.r = praw.Reddit(user_agent = settings.APP_USER_AGENT)
         self.r.set_oauth_app_info(settings.APP_ID, settings.APP_SECRET, settings.APP_URI)
@@ -36,8 +37,13 @@ class GGGGrabberBot:
         for submission in subreddit.get_hot(limit = 25):
             if submission.url.startswith(TARGET_URLS):
                 poe_submissions.append(submission)
+        self.dao.open()
         self.parse_submissions(poe_submissions)
 
+    def get_comment_by_id(self, submission, comment_id):
+        url = submission.url + "/" + comment_id
+        # permalink submission, one comment stored
+        return self.r.get_submission(url=url).comments[0]
 
     def parse_submissions(self, submissions):
         for submission in submissions:
@@ -49,15 +55,29 @@ class GGGGrabberBot:
                 # only check past the pages we've read already
                 page_number = self.dao.poe_thread_page_count(int(poe_id))
                 staff_rows = fparse.get_staff_forum_post_rows(submission.url, page_number)
-                comment_text = self.create_comment_text_from_posts(staff_rows)
-                # check if we've commented on this thread before
+                comment_text = self.create_markdown_from_posts(staff_rows)
             else:
                 # parse its pages
                 staff_rows = fparse.get_staff_forum_post_rows(submission.url)
-                markdown = self.create_comment_text_from_posts(staff_rows)
+                comment_text = self.create_markdown_from_posts(staff_rows)
                 page_number = fparse.get_page_count(submission.url)
-                self.dao.add_poe_thread(poe_id, submission.url, page_number)
-    def create_comment_text_from_posts(self, staff_rows):
+                # add the new thread to the db
+                self.dao.add_poe_thread(poe_id, page_number)
+
+            # check if we've commented on this thread before
+            comment_id = self.dao.get_bot_comment_(reddit_id)
+            if comment_id is not None:
+                # find the comment and edit it with new posts
+                comment = self.get_comment_by_id(submission, comment_id)
+                comment.edit(comment_text)
+                # update db with new info
+                self.dao.update_reddit_thread(reddit_id, comment_text)
+            else:
+                # create a new comment then add its details to the db
+                new_comment = submission.add_comment(comment_text)
+                self.dao.add_reddit_thread(reddit_id, poe_id, new_comment.id, comment_text)
+
+    def create_markdown_from_posts(self, staff_rows):
         markdown = ""
         for row in staff_rows:
             markdown += self.create_ggg_post_section(row)

@@ -38,8 +38,11 @@ def get_staff_forum_post_rows(thread_url, search_start=1):
         # get the table of forum rows
         post_table = soup.find("table", class_="forumPostListTable")
         for row in post_table.find_all("tr"):
+            # if this row is one of the class="newsPost newsPostInfo" rows, ignore it
+            if row.has_attr("class") and "newsPostInfo" in row["class"]:
+                continue
             # check whether this row is a staff post
-            if row.has_attr("class") and "staff" in row["class"]:
+            if row.has_attr("class") and ("staff" in row["class"] or "newsPost" in row["class"]):
                 rows.append(row)
     return rows
 
@@ -51,25 +54,24 @@ def get_post_from_row(post_row):
     return post_row.find("td").find("div", class_="content")
 
 
-def get_news_post(page):
-    """
-    get_staff_forum_posts fetches plain staff posts, this fetches news posts which are formatted
-    a little differently
-    returns the div containing the news post body
-    page should be the BSoup of the 1st page of a news post thread
-    """
-    return page.find("tr", class_="newsPost").find("td").find("div", class_="content")
-
-
 def get_post_author_from_row(post_row):
     """
     returns the name of the author of the post the given row from forumPostListTable contains
     """
-    tag_contents = post_row.find("td", class_="post_info")\
-                    .find("div")\
-                    .find("div", class_="posted-by")\
-                    .find("span", class_="profile-link")\
-                    .find("a").contents
+    tag_contents = None
+    # news posts are wierd, author info is stored in a separate row
+    if "newsPost" in post_row["class"]:
+        info_row = post_row.parent.find("tr", class_="newsPostInfo")
+        tag_contents = info_row.find("td")\
+                         .find("div", class_="posted-by")\
+                         .find("span", class_="profile-link")\
+                         .find("a").contents
+    else:
+        tag_contents = post_row.find("td", class_="post_info")\
+                        .find("div")\
+                        .find("div", class_="posted-by")\
+                        .find("span", class_="profile-link")\
+                        .find("a").contents
     # The challenges count image is in this <a> tag, but is missing if the user has zero challenges
     # Checking for that here
     if len(tag_contents) == 1:
@@ -88,8 +90,16 @@ def convert_html_to_markdown(html):
         if isinstance(part, bs4.element.NavigableString):
             markdown += part
         elif isinstance(part, bs4.element.Tag):
-            if part.name == "strong":
+            # Hold my beer
+            if part.name == "div":
+                markdown += convert_html_to_markdown(part)
+            # headers
+            elif part.name == "h2":
+                markdown += part.get_text() + "\n" + "-" * len(part.get_text())
+            # bold
+            elif part.name == "strong":
                 markdown += "**" + part.get_text() + "**"
+            # italics
             elif part.name == "em":
                 markdown += "*" + part.get_text() + "*"
             # this is how the forum marks up underlines.  Markdown (for good enough reason)
@@ -108,8 +118,9 @@ def convert_html_to_markdown(html):
                     markdown += "[" + content + "]" + "(" + link + ")"
                 # image links... idk it's probably an image I guess
                 else:
-                    text = "Image"
-                    if content.has_attr("alt"):
+                    # not sure what I should output so I guess I'll do this
+                    text = "image with a link"
+                    if content.has_attr("alt") and content["alt"] != "":
                         text = content["alt"]
                     markdown += "[" + text + "]" + "(" + link + ")"
             # <iframe> tags.  I'm going to assume it's a youtube video and link it,
