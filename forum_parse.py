@@ -134,6 +134,7 @@ def convert_html_to_markdown(html):
                     # make the youtube link
                     link = "https://youtube.com/watch?v=" + video_id
                     markdown += "[Youtube Video]" + "(" + link + ")"
+    markdown += "\n"
     return markdown
 
 def parse_quote(block_quote):

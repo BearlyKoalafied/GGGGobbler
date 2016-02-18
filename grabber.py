@@ -6,20 +6,29 @@ import db
 import forum_parse as fparse
 import settings
 
-TARGET_URLS = "https://www.pathofexile.com/forum/view-thread"
+POE_URLS = "https://www.pathofexile.com/forum/view-thread"
 
 def task(next_sched):
     print("starting next run...")
     bot = GGGGobblerBot()
-    bot.parse_reddit()
-    print("run over...")
+    sleep_time = 0
+    try:
+        bot.parse_reddit()
+    except praw.errors.RateLimitExceeded as e:
+        sleep_time = e.sleep_time
+        bot.dao.rollback()
+        print("Rate Limit Exceeded time = " + str(sleep_time) + ", waiting until next cycle")
     # do it again later
-    next_sched.enter(settings.WAIT_TIME, 1, task, (next_sched,))
-
+    if sleep_time > settings.WAIT_TIME:
+        next_sched.enter(sleep_time, 1, task, (next_sched,))
+        sleep_time = 0
+    else:
+        next_sched.enter(settings.WAIT_TIME, 1, task, (next_sched,))
+    print("run over...")
 
 def run():
     scheduler = sched.scheduler(time.time, time.sleep)
-    scheduler.enter(settings.WAIT_TIME, 1, task, (scheduler,))
+    scheduler.enter(5, 1, task, (scheduler,))
     scheduler.run()
 
 
@@ -34,14 +43,15 @@ class GGGGobblerBot:
         subreddit = self.r.get_subreddit('test')
         # collect submissions that link to poe.com from top 25 hot
         poe_submissions = []
-        for submission in subreddit.get_hot(limit = 25):
-            if submission.url.startswith(TARGET_URLS):
+        for submission in subreddit.get_hot(limit = 10):
+            if submission.url.startswith(POE_URLS):
                 poe_submissions.append(submission)
+
         self.dao.open()
         self.parse_submissions(poe_submissions)
 
     def get_comment_by_id(self, submission, comment_id):
-        url = submission.url + "/" + comment_id
+        url = submission.permalink + comment_id
         # permalink submission, one comment stored
         return self.r.get_submission(url=url).comments[0]
 
@@ -49,11 +59,11 @@ class GGGGobblerBot:
         for submission in submissions:
             # get the thread ids
             reddit_id = submission.id
-            poe_id = submission.url[42:]
+            poe_id = self.extract_poe_id_from_url(submission.url)
             # check if we've been to this link before
-            if self.dao.poe_thread_exists(int(poe_id)):
+            if self.dao.poe_thread_exists(poe_id):
                 # only check past the pages we've read already
-                page_number = self.dao.poe_thread_page_count(int(poe_id))
+                page_number = self.dao.poe_thread_page_count(poe_id)
                 staff_rows = fparse.get_staff_forum_post_rows(submission.url, page_number)
                 comment_text = self.create_markdown_from_posts(staff_rows)
             else:
@@ -64,21 +74,25 @@ class GGGGobblerBot:
                 # add the new thread to the db
                 self.dao.add_poe_thread(poe_id, page_number)
 
-            # check if we've commented on this thread before
-            comment_id = self.dao.get_bot_comment_(reddit_id)
-            if comment_id is not None:
-                # find the comment and edit it with new posts
-                comment = self.get_comment_by_id(submission, comment_id)
-                comment.edit(comment_text)
+            # check if we've seen this thread before
+            if self.dao.reddit_thread_exists(reddit_id):
                 # update db with new info
                 self.dao.update_reddit_thread(reddit_id, comment_text)
+                # find the comment and edit it with new posts
+                comment_id = self.dao.get_comment_id_by_thread(reddit_id)
+                comment = self.get_comment_by_id(submission, comment_id)
+                comment.edit(comment_text)
             else:
-                # create a new comment then add its details to the db
                 new_comment = submission.add_comment(comment_text)
+                # create a new comment then add its details to the db
                 self.dao.add_reddit_thread(reddit_id, poe_id, new_comment.id, comment_text)
+            # saving db state between submissions
+            self.dao.commit()
+
+        self.dao.close()
 
     def create_markdown_from_posts(self, staff_rows):
-        markdown = ""
+        markdown = "BEEP BOOP BEEP.  Grinding Gears have been detected in the linked thread:\n\n***\n\n"
         for row in staff_rows:
             markdown += self.create_ggg_post_section(row)
         return markdown
@@ -94,6 +108,12 @@ class GGGGobblerBot:
         footer = "***\n\n"
         markdown += footer
         return markdown
+
+    def extract_poe_id_from_url(self, url):
+        """
+        extracts the id of a thread from the url
+        """
+        return url[len(POE_URLS)+1:len(POE_URLS)+8]
 
 if __name__ == "__main__":
     run()
