@@ -47,12 +47,11 @@ class GGGGobblerBot:
             if submission.url.startswith(POE_URLS):
                 poe_submissions.append(submission)
 
-        self.dao.open()
         self.parse_submissions(poe_submissions)
 
     def get_comment_by_id(self, submission, comment_id):
         url = submission.permalink + comment_id
-        # permalink submission, one comment stored
+        # permalink submission, one comment stored in submission object here
         return self.r.get_submission(url=url).comments[0]
 
     def parse_submissions(self, submissions):
@@ -65,34 +64,45 @@ class GGGGobblerBot:
                 # only check past the pages we've read already
                 page_number = self.dao.poe_thread_page_count(poe_id)
                 staff_rows = fparse.get_staff_forum_post_rows(submission.url, page_number)
-                comment_text = self.create_markdown_from_posts(staff_rows)
+                comment_body_text = self.create_markdown_from_posts(staff_rows)
             else:
                 # parse its pages
                 staff_rows = fparse.get_staff_forum_post_rows(submission.url)
-                comment_text = self.create_markdown_from_posts(staff_rows)
+                comment_body_text = self.create_markdown_from_posts(staff_rows)
                 page_number = fparse.get_page_count(submission.url)
                 # add the new thread to the db
                 self.dao.add_poe_thread(poe_id, page_number)
 
             # check if we've seen this thread before
             if self.dao.reddit_thread_exists(reddit_id):
-                # update db with new info
-                self.dao.update_reddit_thread(reddit_id, comment_text)
-                # find the comment and edit it with new posts
-                comment_id = self.dao.get_comment_id_by_thread(reddit_id)
-                comment = self.get_comment_by_id(submission, comment_id)
-                comment.edit(comment_text)
+                current_comment_text = self.dao.get_comment_body(reddit_id)
+                new_text = current_comment_text + comment_body_text
+                # check if we need to bother doing anything
+                if new_text != current_comment_text:
+                    # update db with new info
+                    self.dao.update_reddit_thread(reddit_id, new_text)
+                    # find the comment and edit it with new posts
+                    comment_id = self.dao.get_comment_id_by_thread(reddit_id)
+                    comment = self.get_comment_by_id(submission, comment_id)
+                    comment.edit(new_text)
             else:
+                # make fresh comment
+                comment_text = self.create_post_preamble() + comment_body_text
                 new_comment = submission.add_comment(comment_text)
                 # create a new comment then add its details to the db
                 self.dao.add_reddit_thread(reddit_id, poe_id, new_comment.id, comment_text)
             # saving db state between submissions
             self.dao.commit()
+            # waiting some time between submissions because reddit gets mad at new accounts
+            time.sleep(35)
 
         self.dao.close()
 
+    def create_post_preamble(self):
+        return "BEEP BOOP BEEP.  Grinding Gears have been detected in the linked thread:\n\n***\n\n"
+
     def create_markdown_from_posts(self, staff_rows):
-        markdown = "BEEP BOOP BEEP.  Grinding Gears have been detected in the linked thread:\n\n***\n\n"
+        markdown = ""
         for row in staff_rows:
             markdown += self.create_ggg_post_section(row)
         return markdown

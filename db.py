@@ -37,20 +37,6 @@ class DAO:
         finally:
             cur.close()
 
-    def get_comment_id_by_thread(self, thread_id):
-        """
-        returns the id of the bot comment in the specified thread,
-        returns None if the thread has no recorded comment
-        """
-        cur = self.db.cursor()
-        try:
-            cur.execute("SELECT redthread_comment_id FROM redthread "
-                        "WHERE redthread_id = ?", (thread_id,))
-            row = cur.fetchone()
-            return None if row is None else row[0]
-        finally:
-            cur.close()
-
     def poe_thread_page_count(self, thread_id):
         """
         gets the recorded page counter of given thread
@@ -95,6 +81,46 @@ class DAO:
         try:
             cur.execute("UPDATE poethread SET poethread_page_count = ? "
                              "WHERE poethread_id = ?", (page_count, thread_id))
+        finally:
+            cur.close()
+
+    def get_reddit_threads_linking_here(self, poe_thread_id):
+        """
+        returns a list of reddit thread ids that link to the given poe thread
+        """
+        cur = self.db.cursor()
+        try:
+            cur.execute("SELECT redthread_id FROM redthread "
+                        "WHERE poethread_id = ?", (poe_thread_id,))
+            results = cur.fetchall()
+            return [result[0] for result in results]
+        finally:
+            cur.close()
+
+    def get_comment_id_by_thread(self, thread_id):
+        """
+        returns the id of the bot comment in the specified thread,
+        returns None if the thread has no recorded comment
+        """
+        cur = self.db.cursor()
+        try:
+            cur.execute("SELECT redthread_comment_id FROM redthread "
+                        "WHERE redthread_id = ?", (thread_id,))
+            row = cur.fetchone()
+            return None if row is None else row[0]
+        finally:
+            cur.close()
+
+    def get_comment_body(self, thread_id):
+        """
+        returns the text body of a stored comment in the given thread
+        """
+        cur = self.db.cursor()
+        try:
+            cur.execute("SELECT redthread_comment_text FROM redthread "
+                        "WHERE redthread_id = ?", (thread_id,))
+            row = cur.fetchone()
+            return None if row is None else row[0]
         finally:
             cur.close()
 
