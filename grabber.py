@@ -6,7 +6,7 @@ import db
 import forum_parse as fparse
 import settings
 
-POE_URLS = "https://www.pathofexile.com/forum/view-thread"
+POE_URL = "www.pathofexile.com/forum/view-thread"
 
 def task(next_sched):
     print("starting next run...")
@@ -45,19 +45,14 @@ class GGGGobblerBot:
         poe_submissions = []
         ids = []
         for submission in subreddit.get_hot(limit = 25):
-            if submission.url.startswith(POE_URLS):
+            if POE_URL in submission.url:
                 poe_submissions.append(submission)
                 ids.append(submission.id)
-        for sub in poe_submissions:
-            print(sub.title)
         for submission in subreddit.get_new(limit = 15):
-            if submission.url.startswith(POE_URLS) and submission.id not in ids:
+            if POE_URL in submission.url and submission.id not in ids:
                 poe_submissions.append(submission)
 
-        for sub in poe_submissions:
-            print(sub.title)
-        print(ids)
-        # self.parse_submissions(poe_submissions)
+        self.parse_submissions(poe_submissions)
 
     def get_comment_by_id(self, submission, comment_id):
         url = submission.permalink + comment_id
@@ -150,7 +145,8 @@ class GGGGobblerBot:
         """
         extracts the id of a thread from the url
         """
-        return url[len(POE_URLS)+1:len(POE_URLS)+8]
+        start_index = url.find("view-thread") + len("view-thread") + 1
+        return url[start_index:start_index+7]
 
 if __name__ == "__main__":
     run()
