@@ -37,6 +37,27 @@ class DAO:
         finally:
             cur.close()
 
+    def get_old_staff_posts_by_thread_id(self, poe_thread_id):
+        """
+        returns a list of strings containing the markdown-ed posts stored in old comments
+        """
+        cur = self.db.cursor()
+        try:
+            cur.execute("SELECT redthread_comment_text FROM redthread "
+                        "WHERE poethread_id = ?", (poe_thread_id,))
+            # In theory, any row will do as they'll all have the same data
+            # maybe I should refactor this db...
+            result = cur.fetchone()
+            if result is None:
+                return []
+            result = result[0]
+            parts = result.split("***")
+            # trim off preamble
+            posts = parts[1:]
+            return posts
+        finally:
+            cur.close()
+
     def poe_thread_page_count(self, thread_id):
         """
         gets the recorded page counter of given thread

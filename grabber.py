@@ -43,10 +43,14 @@ class GGGGobblerBot:
         subreddit = self.r.get_subreddit('test')
         # collect submissions that link to poe.com from top 25 hot
         poe_submissions = []
-        for submission in subreddit.get_hot(limit = 10):
+        ids = []
+        for submission in subreddit.get_hot(limit = 25):
             if submission.url.startswith(POE_URLS):
                 poe_submissions.append(submission)
-
+                ids.append(submission.id)
+        for submission in subreddit.get_new(limit = 15):
+            if submission.url.startswith(POE_URLS) and submission.id not in ids:
+                poe_submissions.append(submission)
         self.parse_submissions(poe_submissions)
 
     def get_comment_by_id(self, submission, comment_id):
@@ -56,15 +60,26 @@ class GGGGobblerBot:
 
     def parse_submissions(self, submissions):
         for submission in submissions:
+            # flag to delay next iteration if a comment is sent
+            comment_made = False
             # get the thread ids
             reddit_id = submission.id
             poe_id = self.extract_poe_id_from_url(submission.url)
             # check if we've been to this link before
             if self.dao.poe_thread_exists(poe_id):
+                # get posts that have been read in the past and placed in another comment
+                old_posts = self.dao.get_old_staff_posts_by_thread_id(poe_id)
                 # only check past the pages we've read already
                 page_number = self.dao.poe_thread_page_count(poe_id)
                 staff_rows = fparse.get_staff_forum_post_rows(submission.url, page_number)
                 comment_body_text = self.create_markdown_from_posts(staff_rows)
+                new_posts = comment_body_text.split("***")
+                # remove duplicates
+                for post in new_posts:
+                    if post in old_posts:
+                        new_posts.remove(post)
+                comment_body_text = "***".join(old_posts + new_posts)
+                print(comment_body_text)
             else:
                 # parse its pages
                 staff_rows = fparse.get_staff_forum_post_rows(submission.url)
@@ -85,16 +100,19 @@ class GGGGobblerBot:
                     comment_id = self.dao.get_comment_id_by_thread(reddit_id)
                     comment = self.get_comment_by_id(submission, comment_id)
                     comment.edit(new_text)
+                    comment_made = True
             else:
                 # make fresh comment
                 comment_text = self.create_post_preamble() + comment_body_text
                 new_comment = submission.add_comment(comment_text)
                 # create a new comment then add its details to the db
                 self.dao.add_reddit_thread(reddit_id, poe_id, new_comment.id, comment_text)
+                comment_made = True
             # saving db state between submissions
             self.dao.commit()
             # waiting some time between submissions because reddit gets mad at new accounts
-            time.sleep(35)
+            if comment_made:
+                time.sleep(35)
 
         self.dao.close()
 
