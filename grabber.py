@@ -48,10 +48,16 @@ class GGGGobblerBot:
             if submission.url.startswith(POE_URLS):
                 poe_submissions.append(submission)
                 ids.append(submission.id)
+        for sub in poe_submissions:
+            print(sub.title)
         for submission in subreddit.get_new(limit = 15):
             if submission.url.startswith(POE_URLS) and submission.id not in ids:
                 poe_submissions.append(submission)
-        self.parse_submissions(poe_submissions)
+
+        for sub in poe_submissions:
+            print(sub.title)
+        print(ids)
+        # self.parse_submissions(poe_submissions)
 
     def get_comment_by_id(self, submission, comment_id):
         url = submission.permalink + comment_id
@@ -73,13 +79,19 @@ class GGGGobblerBot:
                 page_number = self.dao.poe_thread_page_count(poe_id)
                 staff_rows = fparse.get_staff_forum_post_rows(submission.url, page_number)
                 comment_body_text = self.create_markdown_from_posts(staff_rows)
-                new_posts = comment_body_text.split("***")
+                if comment_body_text == "":
+                    new_posts = []
+                else:
+                    new_posts = comment_body_text.split("***")
                 # remove duplicates
+                print(old_posts)
+                print("\n:\n")
+                print(new_posts)
                 for post in new_posts:
                     if post in old_posts:
+                        print("got here")
                         new_posts.remove(post)
                 comment_body_text = "***".join(old_posts + new_posts)
-                print(comment_body_text)
             else:
                 # parse its pages
                 staff_rows = fparse.get_staff_forum_post_rows(submission.url)
@@ -90,17 +102,14 @@ class GGGGobblerBot:
 
             # check if we've seen this thread before
             if self.dao.reddit_thread_exists(reddit_id):
-                current_comment_text = self.dao.get_comment_body(reddit_id)
-                new_text = current_comment_text + comment_body_text
-                # check if we need to bother doing anything
-                if new_text != current_comment_text:
-                    # update db with new info
-                    self.dao.update_reddit_thread(reddit_id, new_text)
-                    # find the comment and edit it with new posts
-                    comment_id = self.dao.get_comment_id_by_thread(reddit_id)
-                    comment = self.get_comment_by_id(submission, comment_id)
-                    comment.edit(new_text)
-                    comment_made = True
+                new_text = self.create_post_preamble() + comment_body_text
+                # update db with new info
+                self.dao.update_reddit_thread(reddit_id, new_text)
+                # find the comment and edit it with new posts
+                comment_id = self.dao.get_comment_id_by_thread(reddit_id)
+                comment = self.get_comment_by_id(submission, comment_id)
+                comment.edit(new_text)
+                comment_made = True
             else:
                 # make fresh comment
                 comment_text = self.create_post_preamble() + comment_body_text
@@ -112,7 +121,7 @@ class GGGGobblerBot:
             self.dao.commit()
             # waiting some time between submissions because reddit gets mad at new accounts
             if comment_made:
-                time.sleep(35)
+                time.sleep(settings.TIME_BETWEEN_COMMENTS)
 
         self.dao.close()
 
