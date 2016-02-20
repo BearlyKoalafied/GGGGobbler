@@ -6,6 +6,7 @@ def get_page_soup(page_url):
     """
     returns the soup object of the linked forum thread
     """
+
     page = requests.get(page_url)
     soup = bs4.BeautifulSoup(page.content.decode("utf-8", "ignore"), "html.parser")
     return soup

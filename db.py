@@ -50,7 +50,7 @@ class DAO:
             result = cur.fetchone()
             if result is None:
                 return []
-            result = result[0]
+            result = result[0].lstrip()
             parts = result.split("***")
             # trim off preamble
             posts = parts[1:]
