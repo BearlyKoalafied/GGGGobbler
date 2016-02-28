@@ -1,5 +1,5 @@
 import sqlite3
-
+from data_structs import StaffPost
 
 class DAO:
     def __init__(self):
@@ -26,82 +26,109 @@ class DAO:
         try:
             cur.execute("""CREATE TABLE poethread (
                                     poethread_id TEXT PRIMARY KEY,
-                                    poethread_page_count INTEGER)""")
+                                    poethread_page_count INTEGER
+                                    )""")
 
             cur.execute("""CREATE TABLE redthread (
                                     redthread_id TEXT PRIMARY KEY,
                                     poethread_id TEXT,
-                                    redthread_comment_id TEXT,
-                                    redthread_comment_text TEXT,
-                                    FOREIGN KEY(poethread_id) REFERENCES poethread(poethread_id))""")
+                                    FOREIGN KEY(poethread_id) REFERENCES poethread(poethread_id)
+                                    )""")
+
+            cur.execute("""CREATE TABLE comment (
+                                    comment_id TEXT PRIMARY KEY,
+                                    comment_order_index INTEGER,
+                                    redthread_id TEXT,
+                                    FOREIGN KEY(redthread_id) REFERENCES redthread(redthread_id)
+                                    )""")
+
+            cur.execute("""CREATE TABLE staffpost (
+                                    staffpost_id INTEGER PRIMARY KEY,
+                                    poethread_id TEXT,
+                                    staffpost_text TEXT,
+                                    staffpost_author TEXT,
+                                    FOREIGN KEY(poethread_id) REFERENCES poethread(poethread_id)
+                                    )""")
+
         finally:
             cur.close()
 
     def get_old_staff_posts_by_thread_id(self, poe_thread_id):
         """
-        returns a list of strings containing the markdown-ed posts stored in old comments
+        returns a list of StaffPosts of posts stored in the db for the specified thread
         """
         cur = self.db.cursor()
         try:
-            cur.execute("SELECT redthread_comment_text FROM redthread "
-                        "WHERE poethread_id = ?", (poe_thread_id,))
-            # In theory, any row will do as they'll all have the same data
-            # maybe I should refactor this db...
-            result = cur.fetchone()
-            if result is None:
+            cur.execute("SELECT staffpost_author, staffpost_text "
+                        "FROM staffpost WHERE poethread_id = ?", (poe_thread_id,))
+            results = cur.fetchall()
+            if results is None:
                 return []
-            result = result[0].lstrip()
-            parts = result.split("***")
-            # trim off preamble
-            posts = parts[1:]
-            return posts
+            return [StaffPost(poe_thread_id, result[0], result[1]) for result in results]
         finally:
             cur.close()
 
-    def poe_thread_page_count(self, thread_id):
+    def poe_thread_page_count(self, poe_thread_id):
         """
         gets the recorded page counter of given thread
         """
         cur = self.db.cursor()
         try:
             cur.execute("SELECT poethread_page_count FROM poethread WHERE poethread_id = ?",
-                        (thread_id,))
+                        (poe_thread_id,))
             row = cur.fetchone()
 
             return None if row is None else row[0]
         finally:
             cur.close()
 
-    def poe_thread_exists(self, thread_id):
+    def poe_thread_exists(self, poe_thread_id):
         """
         checks if the given thread is in the db
         """
         cur = self.db.cursor()
         try:
-            cur.execute("SELECT 1 FROM poethread WHERE poethread_id = ?", (thread_id,))
+            cur.execute("SELECT 1 FROM poethread WHERE poethread_id = ?", (poe_thread_id,))
             return False if cur.fetchone() is None else True
         finally:
             cur.close()
 
-    def add_poe_thread(self, thread_id, page_count):
+    def add_poe_thread(self, poe_thread_id, page_count):
         """
         adds a new pathofexile.com thread reacord
         """
         cur = self.db.cursor()
         try:
             cur.execute("INSERT INTO poethread (poethread_id, poethread_page_count) "
-                        "VALUES (?, ?)", (thread_id, page_count))
+                        "VALUES (?, ?)", (poe_thread_id, page_count))
         finally:
             cur.close()
 
-    def update_poe_thread(self, thread_id, page_count):
+    def add_staff_posts(self, posts):
+        """
+        adds a given list of StaffPosts to the db
+        """
+        cur = self.db.cursor()
+        try:
+            params = []
+            for post in posts:
+                params.append((post.thread_id, post.md_text, post.author))
+            if len(params) == 1:
+                params = params[0]
+            if params != []:
+                cur.execute("INSERT INTO staffpost (poethread_id, staffpost_text, staffpost_author) VALUES "
+                        + "(?, ?, ?)", params)
+        finally:
+            cur.close()
+
+    def update_poe_thread(self, poe_thread_id, page_count):
         """
         updates a threads noted page count
         """
         cur = self.db.cursor()
         try:
             cur.execute("UPDATE poethread SET poethread_page_count = ? "
-                             "WHERE poethread_id = ?", (page_count, thread_id))
+                         "WHERE poethread_id = ?", (page_count, poe_thread_id))
         finally:
             cur.close()
 
@@ -118,63 +145,76 @@ class DAO:
         finally:
             cur.close()
 
-    def get_comment_id_by_thread(self, thread_id):
+    def get_comment_ids_by_thread(self, reddit_thread_id):
         """
-        returns the id of the bot comment in the specified thread,
-        returns None if the thread has no recorded comment
-        """
-        cur = self.db.cursor()
-        try:
-            cur.execute("SELECT redthread_comment_id FROM redthread "
-                        "WHERE redthread_id = ?", (thread_id,))
-            row = cur.fetchone()
-            return None if row is None else row[0]
-        finally:
-            cur.close()
-
-    def get_comment_body(self, thread_id):
-        """
-        returns the text body of a stored comment in the given thread
+        returns an ordered list of ids for the bot comments in the specified thread
         """
         cur = self.db.cursor()
         try:
-            cur.execute("SELECT redthread_comment_text FROM redthread "
-                        "WHERE redthread_id = ?", (thread_id,))
-            row = cur.fetchone()
-            return None if row is None else row[0]
+            cur.execute("SELECT comment_id, comment_order_index FROM comment "
+                        "WHERE redthread_id = ?", (reddit_thread_id,))
+            results = cur.fetchall()
+            count = len(results)
+            out = []
+
+            for i in range(count):
+                next = min(results, key = lambda k: k[1])
+                out.append(next[0])
+                results.remove(next)
+            return out
         finally:
             cur.close()
 
-    def reddit_thread_exists(self, thread_id):
+    def reddit_thread_exists(self, reddit_thread_id):
         """
         checks whether we have a specified reddit post recorded
         """
         cur = self.db.cursor()
         try:
-            cur.execute("SELECT 1 FROM redthread WHERE redthread_id = ?", (thread_id,))
+            cur.execute("SELECT 1 FROM redthread WHERE redthread_id = ?", (reddit_thread_id,))
             return False if cur.fetchone() is None else True
         finally:
             cur.close()
 
-    def add_reddit_thread(self, reddit_thread_id, poe_thread_id, comment_id, comment_text):
+    def add_reddit_thread(self, reddit_thread_id, poe_thread_id):
         """
         adds a new reddit post record
         """
         cur = self.db.cursor()
         try:
-            cur.execute("INSERT INTO redthread (redthread_id, poethread_id, "
-                        "redthread_comment_id, redthread_comment_text) VALUES (?, ?, ?, ?)",
-                        (reddit_thread_id, poe_thread_id, comment_id, comment_text))
+            cur.execute("INSERT INTO redthread (redthread_id, poethread_id) VALUES (?, ?)",
+                        (reddit_thread_id, poe_thread_id))
         finally:
             cur.close()
 
-    def update_reddit_thread(self, thread_id, comment_text):
+    def add_reddit_comment(self, comment_id, reddit_thread_id, ordinal):
         """
-        updates a reddit thread's comment with new text
+        adds a new reddit comment record
         """
         cur = self.db.cursor()
         try:
-            cur.execute("UPDATE redthread SET redthread_comment_text = ? "
-                             "WHERE redthread_id = ?", (comment_text, thread_id))
+            cur.execute("INSERT INTO comment (comment_id, comment_order_index, redthread_id)"
+                        " VALUES (?, ?, ?)", (comment_id, ordinal, reddit_thread_id))
+        finally:
+            cur.close()
+
+    def add_comments(self, reddit_thread_id, comment_ids):
+        """
+        adds a list of new reddit comment records
+        """
+        cur = self.db.cursor()
+        try:
+            # get the number of comments already here
+            cur.execute("SELECT COUNT(*) FROM comment WHERE redthread_id = ?", (reddit_thread_id,))
+            num_old_comments = cur.fetchone()[0]
+
+            new_order_indexes = [i for i in range(num_old_comments + 1, num_old_comments + len(comment_ids) + 1)]
+
+            params = [(comment_ids[i], new_order_indexes[i], reddit_thread_id)
+                      for i in range(len(new_order_indexes))]
+            if len(params) == 1:
+                params = params[0]
+            cur.execute("INSERT INTO comment (comment_id, comment_order_index, redthread_id) "
+                        "VALUES (?, ?, ?)", params)
         finally:
             cur.close()

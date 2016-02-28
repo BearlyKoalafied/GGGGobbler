@@ -9,6 +9,7 @@ import settings
 POE_URL = "www.pathofexile.com/forum/view-thread"
 
 def task(next_sched):
+    import sys
     print("starting next run...")
     bot = GGGGobblerBot()
     sleep_time = 0
@@ -17,7 +18,12 @@ def task(next_sched):
     except praw.errors.RateLimitExceeded as e:
         sleep_time = e.sleep_time
         bot.dao.rollback()
-        print("Rate Limit Exceeded time = " + str(sleep_time) + ", waiting until next cycle")
+        print("Rate Limit Exceeded time = " + str(sleep_time) + ", waiting until next cycle\n"
+            "Message:" + e.strerror)
+    except:
+        bot.dao.rollback()
+        raise
+
     # do it again later
     if sleep_time > settings.WAIT_TIME:
         next_sched.enter(sleep_time, 1, task, (next_sched,))
@@ -41,14 +47,14 @@ class GGGGobblerBot:
 
     def parse_reddit(self):
         subreddit = self.r.get_subreddit('test')
-        # collect submissions that link to poe.com from top 25 hot
+        # collect submissions that link to poe.com
         poe_submissions = []
         ids = []
-        for submission in subreddit.get_hot(limit = 25):
+        for submission in subreddit.get_hot(limit = 15):
             if POE_URL in submission.url:
                 poe_submissions.append(submission)
                 ids.append(submission.id)
-        for submission in subreddit.get_new(limit = 15):
+        for submission in subreddit.get_new(limit = 10):
             if POE_URL in submission.url and submission.id not in ids:
                 poe_submissions.append(submission)
 
@@ -61,83 +67,135 @@ class GGGGobblerBot:
 
     def parse_submissions(self, submissions):
         for submission in submissions:
-            # flag to delay next iteration if a comment is sent
-            comment_made = False
-            # get the thread ids
-            reddit_id = submission.id
-            poe_id = self.extract_poe_id_from_url(submission.url)
-            # check if we've been to this link before
-            if self.dao.poe_thread_exists(poe_id):
-                # get posts that have been read in the past and placed in another comment
-                old_posts = self.dao.get_old_staff_posts_by_thread_id(poe_id)
-                # only check past the pages we've read already
-                page_number = self.dao.poe_thread_page_count(poe_id)
-                staff_rows = fparse.get_staff_forum_post_rows(submission.url, page_number)
-                comment_body_text = self.create_markdown_from_posts(staff_rows)
-                if comment_body_text == "":
-                    new_posts = []
-                else:
-                    new_posts = comment_body_text.split("***")
-                # remove duplicates
-                print(old_posts)
-                print("\n:\n")
-                print(new_posts)
-                for post in new_posts:
-                    if post in old_posts:
-                        print("got here")
-                        new_posts.remove(post)
-                comment_body_text = "***".join(old_posts + new_posts)
-            else:
-                # parse its pages
-                staff_rows = fparse.get_staff_forum_post_rows(submission.url)
-                comment_body_text = self.create_markdown_from_posts(staff_rows)
-                page_number = fparse.get_page_count(submission.url)
-                # add the new thread to the db
-                self.dao.add_poe_thread(poe_id, page_number)
+            posts = self.get_current_posts(submission.url)
 
-            # check if we've seen this thread before
-            if self.dao.reddit_thread_exists(reddit_id):
-                new_text = self.create_post_preamble() + comment_body_text
-                # update db with new info
-                self.dao.update_reddit_thread(reddit_id, new_text)
-                # find the comment and edit it with new posts
-                comment_id = self.dao.get_comment_id_by_thread(reddit_id)
-                comment = self.get_comment_by_id(submission, comment_id)
-                comment.edit(new_text)
-                comment_made = True
-            else:
-                # make fresh comment
-                comment_text = self.create_post_preamble() + comment_body_text
-                new_comment = submission.add_comment(comment_text)
-                # create a new comment then add its details to the db
-                self.dao.add_reddit_thread(reddit_id, poe_id, new_comment.id, comment_text)
-                comment_made = True
+            # only bother doing stuff if we found staff posts
+            if posts == []:
+                self.dao.commit()
+                continue
+
+            comments_to_post = self.create_divided_comments(posts)
+
+            if not self.dao.reddit_thread_exists(submission.id):
+                self.dao.add_reddit_thread(submission.id, self.extract_poe_id_from_url(submission.url))
+
+            self.send_replies(submission, comments_to_post)
             # saving db state between submissions
             self.dao.commit()
-            # waiting some time between submissions because reddit gets mad at new accounts
-            if comment_made:
-                time.sleep(settings.TIME_BETWEEN_COMMENTS)
 
         self.dao.close()
+
+    def get_current_posts(self, url):
+        poe_thread_id = self.extract_poe_id_from_url(url)
+        # check if we've been to this link before
+        if self.dao.poe_thread_exists(poe_thread_id):
+            # get posts that have been read in the past and placed in the db
+            old_posts = self.dao.get_old_staff_posts_by_thread_id(poe_thread_id)
+            # only check past the pages we've read already
+            page_number = self.dao.poe_thread_page_count(poe_thread_id)
+            new_posts, new_page_count = fparse.get_staff_forum_posts(poe_thread_id, page_number)
+            # remove duplicates
+            for post in new_posts:
+                if post in old_posts:
+                    new_posts.remove(post)
+            self.dao.add_staff_posts(new_posts)
+            return old_posts + new_posts
+        else:
+            new_posts, new_page_count = fparse.get_staff_forum_posts(poe_thread_id)
+            # add the new thread to the db
+            self.dao.add_poe_thread(poe_thread_id, new_page_count)
+            self.dao.add_staff_posts(new_posts)
+            return new_posts
+
+    def create_divided_comments(self, posts):
+        """
+        returns a list of strings where each string is a comment no more than COMMENT_CHAR_LIMIT long
+        """
+        comments = []
+        cur_comment = self.create_post_preamble()
+        sections = [self.create_ggg_post_section(post) for post in posts]
+
+        for section in sections:
+            remaining_space = settings.COMMENT_CHAR_LIMIT - len(cur_comment)
+            if remaining_space >= len(section):
+                cur_comment += section
+            else:
+                comments.append(cur_comment)
+                if len(section) <= settings.COMMENT_CHAR_LIMIT:
+                    cur_comment = section
+                else:
+                    # lazily split crap up
+                    parts = []
+                    while len(section) > settings.COMMENT_CHAR_LIMIT:
+                        part = section[:settings.COMMENT_CHAR_LIMIT]
+                        parts.append(part)
+                        section = section[settings.COMMENT_CHAR_LIMIT:]
+                    if section != "":
+                        parts.append(section)
+                    comments.extend(parts)
+                    cur_comment = ""
+        if cur_comment != "":
+            comments.append(cur_comment)
+        return comments
+
+    def send_replies(self, submission, comments_to_post):
+        existing_comment_ids = self.dao.get_comment_ids_by_thread(submission.id)
+        num_existing_comments = len(existing_comment_ids)
+        num_new_comments = len(comments_to_post)
+        if num_new_comments == 0:
+            return
+        if num_existing_comments == 0:
+            new_comments = []
+            # create new comments for thread
+            thing_to_reply = submission.add_comment(comments_to_post[0])
+            time.sleep(settings.TIME_BETWEEN_COMMENTS)
+            comments_to_post.remove(comments_to_post[0])
+            new_comments.append(thing_to_reply.id)
+            for comment in comments_to_post:
+                thing_to_reply = thing_to_reply.reply(comment)
+                new_comments.append(thing_to_reply.id)
+                time.sleep(settings.TIME_BETWEEN_COMMENTS)
+            self.dao.add_comments(submission.id, new_comments)
+
+        elif num_new_comments == num_existing_comments:
+            for i in range(num_existing_comments):
+                comment = self.get_comment_by_id(submission, existing_comment_ids[i])
+                comment.edit(comments_to_post[i])
+                time.sleep(settings.TIME_BETWEEN_COMMENTS)
+
+        elif num_new_comments > num_existing_comments:
+            for i in range(num_existing_comments):
+                comment = self.get_comment_by_id(submission, existing_comment_ids[i])
+                comment.edit(comments_to_post[i])
+                time.sleep(settings.TIME_BETWEEN_COMMENTS)
+            # num_existing_comments is guaranteed to be greater than 0 so the loop is
+            # guaranteed to run at least 1 time
+            # noinspection PyUnboundLocalVariable
+            new_comments = [comment.id]
+            # create new comments after existing ones
+            for i in range(num_existing_comments + 1, num_existing_comments + num_new_comments + 1):
+                # noinspection PyUnboundLocalVariable
+                comment = comment.reply(comments_to_post[i])
+                new_comments.append(comment.id)
+                time.sleep(settings.TIME_BETWEEN_COMMENTS)
+            self.dao.add_comments(submission.id, new_comments)
 
     def create_post_preamble(self):
         return "BEEP BOOP BEEP.  Grinding Gears have been detected in the linked thread:\n\n***\n\n"
 
-    def create_markdown_from_posts(self, staff_rows):
+    def create_markdown_from_posts(self, posts):
         markdown = ""
-        for row in staff_rows:
-            markdown += self.create_ggg_post_section(row)
+        for posts in posts:
+            markdown += self.create_ggg_post_section(posts)
         return markdown
 
-    def create_ggg_post_section(self, post_row):
-        # author label
-        author = fparse.get_post_author_from_row(post_row)
-        markdown = "**" + author + " wrote:**\n\n"
+    def create_ggg_post_section(self, post):
+        markdown = "**" + post.author + " wrote:**\n\n"
         # body text
-        body = fparse.convert_html_to_markdown(fparse.get_post_from_row(post_row))
+        body = post.md_text
         markdown += body
-        # line separator
-        footer = "***\n\n"
+        # post separator
+        footer = "\n\n***\n\n"
         markdown += footer
         return markdown
 
