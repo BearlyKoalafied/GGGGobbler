@@ -8,6 +8,7 @@ import settings
 
 POE_URL = "www.pathofexile.com/forum/view-thread"
 
+
 def task(next_sched):
     import sys
     print("starting next run...")
@@ -18,8 +19,7 @@ def task(next_sched):
     except praw.errors.RateLimitExceeded as e:
         sleep_time = e.sleep_time
         bot.dao.rollback()
-        print("Rate Limit Exceeded time = " + str(sleep_time) + ", waiting until next cycle\n"
-            "Message:" + e.strerror)
+        print("Rate Limit Exceeded time = " + str(sleep_time) + ", waiting until next cycle")
     except:
         bot.dao.rollback()
         raise
@@ -32,6 +32,7 @@ def task(next_sched):
         next_sched.enter(settings.WAIT_TIME, 1, task, (next_sched,))
     print("run over...")
 
+
 def run():
     scheduler = sched.scheduler(time.time, time.sleep)
     scheduler.enter(5, 1, task, (scheduler,))
@@ -40,21 +41,24 @@ def run():
 
 class GGGGobblerBot:
     def __init__(self):
-        self.r = praw.Reddit(user_agent = settings.APP_USER_AGENT)
+        self.r = praw.Reddit(user_agent=settings.APP_USER_AGENT)
         self.r.set_oauth_app_info(settings.APP_ID, settings.APP_SECRET, settings.APP_URI)
         self.r.refresh_access_information(settings.APP_REFRESH)
         self.dao = db.DAO()
 
     def parse_reddit(self):
-        subreddit = self.r.get_subreddit('test')
+        if fparse.forum_is_down():
+            print("Pathofexile.com is down for maintenance")
+            return
+        subreddit = self.r.get_subreddit('pathofexile')
         # collect submissions that link to poe.com
         poe_submissions = []
         ids = []
-        for submission in subreddit.get_hot(limit = 15):
+        for submission in subreddit.get_hot(limit=20):
             if POE_URL in submission.url:
                 poe_submissions.append(submission)
                 ids.append(submission.id)
-        for submission in subreddit.get_new(limit = 10):
+        for submission in subreddit.get_new(limit=10):
             if POE_URL in submission.url and submission.id not in ids:
                 poe_submissions.append(submission)
 
@@ -73,16 +77,15 @@ class GGGGobblerBot:
             if posts == []:
                 self.dao.commit()
                 continue
-
+            print(submission.url)
             comments_to_post = self.create_divided_comments(posts)
-
             if not self.dao.reddit_thread_exists(submission.id):
                 self.dao.add_reddit_thread(submission.id, self.extract_poe_id_from_url(submission.url))
 
             self.send_replies(submission, comments_to_post)
             # saving db state between submissions
             self.dao.commit()
-
+        self.dao.rollback()
         self.dao.close()
 
     def get_current_posts(self, url):
@@ -91,15 +94,22 @@ class GGGGobblerBot:
         if self.dao.poe_thread_exists(poe_thread_id):
             # get posts that have been read in the past and placed in the db
             old_posts = self.dao.get_old_staff_posts_by_thread_id(poe_thread_id)
-            # only check past the pages we've read already
-            page_number = self.dao.poe_thread_page_count(poe_thread_id)
-            new_posts, new_page_count = fparse.get_staff_forum_posts(poe_thread_id, page_number)
-            # remove duplicates
-            for post in new_posts:
-                if post in old_posts:
-                    new_posts.remove(post)
-            self.dao.add_staff_posts(new_posts)
-            return old_posts + new_posts
+            current_posts, new_page_count = fparse.get_staff_forum_posts(poe_thread_id)
+            new_posts = list(current_posts)
+            # remove posts with ids that match an id stored in db
+            # and keep the new copy of the post
+            for current_post in current_posts:
+                for old_post in old_posts:
+                    # dont add posts to the db if they're already there
+                    if current_post.post_id == old_post.post_id:
+                        new_posts.remove(current_post)
+                        # update db with new post texts
+                        if current_post.md_text != old_post.md_text:
+                            self.dao.update_staff_post(current_post)
+                            old_posts.remove(old_post)
+            if new_posts != []:
+                self.dao.add_staff_posts(new_posts)
+            return current_posts
         else:
             new_posts, new_page_count = fparse.get_staff_forum_posts(poe_thread_id)
             # add the new thread to the db
@@ -139,6 +149,7 @@ class GGGGobblerBot:
         return comments
 
     def send_replies(self, submission, comments_to_post):
+        print(comments_to_post)
         existing_comment_ids = self.dao.get_comment_ids_by_thread(submission.id)
         num_existing_comments = len(existing_comment_ids)
         num_new_comments = len(comments_to_post)
@@ -204,7 +215,8 @@ class GGGGobblerBot:
         extracts the id of a thread from the url
         """
         start_index = url.find("view-thread") + len("view-thread") + 1
-        return url[start_index:start_index+7]
+        return url[start_index:start_index + 7]
+
 
 if __name__ == "__main__":
     run()

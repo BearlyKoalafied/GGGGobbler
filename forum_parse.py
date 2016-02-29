@@ -21,6 +21,8 @@ def get_page_count(thread_url):
     """
     soup = get_page_soup(thread_url)
     pagination = soup.find("div", {"class": "pagination"})
+    if pagination is None:
+        return 1
     page_buttons = pagination.find_all("a")
 
     target_button_contents = page_buttons[-1].contents[0]
@@ -29,6 +31,10 @@ def get_page_count(thread_url):
         target_button_contents = page_buttons[-2].contents[0]
     return int(target_button_contents)
 
+def forum_is_down():
+    page = get_page_soup("https://www.pathofexile.com")
+    down_header = page.find("h1", class_="topBar")
+    return down_header is not None and down_header.get_text() == "Down For Maintenance"
 
 def get_staff_forum_posts(thread_id, search_start=1):
     """
@@ -38,29 +44,27 @@ def get_staff_forum_posts(thread_id, search_start=1):
     search_start is the page number to begin the search from
     """
     posts = []
-    page_count = get_page_count(url_of_id(thread_id))
+    # forum has feature to only get staff posts from the thread
+    page_count = get_page_count(url_of_id(thread_id) + "/filter-account-type/staff")
     for i in range(search_start, page_count + 1):
-        soup = get_page_soup(url_of_id(thread_id)+ "/page/" + str(i))
+        soup = get_page_soup(url_of_id(thread_id) + "/filter-account-type/staff" + "/page/" + str(i))
         # get the table of forum rows
         post_table = soup.find("table", class_="forumPostListTable")
         for row in post_table.find_all("tr"):
             # if this row is one of the class="newsPost newsPostInfo" rows, ignore it
             if row.has_attr("class") and "newsPostInfo" in row["class"]:
                 continue
-            # check whether this row is a staff post
-            if row.has_attr("class") and ("staff" in row["class"] or "newsPost" in row["class"]):
-                author = get_post_author_from_row(row)
-                text = convert_html_to_markdown(get_post_from_row(row))
-                posts.append(StaffPost(thread_id, author, text))
+            author = get_post_author_from_row(row)
+            post_id = get_post_id_from_row(row)
+            text = convert_html_to_markdown(get_post_from_row(row))
+            posts.append(StaffPost(post_id, thread_id, author, text))
     return posts, page_count
-
 
 def get_post_from_row(post_row):
     """
     extracts the post body from a post row
     """
     return post_row.find("td").find("div", class_="content")
-
 
 def get_post_author_from_row(post_row):
     """
@@ -86,6 +90,21 @@ def get_post_author_from_row(post_row):
     else:
         return tag_contents[1]
 
+def get_post_id_from_row(post_row):
+    """
+    returns the post id of the post
+    """
+    if "newsPost" in post_row["class"]:
+        info_row = post_row.parent.find("tr", class_="newsPostInfo")
+        post_id = info_row.find("td") \
+            .find("div") \
+            .find("div", class_="post_anchor").get("id")
+    else:
+        post_id = post_row.find("td", class_="post_info") \
+            .find("div") \
+            .find("div", class_="post_anchor").get("id")
+
+    return post_id
 
 def convert_html_to_markdown(html):
     """
@@ -102,6 +121,7 @@ def convert_html_to_markdown(html):
                 markdown += convert_html_to_markdown(part)
             # lists
             elif part.name == "ul":
+                markdown += "\n\n"
                 for list_item in part.find_all("li"):
                     markdown += "* " + convert_html_to_markdown(list_item) + "\n\n"
             # headers
@@ -109,7 +129,7 @@ def convert_html_to_markdown(html):
                 markdown += part.get_text() + "\n" + "-" * len(part.get_text()) + "\n\n"
             # bold
             elif part.name == "strong":
-                markdown += "**" + part.get_text() + "**" + "\n"
+                markdown += "**" + part.get_text() + "**"
             # italics
             elif part.name == "em":
                 markdown += "*" + part.get_text() + "*"

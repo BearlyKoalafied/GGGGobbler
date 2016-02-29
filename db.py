@@ -43,7 +43,7 @@ class DAO:
                                     )""")
 
             cur.execute("""CREATE TABLE staffpost (
-                                    staffpost_id INTEGER PRIMARY KEY,
+                                    staffpost_id TEXT PRIMARY KEY,
                                     poethread_id TEXT,
                                     staffpost_text TEXT,
                                     staffpost_author TEXT,
@@ -59,12 +59,12 @@ class DAO:
         """
         cur = self.db.cursor()
         try:
-            cur.execute("SELECT staffpost_author, staffpost_text "
+            cur.execute("SELECT staffpost_id, staffpost_author, staffpost_text "
                         "FROM staffpost WHERE poethread_id = ?", (poe_thread_id,))
             results = cur.fetchall()
             if results is None:
                 return []
-            return [StaffPost(poe_thread_id, result[0], result[1]) for result in results]
+            return [StaffPost(result[0], poe_thread_id, result[1], result[2]) for result in results]
         finally:
             cur.close()
 
@@ -112,12 +112,21 @@ class DAO:
         try:
             params = []
             for post in posts:
-                params.append((post.thread_id, post.md_text, post.author))
-            if len(params) == 1:
-                params = params[0]
+                params.append((post.post_id, post.thread_id, post.md_text, post.author))
             if params != []:
-                cur.execute("INSERT INTO staffpost (poethread_id, staffpost_text, staffpost_author) VALUES "
-                        + "(?, ?, ?)", params)
+                cur.executemany("INSERT INTO staffpost (staffpost_id, poethread_id, staffpost_text, staffpost_author)"
+                                " VALUES (?, ?, ?, ?)", params)
+        finally:
+            cur.close()
+
+    def update_staff_post(self, post):
+        """
+        updates post text in the db that matches the given post's id
+        """
+        cur = self.db.cursor()
+        try:
+            cur.execute("UPDATE staffpost SET staffpost_text = ? WHERE staffpost_id = ?",
+                            (post.md_text, post.post_id))
         finally:
             cur.close()
 
@@ -212,9 +221,7 @@ class DAO:
 
             params = [(comment_ids[i], new_order_indexes[i], reddit_thread_id)
                       for i in range(len(new_order_indexes))]
-            if len(params) == 1:
-                params = params[0]
-            cur.execute("INSERT INTO comment (comment_id, comment_order_index, redthread_id) "
+            cur.executemany("INSERT INTO comment (comment_id, comment_order_index, redthread_id) "
                         "VALUES (?, ?, ?)", params)
         finally:
             cur.close()
