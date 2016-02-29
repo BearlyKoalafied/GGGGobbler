@@ -21,7 +21,9 @@ def get_page_count(thread_url):
     """
     soup = get_page_soup(thread_url)
     pagination = soup.find("div", {"class": "pagination"})
-    if pagination is None:
+    # apparently the pagination div will be present but empty if there are no staff posts and 1 page,
+    # but is not present at all if there is 1 page and any staff posts.  Handling that here.
+    if pagination is None or pagination.get_text() == "":
         return 1
     page_buttons = pagination.find_all("a")
 
@@ -51,7 +53,7 @@ def get_staff_forum_posts(thread_id, search_start=1):
         # get the table of forum rows
         post_table = soup.find("table", class_="forumPostListTable")
         for row in post_table.find_all("tr"):
-            # if this row is one of the class="newsPost newsPostInfo" rows, ignore it
+            # if this row is one of the newspost details rows, ignore it
             if row.has_attr("class") and "newsPostInfo" in row["class"]:
                 continue
             author = get_post_author_from_row(row)
@@ -96,9 +98,10 @@ def get_post_id_from_row(post_row):
     """
     if "newsPost" in post_row["class"]:
         info_row = post_row.parent.find("tr", class_="newsPostInfo")
+        # they moved it into a slightly different spot
         post_id = info_row.find("td") \
-            .find("div") \
-            .find("div", class_="post_anchor").get("id")
+            .find("div", class_="posted-by")\
+            .find("a", class_="posted-by-link").get("href")[1:]
     else:
         post_id = post_row.find("td", class_="post_info") \
             .find("div") \
@@ -116,6 +119,8 @@ def convert_html_to_markdown(html):
         if isinstance(part, bs4.element.NavigableString):
             markdown += part
         elif isinstance(part, bs4.element.Tag):
+            if part.name == "div" and part.has_attr("class") and "itemContentLayout" in part["class"]:
+                pass
             # Hold my beer
             if part.name == "div":
                 markdown += convert_html_to_markdown(part)
@@ -172,8 +177,10 @@ def parse_quote(block_quote):
     """
     returns markdown for a blockquote element
     """
-    markdown = " > "
+    markdown = "> "
     # just get the text body for now
     body = block_quote.find("div", class_="bot")
     markdown += convert_html_to_markdown(body)
-    return markdown
+    markdown = markdown.replace("\n", "\n> ")
+    return markdown + "\n\n"
+

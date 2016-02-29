@@ -10,7 +10,6 @@ POE_URL = "www.pathofexile.com/forum/view-thread"
 
 
 def task(next_sched):
-    import sys
     print("starting next run...")
     bot = GGGGobblerBot()
     sleep_time = 0
@@ -50,7 +49,7 @@ class GGGGobblerBot:
         if fparse.forum_is_down():
             print("Pathofexile.com is down for maintenance")
             return
-        subreddit = self.r.get_subreddit('pathofexile')
+        subreddit = self.r.get_subreddit('test')
         # collect submissions that link to poe.com
         poe_submissions = []
         ids = []
@@ -77,7 +76,6 @@ class GGGGobblerBot:
             if posts == []:
                 self.dao.commit()
                 continue
-            print(submission.url)
             comments_to_post = self.create_divided_comments(posts)
             if not self.dao.reddit_thread_exists(submission.id):
                 self.dao.add_reddit_thread(submission.id, self.extract_poe_id_from_url(submission.url))
@@ -149,7 +147,6 @@ class GGGGobblerBot:
         return comments
 
     def send_replies(self, submission, comments_to_post):
-        print(comments_to_post)
         existing_comment_ids = self.dao.get_comment_ids_by_thread(submission.id)
         num_existing_comments = len(existing_comment_ids)
         num_new_comments = len(comments_to_post)
