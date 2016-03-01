@@ -121,7 +121,7 @@ def convert_html_to_markdown(html):
         elif isinstance(part, bs4.element.Tag):
                 if part.name == "div":
                     markdown += convert_html_to_markdown(part)
-                if part.name == "p":
+                elif part.name == "p":
                     markdown += convert_html_to_markdown(part) + "\n\n"
                 # lists
                 elif part.name == "ul":
