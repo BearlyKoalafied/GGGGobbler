@@ -70,6 +70,7 @@ class GGGGobblerBot:
 
     def parse_submissions(self, submissions):
         for submission in submissions:
+            print(submission.id)
             posts = self.get_current_posts(submission.url)
 
             # only bother doing stuff if we found staff posts
@@ -212,7 +213,10 @@ class GGGGobblerBot:
         extracts the id of a thread from the url
         """
         start_index = url.find("view-thread") + len("view-thread") + 1
-        return url[start_index:start_index + 7]
+        end_index = url[start_index:].find("/")
+        if end_index == -1:
+            return url[start_index:]
+        return url[start_index:start_index + end_index]
 
 
 if __name__ == "__main__":

@@ -14,6 +14,17 @@ def get_page_soup(page_url):
 def url_of_id(thread_id):
     return "https://www.pathofexile.com/forum/view-thread/" + thread_id
 
+def filter_staff(thread_url):
+    """
+    Dirty and quick way to trim some stuff off the end of a url
+    """
+    if "/page" in thread_url:
+        index = thread_url.rfind("/page")
+    elif "#p" in thread_url:
+        index = thread_url.rfind("#p")
+    else:
+        return thread_url + "/filter-account-type/staff"
+    return thread_url[:index] + "/filter-account-type/staff"
 
 def get_page_count(thread_url):
     """
@@ -47,9 +58,9 @@ def get_staff_forum_posts(thread_id, search_start=1):
     """
     posts = []
     # forum has feature to only get staff posts from the thread
-    page_count = get_page_count(url_of_id(thread_id) + "/filter-account-type/staff")
+    page_count = get_page_count(filter_staff(url_of_id(thread_id)))
     for i in range(search_start, page_count + 1):
-        soup = get_page_soup(url_of_id(thread_id) + "/filter-account-type/staff" + "/page/" + str(i))
+        soup = get_page_soup(filter_staff(url_of_id(thread_id)) + "/page/" + str(i))
         # get the table of forum rows
         post_table = soup.find("table", class_="forumPostListTable")
         for row in post_table.find_all("tr"):
