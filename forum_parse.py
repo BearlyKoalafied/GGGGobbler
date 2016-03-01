@@ -119,58 +119,60 @@ def convert_html_to_markdown(html):
         if isinstance(part, bs4.element.NavigableString):
             markdown += part
         elif isinstance(part, bs4.element.Tag):
-            if part.name == "div" and part.has_attr("class") and "itemContentLayout" in part["class"]:
-                pass
-            # Hold my beer
-            if part.name == "div":
-                markdown += convert_html_to_markdown(part)
-            # lists
-            elif part.name == "ul":
-                markdown += "\n\n"
-                for list_item in part.find_all("li"):
-                    markdown += "* " + convert_html_to_markdown(list_item) + "\n\n"
-            # headers
-            elif part.name == "h2":
-                markdown += part.get_text() + "\n" + "-" * len(part.get_text()) + "\n\n"
-            # bold
-            elif part.name == "strong":
-                markdown += "**" + part.get_text() + "**"
-            # italics
-            elif part.name == "em":
-                markdown += "*" + part.get_text() + "*"
-            # this is how the forum marks up underlines.  Markdown (for good enough reason)
-            # doesn't have underlining syntax, so i'll put <strong> tags instead I guess
-            elif part.name == "span" and part.has_attr("style") and part["style"][0] == "text-decoration: underline;":
-                markdown += "**" + part.get_text() + "**" + "\n"
-            elif part.name == "blockquote":
-                markdown += parse_quote(part)
-            # <a href> links
-            elif part.name == "a":
-                content = part.contents[0]
-                link = part["href"]
-                # text links
-                if isinstance(content, bs4.element.NavigableString):
-                    text = str(content.encode("utf-8"))
-                    markdown += "[" + content + "]" + "(" + link + ")"
-                # image links... idk it's probably an image I guess
-                else:
-                    # not sure what I should output so I guess I'll do this
-                    text = "image with a link"
-                    if content.has_attr("alt") and content["alt"] != "":
-                        text = content["alt"]
-                    markdown += "[" + text + "]" + "(" + link + ")"
-            # <iframe> tags.  I'm going to assume it's a youtube video and link it,
-            # otherwise I'll ignore the tag
-            elif part.name == "iframe":
-                src = part["src"]
-                if "youtube.com/embed" in src:
-                    # get the video identifier
-                    index = src.rfind("/")
-                    video_id = src[index + 1:]
-                    # make the youtube link
-                    link = "https://youtube.com/watch?v=" + video_id
-                    markdown += "[Youtube Video]" + "(" + link + ")"
-    return markdown.strip()
+                if part.name == "div":
+                    markdown += convert_html_to_markdown(part)
+                if part.name == "p":
+                    markdown += convert_html_to_markdown(part) + "\n\n"
+                # lists
+                elif part.name == "ul":
+                    markdown += "\n\n"
+                    for list_item in part.find_all("li"):
+                        markdown += "* " + convert_html_to_markdown(list_item) + "\n\n"
+                # headers
+                elif part.name == "h2":
+                    markdown += part.get_text() + "\n" + "-" * len(part.get_text()) + "\n\n"
+                # bold
+                elif part.name == "strong":
+                    markdown += "**" + part.get_text() + "**"
+                # italics
+                elif part.name == "em":
+                    markdown += "*" + part.get_text() + "*"
+                # this is how the forum marks up underlines.  Markdown (for good enough reason)
+                # doesn't have underlining syntax, so i'll put <strong> tags instead I guess
+                elif part.name == "span" and part.has_attr("style") and part["style"][0] == "text-decoration: underline;":
+                    markdown += "**" + part.get_text() + "**" + "\n"
+                elif part.name == "blockquote":
+                    markdown += parse_quote(part)
+                # <a href> links
+                elif part.name == "a":
+                    content = part.contents[0]
+                    link = part["href"]
+                    # text links
+                    if isinstance(content, bs4.element.NavigableString):
+                        text = str(content.encode("utf-8"))
+                        markdown += "[" + content + "]" + "(" + link + ")"
+                    # image links... idk it's probably an image I guess
+                    else:
+                        # not sure what I should output so I guess I'll do this
+                        text = "image with a link"
+                        if content.has_attr("alt") and content["alt"] != "":
+                            text = content["alt"]
+                        markdown += "[" + text + "]" + "(" + link + ")"
+                elif part.name == "img":
+                    markdown += "[Image Link]" + "(" + part["src"] + ")" + "\n\n"
+                # <iframe> tags.  I'm going to assume it's a youtube video and link it,
+                # otherwise I'll ignore the tag
+                elif part.name == "iframe":
+                    src = part["src"]
+                    if "youtube.com/embed" in src:
+                        # get the video identifier
+                        index = src.rfind("/")
+                        video_id = src[index + 1:]
+                        # make the youtube link
+                        link = "https://youtube.com/watch?v=" + video_id
+                        markdown += "[Youtube Video]" + "(" + link + ")" + "\n\n"
+
+    return markdown
 
 
 def parse_quote(block_quote):
