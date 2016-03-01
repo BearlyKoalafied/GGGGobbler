@@ -130,7 +130,7 @@ def convert_html_to_markdown(html):
                         markdown += "* " + convert_html_to_markdown(list_item) + "\n\n"
                 # headers
                 elif part.name == "h2":
-                    markdown += part.get_text() + "\n" + "-" * len(part.get_text()) + "\n\n"
+                    markdown += "## " + part.get_text() + "\n\n"
                 # bold
                 elif part.name == "strong":
                     markdown += "**" + part.get_text() + "**"
