@@ -53,11 +53,11 @@ class GGGGobblerBot:
         # collect submissions that link to poe.com
         poe_submissions = []
         ids = []
-        for submission in subreddit.get_hot(limit=20):
+        for submission in subreddit.get_hot(limit=25):
             if POE_URL in submission.url:
                 poe_submissions.append(submission)
                 ids.append(submission.id)
-        for submission in subreddit.get_new(limit=10):
+        for submission in subreddit.get_new(limit=15):
             if POE_URL in submission.url and submission.id not in ids:
                 poe_submissions.append(submission)
 
@@ -70,7 +70,6 @@ class GGGGobblerBot:
 
     def parse_submissions(self, submissions):
         for submission in submissions:
-            print(submission.id)
             posts = self.get_current_posts(submission.url)
 
             # only bother doing stuff if we found staff posts
