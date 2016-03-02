@@ -3,6 +3,7 @@ import sched
 import time
 import warnings
 import logging
+import re
 
 import db
 import forum_parse as fparse
@@ -87,6 +88,17 @@ class GGGGobblerBot:
             if posts == []:
                 self.dao.commit()
                 continue
+
+            # if a post was linked to directly, put that one up at the top
+            result = re.search("#p[0-9]*", submission.url)
+            if result is not None:
+                target_post_id = result.group(0)[1:]
+                for i in range(len(posts)):
+                    if posts[i].post_id == target_post_id:
+                        # move this post to the front of the list
+                        posts.insert(0, posts.pop(i))
+                        break
+
             comments_to_post = self.create_divided_comments(posts)
             if not self.dao.reddit_thread_exists(submission.id):
                 self.dao.add_reddit_thread(submission.id, self.extract_poe_id_from_url(submission.url))
