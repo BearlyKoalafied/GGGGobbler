@@ -19,9 +19,6 @@ def task(next_sched):
         sleep_time = e.sleep_time
         bot.dao.rollback()
         print("Rate Limit Exceeded time = " + str(sleep_time) + ", waiting until next cycle")
-    except:
-        bot.dao.rollback()
-        raise
 
     # do it again later
     if sleep_time > settings.WAIT_TIME:
