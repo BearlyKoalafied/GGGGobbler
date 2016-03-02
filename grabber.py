@@ -89,7 +89,7 @@ class GGGGobblerBot:
                 self.dao.commit()
                 continue
 
-            # if a post was linked to directly, put that one up at the top
+            # if a GGG post was linked to directly, put that one up at the top
             result = re.search("#p[0-9]*", submission.url)
             if result is not None:
                 target_post_id = result.group(0)[1:]
