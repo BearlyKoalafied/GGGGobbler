@@ -1,33 +1,47 @@
 import praw
 import sched
 import time
+import warnings
+import logging
 
 import db
 import forum_parse as fparse
 import settings
 
+
+from praw.errors import RateLimitExceeded, APIException, ClientException
+from requests.exceptions import ConnectionError, HTTPError
+
 POE_URL = "www.pathofexile.com/forum/view-thread"
 
+warnings.simplefilter("ignore", ResourceWarning)
 
 def task(next_sched):
-    print("starting next run...")
+    if settings.LOGGING_ON:
+        logging.getLogger(settings.LOGGER_NAME).info("Starting new run")
+
     bot = GGGGobblerBot()
-    sleep_time = 0
+    RECOVERABLE_EXCEPTIONS = (RateLimitExceeded,
+                              APIException,
+                              ClientException,
+                              ConnectionError,
+                              HTTPError)
     try:
         bot.parse_reddit()
-    except praw.errors.RateLimitExceeded as e:
-        sleep_time = e.sleep_time
+    except RECOVERABLE_EXCEPTIONS as e:
+        if settings.LOGGING_ON:
+            logging.getLogger(settings.LOGGER_NAME).error("Hit Recoverable exception, output: " + str(e))
         bot.dao.rollback()
-        print("Rate Limit Exceeded time = " + str(sleep_time) + ", waiting until next cycle")
+    except Exception as e:
+        if settings.LOGGING_ON:
+            logging.getLogger(settings.LOGGER_NAME).critical("Hit unexpected exception, output: " + str(e))
+        bot.dao.rollback()
+        raise
 
     # do it again later
-    if sleep_time > settings.WAIT_TIME:
-        next_sched.enter(sleep_time, 1, task, (next_sched,))
-        sleep_time = 0
-    else:
-        next_sched.enter(settings.WAIT_TIME, 1, task, (next_sched,))
-    print("run over...")
-
+    next_sched.enter(settings.WAIT_TIME, 1, task, (next_sched,))
+    if settings.LOGGING_ON:
+        logging.getLogger(settings.LOGGER_NAME).info("Run over")
 
 def run():
     scheduler = sched.scheduler(time.time, time.sleep)
@@ -216,4 +230,12 @@ class GGGGobblerBot:
 
 
 if __name__ == "__main__":
+    # setup logging
+    logger = logging.getLogger(settings.LOGGER_NAME)
+    fh = logging.FileHandler(settings.LOGFILE_NAME)
+    fmt = logging.Formatter('[%(levelname)s] [%(asctime)s]: %(message)s')
+    fh.setFormatter(fmt)
+    logger.addHandler(fh)
+    logger.setLevel(logging.INFO)
+    # start bot
     run()
