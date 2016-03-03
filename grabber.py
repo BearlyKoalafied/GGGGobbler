@@ -19,23 +19,23 @@ warnings.simplefilter("ignore", ResourceWarning)
 def task(next_sched):
     if settings.LOGGING_ON:
         logging.getLogger(settings.LOGGER_NAME).info("Starting new run")
-
+    dao = db.DAO()
     RECOVERABLE_EXCEPTIONS = (RateLimitExceeded,
                               APIException,
                               ClientException,
                               ConnectionError,
                               HTTPError)
     try:
-        bot = GGGGobblerBot()
+        bot = GGGGobblerBot(dao)
         bot.parse_reddit()
     except RECOVERABLE_EXCEPTIONS as e:
         if settings.LOGGING_ON:
             logging.getLogger(settings.LOGGER_NAME).error("Hit Recoverable exception, output: " + str(e))
-        bot.dao.rollback()
+        dao.rollback()
     except Exception as e:
         if settings.LOGGING_ON:
             logging.getLogger(settings.LOGGER_NAME).critical("Hit unexpected exception, output: " + str(e))
-        bot.dao.rollback()
+        dao.rollback()
         raise
 
     # do it again later
@@ -50,11 +50,14 @@ def run():
 
 
 class GGGGobblerBot:
-    def __init__(self):
+    def __init__(self, dao=None):
         self.r = praw.Reddit(user_agent=settings.APP_USER_AGENT)
         self.r.set_oauth_app_info(settings.APP_ID, settings.APP_SECRET, settings.APP_URI)
         self.r.refresh_access_information(settings.APP_REFRESH)
-        self.dao = db.DAO()
+        if dao is None:
+            self.dao = db.DAO()
+        else:
+            self.dao = dao
 
     def parse_reddit(self):
         if fparse.forum_is_down():
