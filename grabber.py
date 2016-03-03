@@ -59,7 +59,7 @@ class GGGGobblerBot:
 
     def parse_reddit(self):
         if fparse.forum_is_down():
-            print("Pathofexile.com is down for maintenance")
+            logging.getLogger(settings.LOGGER_NAME).info("Pathofexile.com is down for maintenance")
             return
         subreddit = self.r.get_subreddit('pathofexile')
         # collect submissions that link to poe.com
