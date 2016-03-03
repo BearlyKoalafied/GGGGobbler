@@ -9,7 +9,6 @@ import db
 import forum_parse as fparse
 import settings
 
-
 from praw.errors import RateLimitExceeded, APIException, ClientException
 from requests.exceptions import ConnectionError, HTTPError
 
@@ -21,13 +20,13 @@ def task(next_sched):
     if settings.LOGGING_ON:
         logging.getLogger(settings.LOGGER_NAME).info("Starting new run")
 
-    bot = GGGGobblerBot()
     RECOVERABLE_EXCEPTIONS = (RateLimitExceeded,
                               APIException,
                               ClientException,
                               ConnectionError,
                               HTTPError)
     try:
+        bot = GGGGobblerBot()
         bot.parse_reddit()
     except RECOVERABLE_EXCEPTIONS as e:
         if settings.LOGGING_ON:
