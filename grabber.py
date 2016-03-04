@@ -17,8 +17,7 @@ POE_URL = "www.pathofexile.com/forum/view-thread"
 warnings.simplefilter("ignore", ResourceWarning)
 
 def task(next_sched):
-    if settings.LOGGING_ON:
-        logging.getLogger(settings.LOGGER_NAME).info("Starting new run")
+    logging.getLogger(settings.LOGGER_NAME).info("Starting new run")
     dao = db.DAO()
     RECOVERABLE_EXCEPTIONS = (RateLimitExceeded,
                               APIException,
@@ -28,20 +27,17 @@ def task(next_sched):
     try:
         bot = GGGGobblerBot(dao)
         bot.parse_reddit()
-    except RECOVERABLE_EXCEPTIONS as e:
-        if settings.LOGGING_ON:
-            logging.getLogger(settings.LOGGER_NAME).error("Hit Recoverable exception, output: " + str(e))
+    except RECOVERABLE_EXCEPTIONS:
+        logging.getLogger(settings.LOGGER_NAME).exception("Hit Recoverable exception, output: ")
         dao.rollback()
-    except Exception as e:
-        if settings.LOGGING_ON:
-            logging.getLogger(settings.LOGGER_NAME).critical("Hit unexpected exception, output: " + str(e))
+    except:
+        logging.getLogger(settings.LOGGER_NAME).exception("Hit unexpected exception, output: ")
         dao.rollback()
         raise
 
     # do it again later
     next_sched.enter(settings.WAIT_TIME, 1, task, (next_sched,))
-    if settings.LOGGING_ON:
-        logging.getLogger(settings.LOGGER_NAME).info("Run over")
+    logging.getLogger(settings.LOGGER_NAME).info("Run over")
 
 def run():
     scheduler = sched.scheduler(time.time, time.sleep)
@@ -204,9 +200,9 @@ class GGGGobblerBot:
             # num_existing_comments is guaranteed to be greater than 0 so the loop is
             # guaranteed to run at least 1 time
             # noinspection PyUnboundLocalVariable
-            new_comments = [comment.id]
+            new_comments = []
             # create new comments after existing ones
-            for i in range(num_existing_comments + 1, num_existing_comments + num_new_comments + 1):
+            for i in range(num_existing_comments, num_new_comments):
                 # noinspection PyUnboundLocalVariable
                 comment = comment.reply(comments_to_post[i])
                 new_comments.append(comment.id)
@@ -251,5 +247,7 @@ if __name__ == "__main__":
     fh.setFormatter(fmt)
     logger.addHandler(fh)
     logger.setLevel(logging.INFO)
+    if not settings.LOGGING_ON:
+        logging.disable(logging.CRITICAL)
     # start bot
     run()
