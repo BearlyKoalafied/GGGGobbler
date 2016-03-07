@@ -9,10 +9,12 @@ import db
 import forum_parse as fparse
 import settings
 
-from praw.errors import RateLimitExceeded, APIException, ClientException
+from praw.errors import RateLimitExceeded, APIException, ClientException, HTTPException
 from requests.exceptions import ConnectionError, HTTPError
 
 POE_URL = "www.pathofexile.com/forum/view-thread"
+
+CSS_MAGIC_PREPEND = """#####&#009;\n\n######&#009;\n\n####&#009;\n\n"""
 
 warnings.simplefilter("ignore", ResourceWarning)
 
@@ -22,18 +24,15 @@ def task(next_sched):
     RECOVERABLE_EXCEPTIONS = (RateLimitExceeded,
                               APIException,
                               ClientException,
+                              HTTPException,
                               ConnectionError,
                               HTTPError)
     try:
         bot = GGGGobblerBot(dao)
         bot.parse_reddit()
-    except RECOVERABLE_EXCEPTIONS:
+    except RECOVERABLE_EXCEPTIONS as e:
         logging.getLogger(settings.LOGGER_NAME).exception("Hit Recoverable exception, output: ")
         dao.rollback()
-    except:
-        logging.getLogger(settings.LOGGER_NAME).exception("Hit unexpected exception, output: ")
-        dao.rollback()
-        raise
 
     # do it again later
     next_sched.enter(settings.WAIT_TIME, 1, task, (next_sched,))
@@ -86,7 +85,7 @@ class GGGGobblerBot:
             if posts == []:
                 self.dao.commit()
                 continue
-
+            # posts = self.remove_unchanged_posts(posts)
             # if a GGG post was linked to directly, put that one up at the top
             result = re.search("#p[0-9]*", submission.url)
             if result is not None:
@@ -136,15 +135,30 @@ class GGGGobblerBot:
             self.dao.add_staff_posts(new_posts)
             return new_posts
 
+    def remove_unchanged_posts(self, posts):
+        corresponding_posts = self.dao.get_staff_posts_by_id([post.post_id for post in posts])
+        for post in posts:
+            # find the corresponding post
+            for corresponding_post in corresponding_posts:
+                if corresponding_post.post_id == post.post_id \
+                    and corresponding_post.md_text == post.md_text:
+                    posts.remove(post)
+        return posts
+
+
     def create_divided_comments(self, posts):
         """
         returns a list of strings where each string is a comment no more than COMMENT_CHAR_LIMIT long
         """
         comments = []
-        cur_comment = self.create_post_preamble()
+        preamble = self.create_post_preamble()
+        cur_comment = preamble
         sections = [self.create_ggg_post_section(post) for post in posts]
 
         for section in sections:
+            # if we've started a new comment, prepend it with css magic
+            if cur_comment == "":
+                cur_comment = CSS_MAGIC_PREPEND
             remaining_space = settings.COMMENT_CHAR_LIMIT - len(cur_comment)
             if remaining_space >= len(section):
                 cur_comment += section
@@ -210,7 +224,8 @@ class GGGGobblerBot:
             self.dao.add_comments(submission.id, new_comments)
 
     def create_post_preamble(self):
-        return "BEEP BOOP BEEP.  Grinding Gears have been detected in the linked thread:\n\n***\n\n"
+        return CSS_MAGIC_PREPEND + \
+               "BEEP BOOP BEEP.  Grinding Gears have been detected in the linked thread:\n\n***\n\n"
 
     def create_markdown_from_posts(self, posts):
         markdown = ""
@@ -219,12 +234,12 @@ class GGGGobblerBot:
         return markdown
 
     def create_ggg_post_section(self, post):
-        markdown = "**" + post.author + " wrote:**\n\n"
+        markdown = "> **" + post.author + " wrote:**\n\n> "
         # body text
         body = post.md_text
         markdown += body
         # post separator
-        footer = "\n\n***\n\n"
+        footer = "\n\n> ***\n\n"
         markdown += footer
         return markdown
 

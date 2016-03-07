@@ -104,6 +104,20 @@ class DAO:
         finally:
             cur.close()
 
+    def get_staff_posts_by_id(self, ids):
+        """
+        gets a list of staffposts that correspond to the given list of ids
+        """
+        cur = self.db.cursor()
+        try:
+            cur.execute("SELECT * FROM staffpost WHERE staffpost_id IN (%s)" %
+                        ", ".join("?" * len(ids)), tuple(ids))
+            results = cur.fetchall()
+            return [StaffPost(result[0], result[1], result[3], result[2])
+                    for result in results]
+        finally:
+            cur.close()
+
     def add_staff_posts(self, posts):
         """
         adds a given list of StaffPosts to the db

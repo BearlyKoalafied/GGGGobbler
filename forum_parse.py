@@ -133,25 +133,28 @@ def convert_html_to_markdown(html):
                 if part.name == "div":
                     markdown += convert_html_to_markdown(part)
                 elif part.name == "p":
-                    markdown += convert_html_to_markdown(part) + "\n\n"
+                    markdown += convert_html_to_markdown(part) + "\n\n> "
+                elif part.name == "br":
+                    markdown += "\n> "
                 # lists
                 elif part.name == "ul":
-                    markdown += "\n\n"
+                    markdown += "\n\n> "
                     for list_item in part.find_all("li"):
-                        markdown += "* " + convert_html_to_markdown(list_item) + "\n\n"
+                        markdown += "* " + convert_html_to_markdown(list_item) + "\n\n> "
+                    markdown += "\n\n> "
                 # headers
                 elif part.name == "h2":
-                    markdown += "## " + part.get_text() + "\n\n"
+                    markdown += "## " + part.get_text()
                 # bold
                 elif part.name == "strong":
-                    markdown += "**" + part.get_text() + "**"
+                    markdown += "**" + part.get_text().rstrip(" ") + "**"
                 # italics
                 elif part.name == "em":
-                    markdown += "*" + part.get_text() + "*"
+                    markdown += "*" + part.get_text().rstrip(" ") + "*"
                 # this is how the forum marks up underlines.  Markdown (for good enough reason)
                 # doesn't have underlining syntax, so i'll put <strong> tags instead I guess
                 elif part.name == "span" and part.has_attr("style") and part["style"][0] == "text-decoration: underline;":
-                    markdown += "**" + part.get_text() + "**" + "\n"
+                    markdown += "**" + part.get_text() + "**" + "\n> "
                 elif part.name == "blockquote":
                     markdown += parse_quote(part)
                 # <a href> links
@@ -170,7 +173,7 @@ def convert_html_to_markdown(html):
                             text = content["alt"]
                         markdown += "[" + text + "]" + "(" + link + ")"
                 elif part.name == "img":
-                    markdown += "[Image Link]" + "(" + part["src"] + ")" + "\n\n"
+                    markdown += "[Image Link]" + "(" + part["src"] + ")" + "\n\n> "
                 # <iframe> tags.  I'm going to assume it's a youtube video and link it,
                 # otherwise I'll ignore the tag
                 elif part.name == "iframe":
@@ -181,8 +184,7 @@ def convert_html_to_markdown(html):
                         video_id = src[index + 1:]
                         # make the youtube link
                         link = "https://youtube.com/watch?v=" + video_id
-                        markdown += "[Youtube Video]" + "(" + link + ")" + "\n\n"
-
+                        markdown += "[Youtube Video]" + "(" + link + ")" + "\n\n> "
     return markdown
 
 
@@ -195,5 +197,5 @@ def parse_quote(block_quote):
     body = block_quote.find("div", class_="bot")
     markdown += convert_html_to_markdown(body)
     markdown = markdown.replace("\n", "\n> ")
-    return markdown + "\n\n"
+    return markdown + "\n\n> "
 
