@@ -19,7 +19,7 @@ CSS_MAGIC_PREPEND = """#####&#009;\n\n######&#009;\n\n####&#009;\n\n"""
 warnings.simplefilter("ignore", ResourceWarning)
 
 def task(next_sched):
-    logging.getLogger(settings.LOGGER_NAME).info("Starting new run")
+    logging.getLogger(settings.LOGGER_NAME).info("Starting run")
     dao = db.DAO()
     RECOVERABLE_EXCEPTIONS = (RateLimitExceeded,
                               APIException,
@@ -36,11 +36,11 @@ def task(next_sched):
 
     # do it again later
     next_sched.enter(settings.WAIT_TIME, 1, task, (next_sched,))
-    logging.getLogger(settings.LOGGER_NAME).info("Run over")
+    logging.getLogger(settings.LOGGER_NAME).info("Finished run")
 
 def run():
     scheduler = sched.scheduler(time.time, time.sleep)
-    scheduler.enter(5, 1, task, (scheduler,))
+    scheduler.enter(0, 1, task, (scheduler,))
     scheduler.run()
 
 
@@ -141,10 +141,9 @@ class GGGGobblerBot:
             # find the corresponding post
             for corresponding_post in corresponding_posts:
                 if corresponding_post.post_id == post.post_id \
-                    and corresponding_post.md_text == post.md_text:
+                and corresponding_post.md_text == post.md_text:
                     posts.remove(post)
         return posts
-
 
     def create_divided_comments(self, posts):
         """
@@ -152,33 +151,43 @@ class GGGGobblerBot:
         """
         comments = []
         preamble = self.create_post_preamble()
+        cont_preamble = self.create_continue_post_preamble()
         cur_comment = preamble
         sections = [self.create_ggg_post_section(post) for post in posts]
+        total_chars = sum([len(section) for section in sections]) + len(preamble)
+        if total_chars <= settings.COMMENT_CHAR_LIMIT:
+            return [preamble + "".join(sections)]
 
         for section in sections:
-            # if we've started a new comment, prepend it with css magic
             if cur_comment == "":
-                cur_comment = CSS_MAGIC_PREPEND
+                cur_comment = cont_preamble
             remaining_space = settings.COMMENT_CHAR_LIMIT - len(cur_comment)
             if remaining_space >= len(section):
                 cur_comment += section
-            else:
+                continue
+            # if the cur_comment has any posts on it, move to the next comment
+            elif cur_comment != self.create_continue_post_preamble() \
+            and cur_comment != self.create_post_preamble():
                 comments.append(cur_comment)
-                if len(section) <= settings.COMMENT_CHAR_LIMIT:
-                    cur_comment = section
+                cur_comment = ""
+            parts = []
+            while len(section) > settings.COMMENT_CHAR_LIMIT:
+                if cur_comment == "":
+                    cur_comment = cont_preamble
+                chars_to_split_off = settings.COMMENT_CHAR_LIMIT - len(cur_comment)
+                index_to_split_at = section[:chars_to_split_off].rfind("\n\n") + 2
+                part = cur_comment + section[:index_to_split_at]
+                cur_comment = ""
+                parts.append(part)
+                section = section[index_to_split_at:]
+            if section != "":
+                if len(cont_preamble + section) > settings.COMMENT_CHAR_LIMIT:
+                    chars_to_split_off = settings.COMMENT_CHAR_LIMIT - len(cont_preamble)
+                    index_to_split_at = section[:chars_to_split_off].rfind("\n\n") + 2
+                    parts.extend([cont_preamble + section[:index_to_split_at], section[index_to_split_at:]])
                 else:
-                    # lazily split crap up
-                    parts = []
-                    while len(section) > settings.COMMENT_CHAR_LIMIT:
-                        part = section[:settings.COMMENT_CHAR_LIMIT]
-                        parts.append(part)
-                        section = section[settings.COMMENT_CHAR_LIMIT:]
-                    if section != "":
-                        parts.append(section)
-                    comments.extend(parts)
-                    cur_comment = ""
-        if cur_comment != "":
-            comments.append(cur_comment)
+                    parts.append(cont_preamble + section)
+            comments.extend(parts)
         return comments
 
     def send_replies(self, submission, comments_to_post):
@@ -226,6 +235,10 @@ class GGGGobblerBot:
     def create_post_preamble(self):
         return CSS_MAGIC_PREPEND + \
                "BEEP BOOP BEEP.  Grinding Gears have been detected in the linked thread:\n\n***\n\n"
+
+    def create_continue_post_preamble(self):
+        return CSS_MAGIC_PREPEND + \
+               "(continued from above comment)\n\n***\n\n"
 
     def create_markdown_from_posts(self, posts):
         markdown = ""

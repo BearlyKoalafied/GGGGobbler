@@ -150,7 +150,7 @@ def convert_html_to_markdown(html):
                     markdown += "**" + part.get_text().rstrip(" ") + "**"
                 # italics
                 elif part.name == "em":
-                    markdown += "*" + part.get_text().rstrip(" ") + "*"
+                    markdown += "*" + convert_html_to_markdown(part).rstrip(" ") + "*"
                 # this is how the forum marks up underlines.  Markdown (for good enough reason)
                 # doesn't have underlining syntax, so i'll put <strong> tags instead I guess
                 elif part.name == "span" and part.has_attr("style") and part["style"][0] == "text-decoration: underline;":
