@@ -58,7 +58,7 @@ class GGGGobblerBot:
             self.dao = dao
 
     def parse_reddit(self):
-        subreddit = self.r.get_subreddit('pathofexile')
+        subreddit = self.r.get_subreddit('poecsstest')
         # collect submissions that link to poe.com
         poe_submissions = []
         ids = []
@@ -249,7 +249,7 @@ class GGGGobblerBot:
         return markdown
 
     def create_ggg_post_section(self, post):
-        markdown = "> **" + post.author + " wrote:**\n\n> "
+        markdown = "> **" + post.author + " wrote:**\n\n"
         # body text
         body = post.md_text
         markdown += body
