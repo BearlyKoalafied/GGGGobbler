@@ -18,6 +18,7 @@ CSS_MAGIC_PREPEND = """#####&#009;\n\n######&#009;\n\n####&#009;\n\n"""
 
 warnings.simplefilter("ignore", ResourceWarning)
 
+
 def task(next_sched):
     logging.getLogger(settings.LOGGER_NAME).info("Starting run")
     dao = db.DAO()
@@ -26,7 +27,8 @@ def task(next_sched):
                               ClientException,
                               HTTPException,
                               ConnectionError,
-                              HTTPError)
+                              HTTPError,
+                              fparse.PathofexileDownException)
     try:
         bot = GGGGobblerBot(dao)
         bot.parse_reddit()
@@ -37,6 +39,7 @@ def task(next_sched):
     # do it again later
     next_sched.enter(settings.WAIT_TIME, 1, task, (next_sched,))
     logging.getLogger(settings.LOGGER_NAME).info("Finished run")
+
 
 def run():
     scheduler = sched.scheduler(time.time, time.sleep)
@@ -55,9 +58,6 @@ class GGGGobblerBot:
             self.dao = dao
 
     def parse_reddit(self):
-        if fparse.forum_is_down():
-            logging.getLogger(settings.LOGGER_NAME).info("Pathofexile.com is down for maintenance")
-            return
         subreddit = self.r.get_subreddit('pathofexile')
         # collect submissions that link to poe.com
         poe_submissions = []
@@ -66,7 +66,7 @@ class GGGGobblerBot:
             if POE_URL in submission.url:
                 poe_submissions.append(submission)
                 ids.append(submission.id)
-        for submission in subreddit.get_new(limit=15):
+        for submission in subreddit.get_new(limit=25):
             if POE_URL in submission.url and submission.id not in ids:
                 poe_submissions.append(submission)
 
@@ -99,6 +99,8 @@ class GGGGobblerBot:
             comments_to_post = self.create_divided_comments(posts)
             if not self.dao.reddit_thread_exists(submission.id):
                 self.dao.add_reddit_thread(submission.id, self.extract_poe_id_from_url(submission.url))
+                logging.getLogger(settings.LOGGER_NAME).info("New reddit thread discovered, thread id = "
+                                                             + submission.id)
 
             self.send_replies(submission, comments_to_post)
             # saving db state between submissions

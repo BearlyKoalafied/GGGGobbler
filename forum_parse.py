@@ -8,6 +8,8 @@ def get_page_soup(page_url):
     """
     page = requests.get(page_url)
     soup = bs4.BeautifulSoup(page.content.decode("utf-8", "ignore"), "html.parser")
+    if forum_is_down(soup):
+        raise PathofexileDownException("pathofexile.com is down for maintenance")
     return soup
 
 
@@ -44,8 +46,7 @@ def get_page_count(thread_url):
         target_button_contents = page_buttons[-2].contents[0]
     return int(target_button_contents)
 
-def forum_is_down():
-    page = get_page_soup("https://www.pathofexile.com")
+def forum_is_down(page):
     down_header = page.find("h1", class_="topBar")
     return down_header is not None and down_header.get_text() == "Down For Maintenance"
 
@@ -199,3 +200,8 @@ def parse_quote(block_quote):
     markdown = markdown.replace("\n", "\n> ")
     return markdown + "\n\n> "
 
+class PathofexileDownException(Exception):
+    """
+    Exception thrown when Poe is down for maintenance
+    """
+    pass
