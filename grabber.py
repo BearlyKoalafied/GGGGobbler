@@ -58,7 +58,7 @@ class GGGGobblerBot:
             self.dao = dao
 
     def parse_reddit(self):
-        subreddit = self.r.get_subreddit('poecsstest')
+        subreddit = self.r.get_subreddit('pathofexile')
         # collect submissions that link to poe.com
         poe_submissions = []
         ids = []
@@ -79,34 +79,37 @@ class GGGGobblerBot:
 
     def parse_submissions(self, submissions):
         for submission in submissions:
-            posts = self.get_current_posts(submission.url)
-
-            # only bother doing stuff if we found staff posts
-            if posts == []:
-                self.dao.commit()
-                continue
-            # posts = self.remove_unchanged_posts(posts)
-            # if a GGG post was linked to directly, put that one up at the top
-            result = re.search("#p[0-9]*", submission.url)
-            if result is not None:
-                target_post_id = result.group(0)[1:]
-                for i in range(len(posts)):
-                    if posts[i].post_id == target_post_id:
-                        # move this post to the front of the list
-                        posts.insert(0, posts.pop(i))
-                        break
-
-            comments_to_post = self.create_divided_comments(posts)
-            if not self.dao.reddit_thread_exists(submission.id):
-                self.dao.add_reddit_thread(submission.id, self.extract_poe_id_from_url(submission.url))
-                logging.getLogger(settings.LOGGER_NAME).info("New reddit thread discovered, thread id = "
-                                                             + submission.id)
-
-            self.send_replies(submission, comments_to_post)
-            # saving db state between submissions
-            self.dao.commit()
+            self.parse_submission(submission)
         self.dao.rollback()
         self.dao.close()
+
+    def parse_submission(self, submission):
+        posts = self.get_current_posts(submission.url)
+        # only bother doing stuff if we found staff posts
+        if posts == []:
+            self.dao.commit()
+            return
+        # posts = self.remove_unchanged_posts(posts)
+        # if a GGG post was linked to directly, put that one up at the top
+        result = re.search("#p[0-9]*", submission.url)
+        if result is not None:
+            target_post_id = result.group(0)[1:]
+            for i in range(len(posts)):
+                if posts[i].post_id == target_post_id:
+                    # move this post to the front of the list
+                    posts.insert(0, posts.pop(i))
+                    break
+
+        comments_to_post = self.create_divided_comments(posts)
+        if not self.dao.reddit_thread_exists(submission.id):
+            self.dao.add_reddit_thread(submission.id, self.extract_poe_id_from_url(submission.url))
+            logging.getLogger(settings.LOGGER_NAME).info("New reddit thread discovered, thread id = "
+                                                         + submission.id)
+
+        self.send_replies(submission, comments_to_post)
+        # saving db state between submissions
+        self.dao.commit()
+
 
     def get_current_posts(self, url):
         poe_thread_id = self.extract_poe_id_from_url(url)
@@ -249,7 +252,7 @@ class GGGGobblerBot:
         return markdown
 
     def create_ggg_post_section(self, post):
-        markdown = "> **" + post.author + " wrote:**\n\n"
+        markdown = "> **Posted by " + post.author + "** on " + post.date + " UTC\n\n"
         # body text
         body = post.md_text
         markdown += body
@@ -267,6 +270,19 @@ class GGGGobblerBot:
         if end_index == -1:
             return url[start_index:]
         return url[start_index:start_index + end_index]
+
+    # tools
+    def force_update_all(self):
+        """
+        updates every post made by the bot stored in the db.
+        """
+        print("Beginning force update all...")
+        threads = self.dao.get_all_reddit_threads()
+        for thread in threads:
+            # get submission by id
+            submission = self.r.get_submission(thread[0])
+            self.parse_submission(submission)
+        print("Finished force update all")
 
 
 if __name__ == "__main__":

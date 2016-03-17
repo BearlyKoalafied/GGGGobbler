@@ -47,6 +47,7 @@ class DAO:
                                     poethread_id TEXT,
                                     staffpost_text TEXT,
                                     staffpost_author TEXT,
+                                    staffpost_date TEXT,
                                     FOREIGN KEY(poethread_id) REFERENCES poethread(poethread_id)
                                     )""")
 
@@ -59,12 +60,13 @@ class DAO:
         """
         cur = self.db.cursor()
         try:
-            cur.execute("SELECT staffpost_id, staffpost_author, staffpost_text "
+            cur.execute("SELECT staffpost_id, staffpost_author, staffpost_text, staffpost_date "
                         "FROM staffpost WHERE poethread_id = ?", (poe_thread_id,))
             results = cur.fetchall()
             if results is None:
                 return []
-            return [StaffPost(result[0], poe_thread_id, result[1], result[2]) for result in results]
+            return [StaffPost(result[0], poe_thread_id, result[1], result[2], result[3])
+                    for result in results]
         finally:
             cur.close()
 
@@ -113,7 +115,7 @@ class DAO:
             cur.execute("SELECT * FROM staffpost WHERE staffpost_id IN (%s)" %
                         ", ".join("?" * len(ids)), tuple(ids))
             results = cur.fetchall()
-            return [StaffPost(result[0], result[1], result[3], result[2])
+            return [StaffPost(result[0], result[1], result[3], result[2], result[4])
                     for result in results]
         finally:
             cur.close()
@@ -126,10 +128,11 @@ class DAO:
         try:
             params = []
             for post in posts:
-                params.append((post.post_id, post.thread_id, post.md_text, post.author))
+                params.append((post.post_id, post.thread_id, post.md_text, post.author, post.date))
             if params != []:
-                cur.executemany("INSERT INTO staffpost (staffpost_id, poethread_id, staffpost_text, staffpost_author)"
-                                " VALUES (?, ?, ?, ?)", params)
+                cur.executemany("INSERT INTO staffpost (staffpost_id, poethread_id, staffpost_text, "
+                                "staffpost_author, staffpost_date)"
+                                " VALUES (?, ?, ?, ?, ?)", params)
         finally:
             cur.close()
 
@@ -237,5 +240,14 @@ class DAO:
                       for i in range(len(new_order_indexes))]
             cur.executemany("INSERT INTO comment (comment_id, comment_order_index, redthread_id) "
                         "VALUES (?, ?, ?)", params)
+        finally:
+            cur.close()
+
+    def get_all_reddit_threads(self):
+        cur = self.db.cursor()
+        try:
+            cur.execute("SELECT * FROM redthread")
+            results = cur.fetchall()
+            return results
         finally:
             cur.close()

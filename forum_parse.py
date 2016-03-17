@@ -1,7 +1,10 @@
 import requests
 import bs4
 import re
+import datetime
+
 from data_structs import StaffPost
+import settings
 
 def get_page_soup(page_url):
     """
@@ -73,7 +76,8 @@ def get_staff_forum_posts(thread_id, search_start=1):
             post_id = get_post_id_from_row(row)
             text = re.sub(r"[\n\r]+", "\n\n> ",
                           "> " + convert_html_to_markdown(get_post_from_row(row)))
-            posts.append(StaffPost(post_id, thread_id, author, text))
+            post_date = get_post_date_from_row(row)
+            posts.append(StaffPost(post_id, thread_id, author, text, post_date))
     return posts, page_count
 
 def get_post_from_row(post_row):
@@ -122,6 +126,27 @@ def get_post_id_from_row(post_row):
             .find("div", class_="post_anchor").get("id")
 
     return post_id
+
+def get_post_date_from_row(post_row):
+    """
+    returns the date of the post
+    """
+    if "newsPost" in post_row["class"]:
+        info_row = post_row.parent.find("tr", class_="newsPostInfo")
+        str_date = info_row.find("td") \
+            .find("div", class_="posted-by") \
+            .find("span", class_="post_date").get_text()
+    else:
+        str_date = post_row.find("td", class_="post_info") \
+            .find("div") \
+            .find("div", class_="posted-by") \
+            .find("span", class_="post_date").get_text()
+    # convert to GMT+0 timezone
+    format = "%B %d, %Y %I:%M %p"
+    date = datetime.datetime.strptime(str_date, format)
+    date = date + datetime.timedelta(hours=-settings.TIMEZONE_OFFSET)
+    str_date = date.strftime(format)
+    return str_date
 
 def convert_html_to_markdown(html):
     """
@@ -193,7 +218,6 @@ def convert_html_to_markdown(html):
                         link = "https://youtube.com/watch?v=" + video_id
                         markdown += "[Youtube Video]" + "(" + link + ")"
     return markdown
-
 
 def parse_quote(block_quote):
     """
