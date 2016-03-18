@@ -12,7 +12,7 @@ import settings
 from praw.errors import RateLimitExceeded, APIException, ClientException, HTTPException
 from requests.exceptions import ConnectionError, HTTPError
 
-POE_URL = "www.pathofexile.com/forum/view-thread"
+POE_URL = "pathofexile.com/forum/view-thread"
 
 CSS_MAGIC_PREPEND = """#####&#009;\n\n######&#009;\n\n####&#009;\n\n"""
 
