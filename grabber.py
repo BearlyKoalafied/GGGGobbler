@@ -10,7 +10,7 @@ import forum_parse as fparse
 import settings
 
 from praw.errors import RateLimitExceeded, APIException, ClientException, HTTPException
-from requests.exceptions import ConnectionError, HTTPError
+from requests.exceptions import ConnectionError, HTTPError, ReadTimeout
 
 POE_URL = "pathofexile.com/forum/view-thread"
 
@@ -28,6 +28,7 @@ def task(next_sched):
                               HTTPException,
                               ConnectionError,
                               HTTPError,
+                              ReadTimeout,
                               fparse.PathofexileDownException)
     try:
         bot = GGGGobblerBot(dao)
@@ -204,13 +205,13 @@ class GGGGobblerBot:
         if num_existing_comments == 0:
             new_comments = []
             # create new comments for thread
-            thing_to_reply = submission.add_comment(comments_to_post[0])
+            top_level_comment = submission.add_comment(comments_to_post[0])
             time.sleep(settings.TIME_BETWEEN_COMMENTS)
             comments_to_post.remove(comments_to_post[0])
-            new_comments.append(thing_to_reply.id)
+            new_comments.append(top_level_comment.id)
             for comment in comments_to_post:
-                thing_to_reply = thing_to_reply.reply(comment)
-                new_comments.append(thing_to_reply.id)
+                top_level_comment = top_level_comment.reply(comment)
+                new_comments.append(top_level_comment.id)
                 time.sleep(settings.TIME_BETWEEN_COMMENTS)
             self.dao.add_comments(submission.id, new_comments)
 

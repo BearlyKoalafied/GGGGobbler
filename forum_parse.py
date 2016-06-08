@@ -68,12 +68,16 @@ def get_staff_forum_posts(thread_id, search_start=1):
         soup = get_page_soup(filter_staff(url_of_id(thread_id)) + "/page/" + str(i))
         # get the table of forum rows
         post_table = soup.find("table", class_="forumPostListTable")
+        if post_table is None:
+            # lazy fix for unknown problem
+            raise PathofexileDownException
         for row in post_table.find_all("tr"):
             # if this row is one of the newspost details rows, ignore it
             if row.has_attr("class") and "newsPostInfo" in row["class"]:
                 continue
             author = get_post_author_from_row(row)
             post_id = get_post_id_from_row(row)
+            # enclose the whole text within a blockquote
             text = re.sub(r"[\n\r]+", "\n\n> ",
                           "> " + convert_html_to_markdown(get_post_from_row(row)))
             post_date = get_post_date_from_row(row)
