@@ -1,4 +1,5 @@
 import praw
+import OAuth2Util
 import sched
 import time
 import warnings
@@ -18,6 +19,9 @@ CSS_MAGIC_PREPEND = """#####&#009;\n\n######&#009;\n\n####&#009;\n\n"""
 
 warnings.simplefilter("ignore", ResourceWarning)
 
+# praw and oauth api
+global r
+global o
 
 def task(next_sched):
     logging.getLogger(settings.LOGGER_NAME).info("Starting run")
@@ -49,10 +53,11 @@ def run():
 
 
 class GGGGobblerBot:
+    global r
+    global o
     def __init__(self, dao=None):
-        self.r = praw.Reddit(user_agent=settings.APP_USER_AGENT)
-        self.r.set_oauth_app_info(settings.APP_ID, settings.APP_SECRET, settings.APP_URI)
-        self.r.refresh_access_information(settings.APP_REFRESH)
+        self.r = r
+        o.refresh()
         if dao is None:
             self.dao = db.DAO()
         else:
@@ -206,6 +211,16 @@ class GGGGobblerBot:
             new_comments = []
             # create new comments for thread
             top_level_comment = submission.add_comment(comments_to_post[0])
+            # check if the mods have already posted a sticky comment
+            # and respect it if so
+            # submissionHasSticky = False
+            # for comment in submission.comments:
+            #     if comment.sticky:
+            #         submissionHasSticky = True
+            #         break
+            # # sticky the bot's top level comment in the thread
+            # if not submissionHasSticky:
+            #     top_level_comment.distinguish(as_made_by='mod', sticky=True)
             time.sleep(settings.TIME_BETWEEN_COMMENTS)
             comments_to_post.remove(comments_to_post[0])
             new_comments.append(top_level_comment.id)
@@ -287,6 +302,11 @@ class GGGGobblerBot:
 
 
 if __name__ == "__main__":
+    global r
+    global o
+    # oauth stuff
+    r = praw.Reddit(user_agent=settings.APP_USER_AGENT)
+    o = OAuth2Util.OAuth2Util(r)
     # setup logging
     logger = logging.getLogger(settings.LOGGER_NAME)
     fh = logging.FileHandler(settings.LOGFILE_NAME)
