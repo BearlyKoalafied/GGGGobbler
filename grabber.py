@@ -211,8 +211,9 @@ class GGGGobblerBot:
             new_comments = []
             # create new comments for thread
             top_level_comment = submission.add_comment(comments_to_post[0])
-            # check if the mods have already posted a sticky comment
-            # and respect it if so
+            # code to sticky comments (shelved)
+            # # check if the mods have already posted a sticky comment
+            # # and respect it if so
             # submissionHasSticky = False
             # for comment in submission.comments:
             #     if comment.sticky:

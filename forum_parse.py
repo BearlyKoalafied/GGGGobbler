@@ -167,13 +167,17 @@ def convert_html_to_markdown(html):
     sbox_num = 0
     for part in parts:
         if isinstance(part, bs4.element.NavigableString):
-            if part.parent.name == "div" and "content" not in part.parent["class"]\
-                    and "box-content" not in part.parent["class"]:
+            if part.parent.name == "div" and (part.parent.has_attr("class") and \
+                    ("content" not in part.parent["class"]
+                    and "box-content" not in part.parent["class"]) \
+                    or not part.parent.has_attr("class")):
                 markdown += part.strip() + "\n\n"
             else:
                 markdown += part.strip()
         elif isinstance(part, bs4.element.Tag):
-            if part.name == "div" and "s-pad" in part["class"]:
+            if part.name == "div" and not part.has_attr("class"):
+                markdown += convert_html_to_markdown(part) + "\n\n"
+            elif part.name == "div" and "s-pad" in part["class"]:
                 markdown += convert_html_to_markdown(part) + "\n\n"
             # these things are confusing.  They appear to be used to make tables, but
             # I'm having trouble figuring out what the pattern is to it.
@@ -202,6 +206,8 @@ def convert_html_to_markdown(html):
             # headers
             elif part.name == "h2":
                 markdown += "## " + part.get_text() + "\n\n"
+            elif part.name == "h3":
+                markdown += "### " + part.get_text() + "\n\n"
             # bold
             elif part.name == "strong":
                 markdown += " **" + part.get_text().rstrip(" ") + "** "
