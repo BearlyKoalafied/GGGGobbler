@@ -222,7 +222,8 @@ def convert_html_to_markdown(html):
             elif part.name == "blockquote":
                 markdown += parse_quote(part)
             # <a href> links
-            elif part.name == "a":
+            elif part.name == "a" and len(part.contents) != 0:
+                # empty anchor tags?  come on now... :(
                 content = part.contents[0]
                 link = part["href"]
                 # image links... idk it's probably an image I guess
