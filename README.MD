@@ -1,13 +1,13 @@
 Instructions to run
 
 1. Install packages
-
+```
 	pip install -r requirements.txt
-
+```
 2. Setup OAuth on the reddit account to be used as well as OAuth2Util instructions spefified here https://github.com/SmBe19/praw-OAuth2Util
 
 3. Create a file called settings.py and specify the following variables:
-
+```
 	# Time in seconds to wait between checking for new posts on /r/poe and poe.com specify it to what you like
 	WAIT_TIME = 300
 
@@ -24,3 +24,9 @@ Instructions to run
 	LOGGING_ON = True
 	LOGGER_NAME = "GGGGobblerVomitter"
 	LOGFILE_NAME = "GGGGobblerVomit.log"
+```
+4. Do
+```
+	python grabber.py
+```
+The bot should run forever until it's stopped without needing attention.  It might need fixing if the layout of pathofexile.com changes or some element I didn't consider is introduced in a news post or something that breaks my bad code :^)
