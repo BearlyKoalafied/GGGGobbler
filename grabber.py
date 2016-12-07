@@ -202,26 +202,17 @@ class GGGGobblerBot:
         return comments
 
     def send_replies(self, submission, comments_to_post):
-        existing_comment_ids = self.dao.get_comment_ids_by_thread(submission.id)
-        num_existing_comments = len(existing_comment_ids)
         num_new_comments = len(comments_to_post)
         if num_new_comments == 0:
             return
+        existing_comment_ids = self.dao.get_comment_ids_by_thread(submission.id)
+        num_existing_comments = len(existing_comment_ids)
+
         if num_existing_comments == 0:
             new_comments = []
             # create new comments for thread
             top_level_comment = submission.add_comment(comments_to_post[0])
-            # code to sticky comments (shelved)
-            # # check if the mods have already posted a sticky comment
-            # # and respect it if so
-            # submissionHasSticky = False
-            # for comment in submission.comments:
-            #     if comment.sticky:
-            #         submissionHasSticky = True
-            #         break
-            # # sticky the bot's top level comment in the thread
-            # if not submissionHasSticky:
-            #     top_level_comment.distinguish(as_made_by='mod', sticky=True)
+            self.sticky_comment(submission, top_level_comment)
             time.sleep(settings.TIME_BETWEEN_COMMENTS)
             comments_to_post.remove(comments_to_post[0])
             new_comments.append(top_level_comment.id)
@@ -244,15 +235,27 @@ class GGGGobblerBot:
                 time.sleep(settings.TIME_BETWEEN_COMMENTS)
             # num_existing_comments is guaranteed to be greater than 0 so the loop is
             # guaranteed to run at least 1 time
-            # noinspection PyUnboundLocalVariable
             new_comments = []
             # create new comments after existing ones
             for i in range(num_existing_comments, num_new_comments):
-                # noinspection PyUnboundLocalVariable
                 comment = comment.reply(comments_to_post[i])
                 new_comments.append(comment.id)
                 time.sleep(settings.TIME_BETWEEN_COMMENTS)
             self.dao.add_comments(submission.id, new_comments)
+
+    def sticky_comment(self, submission, comment):
+        # code to sticky comments (shelved)
+        pass
+        # # check if the mods have already posted a sticky comment
+        # # and respect it if so
+        # submissionHasSticky = False
+        # for comment in submission.comments:
+        #     if comment.sticky:
+        #         submissionHasSticky = True
+        #         break
+        # # sticky the bot's top level comment in the thread
+        # if not submissionHasSticky:
+        #     comment.distinguish(as_made_by='mod', sticky=True)
 
     def create_post_preamble(self):
         return CSS_MAGIC_PREPEND + \
