@@ -77,3 +77,4 @@ target/
 # config
 settings.py
 tester.py
+*.ini
