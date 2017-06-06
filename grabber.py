@@ -5,6 +5,9 @@ import time
 import warnings
 import logging
 import re
+import os
+import errno
+import timeout
 
 import db
 import forum_parse as fparse
@@ -14,7 +17,7 @@ from praw.errors import RateLimitExceeded, APIException, ClientException, HTTPEx
 from requests.exceptions import ConnectionError, HTTPError, ReadTimeout
 
 POE_URL = "pathofexile.com/forum/view-thread"
-
+TIMEOUT_SECONDS = 300
 CSS_MAGIC_PREPEND = """#####&#009;\n\n######&#009;\n\n####&#009;\n\n"""
 
 warnings.simplefilter("ignore", ResourceWarning)
@@ -63,6 +66,7 @@ class GGGGobblerBot:
         else:
             self.dao = dao
 
+    @timeout.timeout(300, os.strerror(errno.ETIMEDOUT))
     def parse_reddit(self):
         subreddit = self.r.get_subreddit('pathofexile')
         # collect submissions that link to poe.com
