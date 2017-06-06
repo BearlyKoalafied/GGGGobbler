@@ -8,9 +8,9 @@ class DAO:
     def __init__(self):
         if os.path.isfile(DB_FILE_NAME):
             self.open()
-            self.create_tables()
         else:
             self.open()
+            self.create_tables()
 
     def open(self):
         self.db = sqlite3.connect(DB_FILE_NAME)
