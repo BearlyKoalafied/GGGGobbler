@@ -36,6 +36,7 @@ def task(next_sched):
                               ConnectionError,
                               HTTPError,
                               ReadTimeout,
+                              timeout.TimeoutError,
                               fparse.PathofexileDownException)
     try:
         bot = GGGGobblerBot(dao)
