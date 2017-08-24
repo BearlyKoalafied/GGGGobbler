@@ -25,7 +25,8 @@ warnings.simplefilter("ignore", ResourceWarning)
 # praw and oauth api
 global r
 global o
-
+    
+@timeout.timeout(TIMEOUT_SECONDS, os.strerror(errno.ETIMEDOUT))
 def task(next_sched):
     logging.getLogger(settings.LOGGER_NAME).info("Starting run")
     dao = db.DAO()
@@ -67,7 +68,6 @@ class GGGGobblerBot:
         else:
             self.dao = dao
 
-    @timeout.timeout(300, os.strerror(errno.ETIMEDOUT))
     def parse_reddit(self):
         subreddit = self.r.get_subreddit('pathofexile')
         # collect submissions that link to poe.com
