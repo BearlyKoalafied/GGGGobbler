@@ -78,3 +78,6 @@ target/
 settings.py
 tester.py
 *.ini
+
+# misc
+*.sh
