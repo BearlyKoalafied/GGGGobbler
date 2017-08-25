@@ -42,8 +42,11 @@ def task(next_sched):
     try:
         bot = GGGGobblerBot(dao)
         bot.parse_reddit()
-    except RECOVERABLE_EXCEPTIONS as e:
+    except RECOVERABLE_EXCEPTIONS:
         logging.getLogger(settings.LOGGER_NAME).exception("Hit Recoverable exception, output: ")
+        dao.rollback()
+    except:
+        logging.getLogger(settings.LOGGER_NAME).exception("Hit Unexpected exception, output: ")
         dao.rollback()
 
     # do it again later
