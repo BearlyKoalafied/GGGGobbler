@@ -26,7 +26,6 @@ warnings.simplefilter("ignore", ResourceWarning)
 global r
 global o
     
-@timeout.timeout(TIMEOUT_SECONDS, os.strerror(errno.ETIMEDOUT))
 def task(next_sched):
     logging.getLogger(settings.LOGGER_NAME).info("Starting run")
     dao = db.DAO()
@@ -39,9 +38,14 @@ def task(next_sched):
                               ReadTimeout,
                               timeout.TimeoutError,
                               fparse.PathofexileDownException)
-    try:
+
+    @timeout.timeout(TIMEOUT_SECONDS, os.strerror(errno.ETIMEDOUT))
+    def f():
         bot = GGGGobblerBot(dao)
         bot.parse_reddit()
+
+    try:
+        f()
     except RECOVERABLE_EXCEPTIONS:
         logging.getLogger(settings.LOGGER_NAME).exception("Hit Recoverable exception, output: ")
         dao.rollback()
