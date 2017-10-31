@@ -35,7 +35,6 @@ def task(next_sched):
                               ConnectionError,
                               HTTPError,
                               ReadTimeout,
-                              timeout.TimeoutError,
                               fparse.PathofexileDownException)
 
     @timeout.timeout(TIMEOUT_SECONDS, os.strerror(errno.ETIMEDOUT))
@@ -49,8 +48,13 @@ def task(next_sched):
     except RECOVERABLE_EXCEPTIONS:
         logging.getLogger(settings.LOGGER_NAME).exception("Hit Recoverable exception, output: ")
         dao.rollback()
+    except timeout.TimeoutError:
+        logging.getLogger(settings.LOGGER_NAME).exception("Hit manual Timeout exception, output: ")
+        r.redditor(settings.REDDIT_ACC_OWNER).message("Bot Timed out", traceback.format_exc())
+        dao.rollback()
     except:
         logging.getLogger(settings.LOGGER_NAME).exception("Hit Unexpected exception, output: ")
+        r.redditor(settings.REDDIT_ACC_OWNER).message("Bot Crashed", traceback.format_exc())
         dao.rollback()
         raise
 
