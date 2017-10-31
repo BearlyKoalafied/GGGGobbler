@@ -8,12 +8,13 @@ import re
 import os
 import errno
 import timeout
+import traceback
 
 import db
 import forum_parse as fparse
 import settings
 
-from praw.errors import RateLimitExceeded, APIException, ClientException, HTTPException
+from praw.exceptions import APIException, ClientException
 from requests.exceptions import ConnectionError, HTTPError, ReadTimeout
 
 POE_URL = "pathofexile.com/forum/view-thread"
@@ -25,14 +26,12 @@ warnings.simplefilter("ignore", ResourceWarning)
 # praw and oauth api
 global r
 global o
-    
+
 def task(next_sched):
     logging.getLogger(settings.LOGGER_NAME).info("Starting run")
     dao = db.DAO()
-    RECOVERABLE_EXCEPTIONS = (RateLimitExceeded,
-                              APIException,
+    RECOVERABLE_EXCEPTIONS = (APIException,
                               ClientException,
-                              HTTPException,
                               ConnectionError,
                               HTTPError,
                               ReadTimeout,
@@ -52,6 +51,7 @@ def task(next_sched):
     except:
         logging.getLogger(settings.LOGGER_NAME).exception("Hit Unexpected exception, output: ")
         dao.rollback()
+        raise
 
     # do it again later
     next_sched.enter(settings.WAIT_TIME, 1, task, (next_sched,))
@@ -76,7 +76,7 @@ class GGGGobblerBot:
             self.dao = dao
 
     def parse_reddit(self):
-        subreddit = self.r.get_subreddit('pathofexile')
+        subreddit = self.r.subreddit('pathofexile')
         # collect submissions that link to poe.com
         poe_submissions = []
         ids = []
@@ -93,7 +93,7 @@ class GGGGobblerBot:
     def get_comment_by_id(self, submission, comment_id):
         url = submission.permalink + comment_id
         # permalink submission, one comment stored in submission object here
-        return self.r.get_submission(url=url).comments[0]
+        return self.r.submission(url=url).comments[0]
 
     def parse_submissions(self, submissions):
         for submission in submissions:
@@ -312,7 +312,7 @@ class GGGGobblerBot:
         threads = self.dao.get_all_reddit_threads()
         for thread in threads:
             # get submission by id
-            submission = self.r.get_submission(thread[0])
+            submission = self.r.submission(thread[0])
             self.parse_submission(submission)
         print("Finished force update all")
 
@@ -321,7 +321,9 @@ if __name__ == "__main__":
     global r
     global o
     # oauth stuff
-    r = praw.Reddit(user_agent=settings.APP_USER_AGENT)
+    r = praw.Reddit(client_id=settings.APP_ID,
+                    client_secret=settings.APP_SECRET,
+                    user_agent=settings.APP_USER_AGENT)
     o = OAuth2Util.OAuth2Util(r)
     # setup logging
     logger = logging.getLogger(settings.LOGGER_NAME)
