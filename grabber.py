@@ -91,7 +91,6 @@ class GGGGobblerBot:
 
     def get_comment_by_id(self, submission, comment_id):
         url = "https://reddit.com" + submission.permalink + comment_id
-        print(url)
         # permalink submission, one comment stored in submission object here
         return self.r.submission(url=url).comments[0]
 
