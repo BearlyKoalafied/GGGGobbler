@@ -12,6 +12,7 @@ import traceback
 
 import db
 import forum_parse as fparse
+import gobOauth
 import settings
 
 from praw.exceptions import APIException, ClientException
@@ -25,7 +26,6 @@ warnings.simplefilter("ignore", ResourceWarning)
 
 # praw and oauth api
 global r
-global o
 
 def task(next_sched):
     logging.getLogger(settings.LOGGER_NAME).info("Starting run")
@@ -40,6 +40,7 @@ def task(next_sched):
 
     @timeout.timeout(TIMEOUT_SECONDS, os.strerror(errno.ETIMEDOUT))
     def f():
+        r = gobOauth.get_refreshable_instance()
         bot = GGGGobblerBot(dao)
         bot.parse_reddit()
 
@@ -66,10 +67,8 @@ def run():
 
 class GGGGobblerBot:
     global r
-    global o
     def __init__(self, dao=None):
         self.r = r
-        o.refresh()
         if dao is None:
             self.dao = db.DAO()
         else:
@@ -319,12 +318,8 @@ class GGGGobblerBot:
 
 if __name__ == "__main__":
     global r
-    global o
     # oauth stuff
-    r = praw.Reddit(client_id=settings.APP_ID,
-                    client_secret=settings.APP_SECRET,
-                    user_agent=settings.APP_USER_AGENT)
-    o = OAuth2Util.OAuth2Util(r)
+    r = gobOauth.get_refreshable_instance()
     # setup logging
     logger = logging.getLogger(settings.LOGGER_NAME)
     fh = logging.FileHandler(settings.LOGFILE_NAME)
