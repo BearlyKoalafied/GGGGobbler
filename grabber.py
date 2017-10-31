@@ -75,22 +75,23 @@ class GGGGobblerBot:
             self.dao = dao
 
     def parse_reddit(self):
-        subreddit = self.r.subreddit('pathofexile')
+        subreddit = self.r.subreddit('test')
         # collect submissions that link to poe.com
         poe_submissions = []
         ids = []
-        for submission in subreddit.get_hot(limit=25):
+        for submission in subreddit.hot(limit=25):
             if POE_URL in submission.url:
                 poe_submissions.append(submission)
                 ids.append(submission.id)
-        for submission in subreddit.get_new(limit=25):
+        for submission in subreddit.new(limit=25):
             if POE_URL in submission.url and submission.id not in ids:
                 poe_submissions.append(submission)
 
         self.parse_submissions(poe_submissions)
 
     def get_comment_by_id(self, submission, comment_id):
-        url = submission.permalink + comment_id
+        url = "https://reddit.com" + submission.permalink + comment_id
+        print(url)
         # permalink submission, one comment stored in submission object here
         return self.r.submission(url=url).comments[0]
 
@@ -222,7 +223,7 @@ class GGGGobblerBot:
         if num_existing_comments == 0:
             new_comments = []
             # create new comments for thread
-            top_level_comment = submission.add_comment(comments_to_post[0])
+            top_level_comment = submission.reply(comments_to_post[0])
             self.sticky_comment(submission, top_level_comment)
             time.sleep(settings.TIME_BETWEEN_COMMENTS)
             comments_to_post.remove(comments_to_post[0])
