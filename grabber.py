@@ -79,7 +79,7 @@ class GGGGobblerBot:
             self.dao = dao
 
     def parse_reddit(self):
-        subreddit = self.r.subreddit('test')
+        subreddit = self.r.subreddit(settings.SUBREDDIT)
         # collect submissions that link to poe.com
         poe_submissions = []
         ids = []
@@ -94,9 +94,7 @@ class GGGGobblerBot:
         self.parse_submissions(poe_submissions)
 
     def get_comment_by_id(self, submission, comment_id):
-        url = "https://reddit.com" + submission.permalink + comment_id
-        # permalink submission, one comment stored in submission object here
-        return self.r.submission(url=url).comments[0]
+        return self.r.comment(comment_id)
 
     def parse_submissions(self, submissions):
         for submission in submissions:
