@@ -16,6 +16,7 @@ import gobOauth
 import settings
 
 from praw.exceptions import APIException, ClientException
+from prawcore.exceptions import RequestException
 from requests.exceptions import ConnectionError, HTTPError, ReadTimeout
 
 POE_URL = "pathofexile.com/forum/view-thread"
@@ -35,6 +36,7 @@ def task(next_sched):
                               ConnectionError,
                               HTTPError,
                               ReadTimeout,
+                              RequestException,
                               fparse.PathofexileDownException)
 
     @timeout.timeout(TIMEOUT_SECONDS, os.strerror(errno.ETIMEDOUT))
