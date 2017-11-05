@@ -45,6 +45,12 @@ def task(next_sched):
         bot = GGGGobblerBot(dao)
         bot.parse_reddit()
 
+    def send_error_mail(message):
+        try:
+            r.redditor(settings.REDDIT_ACC_OWNER).message("Bot Crashed", message)
+        except RECOVERABLE_EXCEPTIONS:
+            logging.getLogger((settings.LOGGER_NAME).exception("Hit exception while sending error message: "))
+
     try:
         f()
     except RECOVERABLE_EXCEPTIONS:
@@ -52,11 +58,11 @@ def task(next_sched):
         dao.rollback()
     except timeout.TimeoutError:
         logging.getLogger(settings.LOGGER_NAME).exception("Hit manual Timeout exception, output: ")
-        r.redditor(settings.REDDIT_ACC_OWNER).message("Bot Timed out", traceback.format_exc())
+        send_error_mail(traceback.format_exc())
         dao.rollback()
     except:
         logging.getLogger(settings.LOGGER_NAME).exception("Hit Unexpected exception, output: ")
-        r.redditor(settings.REDDIT_ACC_OWNER).message("Bot Crashed", traceback.format_exc())
+        send_error_mail(traceback.format_exc())
         dao.rollback()
         raise
 
