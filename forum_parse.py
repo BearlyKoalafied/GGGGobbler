@@ -85,7 +85,9 @@ def get_staff_forum_posts(thread_id, search_start=1):
             text = re.sub(r"[\n\r]+", "\n\n> ",
                           "> " + convert_html_to_markdown(get_post_from_row(row)))
             post_date = get_post_date_from_row(row)
-            posts.append(StaffPost(post_id, thread_id, author, text, post_date))
+            # a bug in the website sometimes causes 2 pages of forum posts to return the same forum post
+            if not check_for_duplicate(posts, post_id):
+                posts.append(StaffPost(post_id, thread_id, author, text, post_date))
     return posts, page_count
 
 def get_post_from_row(post_row):
@@ -272,6 +274,16 @@ def parse_table(parts, start_item_index):
         i += 1
     width = 3
 
+
+def check_for_duplicate(posts, post_id):
+    """
+    fix duplicate posts in a list of posts
+    returns true if post_id is in posts
+    """
+    for post in posts:
+        if post_id == post.post_id:
+            return True
+    return False
 
 class PathofexileDownException(Exception):
     """
