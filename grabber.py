@@ -1,5 +1,4 @@
 import praw
-import OAuth2Util
 import sched
 import time
 import warnings
@@ -7,17 +6,13 @@ import logging
 import re
 import os
 import errno
-import timeout
-import traceback
 
 import db
 import forum_parse as fparse
 import gobOauth
+import ErrorHandling
+import timeout
 import settings
-
-from praw.exceptions import APIException, ClientException
-from prawcore.exceptions import RequestException, ServerError
-from requests.exceptions import ConnectionError, HTTPError, ReadTimeout
 
 POE_URL = "pathofexile.com/forum/view-thread"
 TIMEOUT_SECONDS = 300
@@ -31,41 +26,14 @@ global r
 def task(next_sched):
     logging.getLogger(settings.LOGGER_NAME).info("Starting run")
     dao = db.DAO()
-    RECOVERABLE_EXCEPTIONS = (APIException,
-                              ClientException,
-                              ConnectionError,
-                              HTTPError,
-                              ReadTimeout,
-                              RequestException,
-                              ServerError,
-                              fparse.PathofexileDownException)
 
     @timeout.timeout(TIMEOUT_SECONDS, os.strerror(errno.ETIMEDOUT))
-    def f():
-        r = gobOauth.get_refreshable_instance()
+    def repeated_func():
         bot = GGGGobblerBot(dao)
         bot.parse_reddit()
 
-    def send_error_mail(message):
-        try:
-            r.redditor(settings.REDDIT_ACC_OWNER).message("Bot Crashed", message)
-        except RECOVERABLE_EXCEPTIONS:
-            logging.getLogger((settings.LOGGER_NAME).exception("Hit exception while sending error message: "))
-
-    try:
-        f()
-    except RECOVERABLE_EXCEPTIONS:
-        logging.getLogger(settings.LOGGER_NAME).exception("Hit Recoverable exception, output: ")
-        dao.rollback()
-    except timeout.TimeoutError:
-        logging.getLogger(settings.LOGGER_NAME).exception("Hit manual Timeout exception, output: ")
-        send_error_mail(traceback.format_exc())
-        dao.rollback()
-    except:
-        logging.getLogger(settings.LOGGER_NAME).exception("Hit Unexpected exception, output: ")
-        send_error_mail(traceback.format_exc())
-        dao.rollback()
-        raise
+    # run the bot
+    ErrorHandling.handle_errors(r, repeated_func, dao)
 
     # do it again later
     next_sched.enter(settings.WAIT_TIME, 1, task, (next_sched,))
