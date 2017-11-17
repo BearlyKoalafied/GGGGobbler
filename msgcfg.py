@@ -45,22 +45,22 @@ def send_confirmation_message(reddit, header, body):
 
 def set_currently_running(new_setting):
     cfg = read_ini()
-    cfg['currently_running'] = new_setting
+    cfg['a']['currently_running'] = new_setting
 
 def set_error_messaging(new_setting):
     cfg = read_ini()
-    cfg['error_reddit_messaging'] = new_setting
+    cfg['a']['error_reddit_messaging'] = new_setting
 
 def currently_running_enabled():
     cfg = read_ini()
-    if cfg['currently_running'] == 'on':
+    if cfg['a']['currently_running'] == 'on':
         return True
     else:
         return False
 
 def error_messaging_enabled():
     cfg = read_ini()
-    if cfg['error_reddit_messaging'] == 'on':
+    if cfg['a']['error_reddit_messaging'] == 'on':
         return True
     else:
         return False
