@@ -43,11 +43,13 @@ def handle_errors(reddit, func, dao):
     except timeout.TimeoutError:
         logging.getLogger(settings.LOGGER_NAME).exception("Hit manual Timeout exception, output: ")
         dao.rollback()
-        while not send_error_mail(reddit, traceback.format_exc()):
-            time.sleep(60000)
+        if settings.ERROR_MESSAGING:
+            while not send_error_mail(reddit, traceback.format_exc()):
+                time.sleep(60000)
     except:
         logging.getLogger(settings.LOGGER_NAME).exception("Hit Unexpected exception, output: ")
         dao.rollback()
-        while not send_error_mail(reddit, traceback.format_exc()):
-            time.sleep(60000)
+        if settings.ERROR_MESSAGING:
+            while not send_error_mail(reddit, traceback.format_exc()):
+                time.sleep(60000)
         raise

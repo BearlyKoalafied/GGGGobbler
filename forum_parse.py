@@ -70,8 +70,9 @@ def get_staff_forum_posts(thread_id, search_start=1):
         # get the table of forum rows
         post_table = soup.find("table", class_="forumPostListTable")
         if post_table is None:
-            # lazy fix for unknown problem
-            raise PathofexileDownException
+            # catch all for cases where the page returns something that isn't a forum post list
+            # for whatever reason
+            return [], 0
         for row in post_table.find_all("tr"):
             # ignore if this isn't a staff post at all (I've seen this for poll threads)
             if not row.has_attr("class"):
