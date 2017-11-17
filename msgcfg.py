@@ -13,10 +13,11 @@ def read_ini():
     return cfg
 
 def check_messages(r):
-    unread = r.get_unread()
+    unread = r.unread()
     for new in unread:
         if new.author == settings.REDDIT_ACC_OWNER:
             process(r, new.body)
+        new.mark_read()
 
 def process(r, body):
     if body.startsWith('turn on'):
