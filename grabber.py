@@ -11,6 +11,7 @@ import db
 import forum_parse as fparse
 import gobOauth
 import ErrorHandling
+import msgcfg
 import timeout
 import settings
 
@@ -29,8 +30,12 @@ def task(next_sched):
 
     @timeout.timeout(TIMEOUT_SECONDS, os.strerror(errno.ETIMEDOUT))
     def repeated_func():
-        bot = GGGGobblerBot(dao)
-        bot.parse_reddit()
+        msgcfg.check_messages(r)
+        if msgcfg.currently_running_enabled():
+            bot = GGGGobblerBot(dao)
+            bot.parse_reddit()
+
+
 
     # run the bot
     ErrorHandling.handle_errors(r, repeated_func, dao)

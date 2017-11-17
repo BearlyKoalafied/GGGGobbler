@@ -4,6 +4,7 @@ import time
 
 import forum_parse as fparse
 import timeout
+import msgcfg
 import settings
 
 from praw.exceptions import APIException, ClientException
@@ -43,13 +44,13 @@ def handle_errors(reddit, func, dao):
     except timeout.TimeoutError:
         logging.getLogger(settings.LOGGER_NAME).exception("Hit manual Timeout exception, output: ")
         dao.rollback()
-        if settings.ERROR_MESSAGING:
+        if msgcfg.error_messaging_enabled():
             while not send_error_mail(reddit, traceback.format_exc()):
                 time.sleep(60000)
     except:
         logging.getLogger(settings.LOGGER_NAME).exception("Hit Unexpected exception, output: ")
         dao.rollback()
-        if settings.ERROR_MESSAGING:
+        if msgcfg.error_messaging_enabled():
             while not send_error_mail(reddit, traceback.format_exc()):
                 time.sleep(60000)
         raise
