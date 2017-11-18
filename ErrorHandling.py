@@ -25,14 +25,11 @@ RECOVERABLE_EXCEPTIONS = (APIException,
 def send_error_mail(reddit, message):
     """
     Attempt to send an error message to my main reddit account
-    Returns False on failure due to network errors
     """
     try:
         reddit.redditor(settings.REDDIT_ACC_OWNER).message("Bot Crashed", message)
-        return True
     except RECOVERABLE_EXCEPTIONS:
         logging.getLogger((settings.LOGGER_NAME).exception("Hit exception while sending error message: "))
-        return False
     except:
         logging.getLogger((settings.LOGGER_NAME).exception("Hit Unexpected exception while sending error message: "))
         raise
@@ -46,7 +43,7 @@ def handle_err_send_error_mail_thread(reddit, message, lock, retry_count):
             logging.getLogger((settings.LOGGER_NAME).exception("Ran out of retries while sending error message: "))
             raise
         # create threads trying to send mail until succession, or limit is reached
-        thread = threading.Thread(handle_err_send_error_mail_thread, (reddit, message, retry_count - 1,))
+        thread = threading.Timer(15, handle_err_send_error_mail_thread, (reddit, message, retry_count - 1,))
         thread.start()
     finally:
         lock.release()
