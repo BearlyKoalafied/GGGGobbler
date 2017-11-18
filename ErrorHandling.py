@@ -1,6 +1,7 @@
 import logging
 import traceback
 import time
+import threading
 
 import forum_parse as fparse
 import timeout
@@ -34,9 +35,25 @@ def send_error_mail(reddit, message):
         return False
     except:
         logging.getLogger((settings.LOGGER_NAME).exception("Hit Unexpected exception while sending error message: "))
+        raise
 
-def handle_errors(reddit, func, dao):
+def handle_err_send_error_mail_thread(reddit, message, lock, retry_count):
     try:
+        with lock:
+            send_error_mail(reddit, message)
+    except RECOVERABLE_EXCEPTIONS:
+        if retry_count == 0:
+            logging.getLogger((settings.LOGGER_NAME).exception("Ran out of retries while sending error message: "))
+            raise
+        # create threads trying to send mail until succession, or limit is reached
+        thread = threading.Thread(handle_err_send_error_mail_thread, (reddit, message, retry_count - 1,))
+        thread.start()
+    finally:
+        lock.release()
+
+def handle_errors(reddit, func, dao, lock):
+    try:
+        lock.acquire()
         func()
     except RECOVERABLE_EXCEPTIONS:
         logging.getLogger(settings.LOGGER_NAME).exception("Hit Recoverable exception, output: ")
@@ -44,13 +61,11 @@ def handle_errors(reddit, func, dao):
     except timeout.TimeoutError:
         logging.getLogger(settings.LOGGER_NAME).exception("Hit manual Timeout exception, output: ")
         dao.rollback()
-        if msgcfg.error_messaging_enabled():
-            while not send_error_mail(reddit, traceback.format_exc()):
-                time.sleep(60000)
+        handle_err_send_error_mail_thread(reddit, traceback.format_exc(), lock, 15)
     except:
         logging.getLogger(settings.LOGGER_NAME).exception("Hit Unexpected exception, output: ")
         dao.rollback()
-        if msgcfg.error_messaging_enabled():
-            while not send_error_mail(reddit, traceback.format_exc()):
-                time.sleep(60000)
+        handle_err_send_error_mail_thread(reddit, traceback.format_exc(), lock, 15)
         raise
+    finally:
+        lock.release()

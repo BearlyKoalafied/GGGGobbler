@@ -1,5 +1,3 @@
-import praw
-import sched
 import threading
 import time
 import warnings
@@ -25,7 +23,7 @@ warnings.simplefilter("ignore", ResourceWarning)
 # praw and oauth api
 global r
 
-lock = threading.Lock()
+praw_lock = threading.Lock()
 
 def main():
     thread_main = threading.Timer(10, main_thread)
@@ -40,12 +38,11 @@ def main_thread():
     @timeout.timeout(TIMEOUT_SECONDS, os.strerror(errno.ETIMEDOUT))
     def repeated_func():
         if msgcfg.currently_running_enabled():
-            with lock:
-                bot = GGGGobblerBot(dao)
-                bot.parse_reddit()
+            bot = GGGGobblerBot(dao)
+            bot.parse_reddit()
 
     # run the bot
-    ErrorHandling.handle_errors(r, repeated_func, dao)
+    ErrorHandling.handle_errors(r, repeated_func, dao, praw_lock)
 
     # do it again later
     thread = threading.Timer(settings.WAIT_TIME_MAIN, main_thread)
@@ -54,7 +51,7 @@ def main_thread():
     logging.getLogger(settings.LOGGER_NAME).info("Finished run")
 
 def check_msgs_thread():
-    with lock:
+    with praw_lock:
         msgcfg.check_messages(r)
     thread = threading.Timer(settings.WAIT_TIME_CHECK_MESSAGES, check_msgs_thread)
     thread.start()
