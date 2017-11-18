@@ -40,20 +40,19 @@ def process(r, body):
         send_confirmation_message(r, CFG_RESPONSE_MAIL_HEADER,
                                     'Turning Error Messaging off')
 
-
 def send_confirmation_message(reddit, header, body):
     reddit.redditor(settings.REDDIT_ACC_OWNER).message(header, body)
 
 def set_currently_running(new_setting):
     cfg = read_ini()
     cfg.set('a', 'currently_running', new_setting)
-    with open(CFG_FILE, 'wb') as cfgfile:
+    with open(CFG_FILE, 'w') as cfgfile:
         cfg.write(cfgfile)
 
 def set_error_messaging(new_setting):
     cfg = read_ini()
     cfg.set('a', 'error_reddit_messaging', new_setting)
-    with open(CFG_FILE, 'wb') as cfgfile:
+    with open(CFG_FILE, 'w') as cfgfile:
         cfg.write(cfgfile)
 
 def currently_running_enabled():

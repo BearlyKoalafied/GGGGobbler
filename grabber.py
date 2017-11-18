@@ -35,8 +35,6 @@ def task(next_sched):
             bot = GGGGobblerBot(dao)
             bot.parse_reddit()
 
-
-
     # run the bot
     ErrorHandling.handle_errors(r, repeated_func, dao)
 
