@@ -1,5 +1,6 @@
 import praw
 import sched
+import threading
 import time
 import warnings
 import logging
@@ -24,29 +25,39 @@ warnings.simplefilter("ignore", ResourceWarning)
 # praw and oauth api
 global r
 
-def task(next_sched):
+lock = threading.Lock()
+
+def main():
+    thread_main = threading.Timer(10, main_thread)
+    thread_messages = threading.Timer(0, check_msgs_thread)
+    thread_main.start()
+    thread_messages.start()
+
+def main_thread():
     logging.getLogger(settings.LOGGER_NAME).info("Starting run")
     dao = db.DAO()
 
     @timeout.timeout(TIMEOUT_SECONDS, os.strerror(errno.ETIMEDOUT))
     def repeated_func():
-        msgcfg.check_messages(r)
         if msgcfg.currently_running_enabled():
-            bot = GGGGobblerBot(dao)
-            bot.parse_reddit()
+            with lock:
+                bot = GGGGobblerBot(dao)
+                bot.parse_reddit()
 
     # run the bot
     ErrorHandling.handle_errors(r, repeated_func, dao)
 
     # do it again later
-    next_sched.enter(settings.WAIT_TIME, 1, task, (next_sched,))
+    thread = threading.Timer(settings.WAIT_TIME_MAIN, main_thread)
+    thread.start()
+    # next_sched.enter(settings.WAIT_TIME, 1, task, (next_sched,))
     logging.getLogger(settings.LOGGER_NAME).info("Finished run")
 
-
-def run():
-    scheduler = sched.scheduler(time.time, time.sleep)
-    scheduler.enter(0, 1, task, (scheduler,))
-    scheduler.run()
+def check_msgs_thread():
+    with lock:
+        msgcfg.check_messages(r)
+    thread = threading.Timer(settings.WAIT_TIME_CHECK_MESSAGES, check_msgs_thread)
+    thread.start()
 
 
 class GGGGobblerBot:
@@ -312,4 +323,4 @@ if __name__ == "__main__":
     if not settings.LOGGING_ON:
         logging.disable(logging.CRITICAL)
     # start bot
-    run()
+    main()

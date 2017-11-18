@@ -1,4 +1,4 @@
-import praw
+import threading
 import configparser
 import settings
 
@@ -68,3 +68,6 @@ def error_messaging_enabled():
         return True
     else:
         return False
+
+def check_inbox_task():
+    pass
