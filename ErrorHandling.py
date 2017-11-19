@@ -1,9 +1,8 @@
-import traceback
 import threading
-import functools
 
 import forum_parse as fparse
 import gobblogger
+import msgcfg
 import settings
 
 from praw.exceptions import APIException, ClientException
@@ -51,9 +50,10 @@ def handle_errors(reddit, lock, dao,
             func()
     except RECOVERABLE_EXCEPTIONS:
         gobblogger.exception(recoverable_err_msg)
-        if retry_count == 0:
+        if retry_count <= 0:
             gobblogger.exception("Ran out of retries while handling " + func.__name__ + ":")
             retry_limit_event.set()
+            msgcfg.set_currently_running('off')
             raise
         retry_decrement_event.set()
         dao.rollback()

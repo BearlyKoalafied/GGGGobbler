@@ -21,18 +21,27 @@ def start_main_threads(reddit):
     praw_lock = threading.Lock()
     close_event = threading.Event()
     retry_limit_event = threading.Event()
-    t_retry_manager = threading.Thread(group=None, target=thread_retry_manager,
-                                       args=(reddit, retry_limit_event, close_event, praw_lock))
     t_scan_reddit = threading.Thread(group=None, target=thread_scan_reddit,
                                      args=(reddit, retry_limit_event, close_event, praw_lock))
     t_messages = threading.Thread(group=None, target=thread_check_msgs,
                                   args=(reddit, close_event, praw_lock))
     t_close = threading.Thread(group=None, target=thread_wait_for_close,
                                args=(close_event,))
-    t_retry_manager.start()
     t_scan_reddit.start()
     t_messages.start()
     t_close.start()
+    manage_threads(reddit, retry_limit_event, close_event, praw_lock)
+
+def manage_threads(r, retry_limit_event, close_event, praw_lock):
+    while not close_event.is_set():
+        if retry_limit_event.is_set():
+            msgcfg.set_currently_running('off')
+            ErrorHandling.send_error_mail(r, praw_lock, "Hit maximum retries with no solution, shutting down bot")
+            retry_limit_event.clear()
+        counter = secs_to_next_fraction_of_hour(settings.WAIT_TIME_MAIN)
+        while not close_event.is_set() and counter > 0:
+            time.sleep(1)
+            counter -= 1
 
 def secs_to_next_fraction_of_hour(n):
     """
@@ -43,16 +52,6 @@ def secs_to_next_fraction_of_hour(n):
     # number of seconds into the current hour
     curSecs = now.second + now.minute * 60
     return (int(curSecs / n)+ 1)*n - curSecs
-
-def thread_retry_manager(r, retry_limit_event, close_event, praw_lock):
-    while not close_event.is_set():
-        if retry_limit_event.is_set():
-            msgcfg.set_currently_running('off')
-            ErrorHandling.send_error_mail(r, praw_lock, "Hit maximum retries with no solution, shutting down bot")
-        counter = secs_to_next_fraction_of_hour(settings.WAIT_TIME_MAIN)
-        while not close_event.is_set() and counter > 0:
-            time.sleep(1)
-            counter -= 1
 
 def thread_scan_reddit(r, retry_limit_event, close_event, praw_lock):
     """

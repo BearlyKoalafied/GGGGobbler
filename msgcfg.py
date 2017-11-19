@@ -1,7 +1,6 @@
 import configparser
 
 import gobblogger
-import ErrorHandling
 import settings
 
 CFG_FILE = "remote_config.ini"
