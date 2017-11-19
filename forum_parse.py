@@ -2,7 +2,6 @@ import requests
 import bs4
 import re
 import datetime
-import logging
 
 from data_structs import StaffPost
 import settings

@@ -1,8 +1,8 @@
-import logging
 import traceback
 import threading
 
 import forum_parse as fparse
+import gobblogger
 import settings
 
 from praw.exceptions import APIException, ClientException
@@ -18,7 +18,6 @@ RECOVERABLE_EXCEPTIONS = (APIException,
                           ServerError,
                           fparse.PathofexileDownException)
 
-
 def send_error_mail(reddit, message):
     """
     Attempt to send an error message to my main reddit account
@@ -26,10 +25,10 @@ def send_error_mail(reddit, message):
     try:
         reddit.redditor(settings.REDDIT_ACC_OWNER).message("Bot Crashed", message)
     except RECOVERABLE_EXCEPTIONS:
-        logging.getLogger((settings.LOGGER_NAME).exception("Hit exception while sending error message: "))
+        gobblogger.exception("Hit exception while sending error message: ")
         raise
     except:
-        logging.getLogger((settings.LOGGER_NAME).exception("Hit Unexpected exception while sending error message: "))
+        gobblogger.exception("Hit Unexpected exception while sending error message: ")
         raise
 
 def handle_err_send_error_mail_thread(reddit, message, lock, retry_count):
@@ -38,7 +37,7 @@ def handle_err_send_error_mail_thread(reddit, message, lock, retry_count):
             send_error_mail(reddit, message)
     except RECOVERABLE_EXCEPTIONS:
         if retry_count == 0:
-            logging.getLogger((settings.LOGGER_NAME).exception("Ran out of retries while sending error message: "))
+            gobblogger.exception("Ran out of retries while sending error message: ")
             raise
         # create threads trying to send mail until succession, or limit is reached
         thread = threading.Timer(15, handle_err_send_error_mail_thread, (reddit, message, retry_count - 1,))
@@ -51,10 +50,10 @@ def handle_errors(reddit, func, dao, lock):
         lock.acquire()
         func()
     except RECOVERABLE_EXCEPTIONS:
-        logging.getLogger(settings.LOGGER_NAME).exception("Hit Recoverable exception, output: ")
+        gobblogger.exception("Hit Recoverable exception, output: ")
         dao.rollback()
     except:
-        logging.getLogger(settings.LOGGER_NAME).exception("Hit Unexpected exception, output: ")
+        gobblogger.exception("Hit Unexpected exception, output: ")
         dao.rollback()
         handle_err_send_error_mail_thread(reddit, traceback.format_exc(), lock, 15)
         raise

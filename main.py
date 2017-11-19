@@ -1,28 +1,20 @@
 import threading
 import time
 import datetime
-import logging
-
 
 from grabber import GGGGobblerBot
 import db
 import ErrorHandling
 import msgcfg
 import gobOauth
+import gobblogger
 import settings
 
 def main():
     # connect using oauth to reddit
     reddit = gobOauth.get_refreshable_instance()
     # setup logging
-    logger = logging.getLogger(settings.LOGGER_NAME)
-    fh = logging.FileHandler(settings.LOGFILE_NAME)
-    fmt = logging.Formatter('[%(levelname)s] [%(asctime)s]: %(message)s')
-    fh.setFormatter(fmt)
-    logger.addHandler(fh)
-    logger.setLevel(logging.INFO)
-    if not settings.LOGGING_ON:
-        logging.disable(logging.CRITICAL)
+    gobblogger.prepare()
     start_main_threads(reddit)
 
 def start_main_threads(reddit):
@@ -58,7 +50,7 @@ def thread_scan_reddit(r, close_event, praw_lock):
     :param praw_lock: threading.Lock to share the reddit instance
     """
     while not close_event.is_set():
-        logging.getLogger(settings.LOGGER_NAME).info("Starting run")
+        gobblogger.info("Starting run")
         dao = db.DAO()
         # run the bot
         def func():
@@ -67,7 +59,7 @@ def thread_scan_reddit(r, close_event, praw_lock):
                 bot.parse_reddit()
         # managing exceptions
         ErrorHandling.handle_errors(r, func, dao, praw_lock)
-        logging.getLogger(settings.LOGGER_NAME).info("Finished run")
+        gobblogger.info("Finished run")
         counter = secs_to_next_fraction_of_hour(settings.WAIT_TIME_MAIN)
         while not close_event.is_set() and counter > 0:
             time.sleep(1)
