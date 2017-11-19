@@ -3,7 +3,6 @@ import traceback
 import threading
 
 import forum_parse as fparse
-import timeout
 import settings
 
 from praw.exceptions import APIException, ClientException
@@ -54,10 +53,6 @@ def handle_errors(reddit, func, dao, lock):
     except RECOVERABLE_EXCEPTIONS:
         logging.getLogger(settings.LOGGER_NAME).exception("Hit Recoverable exception, output: ")
         dao.rollback()
-    except timeout.TimeoutError:
-        logging.getLogger(settings.LOGGER_NAME).exception("Hit manual Timeout exception, output: ")
-        dao.rollback()
-        handle_err_send_error_mail_thread(reddit, traceback.format_exc(), lock, 15)
     except:
         logging.getLogger(settings.LOGGER_NAME).exception("Hit Unexpected exception, output: ")
         dao.rollback()
