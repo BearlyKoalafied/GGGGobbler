@@ -30,6 +30,7 @@ def send_error_mail(reddit, message):
         reddit.redditor(settings.REDDIT_ACC_OWNER).message("Bot Crashed", message)
     except RECOVERABLE_EXCEPTIONS:
         logging.getLogger((settings.LOGGER_NAME).exception("Hit exception while sending error message: "))
+        raise
     except:
         logging.getLogger((settings.LOGGER_NAME).exception("Hit Unexpected exception while sending error message: "))
         raise

@@ -28,10 +28,10 @@ def main():
 def start_main_threads(reddit):
     praw_lock = threading.Lock()
     close_event = threading.Event()
-    thread_main = threading.Timer(10, main_thread, (reddit, close_event, praw_lock))
-    thread_messages = threading.Timer(0, check_msgs_thread, (reddit, close_event, praw_lock))
-    thread_main.start()
-    thread_messages.start()
+    t_scan_reddit = threading.Timer(10, thread_scan_reddit, (reddit, close_event, praw_lock))
+    t_messages = threading.Timer(0, thread_check_msgs, (reddit, close_event, praw_lock))
+    t_scan_reddit.start()
+    t_messages.start()
     try:
         while 1:
             time.sleep(0.1)
@@ -39,7 +39,7 @@ def start_main_threads(reddit):
         close_event.set()
         raise
 
-def main_thread(r, close_event, praw_lock):
+def thread_scan_reddit(r, close_event, praw_lock):
     """
     This thread is responsible for monitoring reddit for forum posts and creating
     corresponding reddit comments
@@ -63,7 +63,7 @@ def main_thread(r, close_event, praw_lock):
             time.sleep(1)
             counter -= 1
 
-def check_msgs_thread(r, close_event, praw_lock):
+def thread_check_msgs(r, close_event, praw_lock):
     """
     This thread is responsible for monitoring the bot's message inbox and performing tasks
     related to that
