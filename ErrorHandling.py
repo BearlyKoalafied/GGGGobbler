@@ -45,7 +45,7 @@ def send_error_mail_thread(reddit, lock, message, retry_count):
         lock.release()
 
 def handle_errors(reddit, lock, dao,
-                  retry_count, retry_limit_event,
+                  retry_count, retry_limit_event, retry_decrement_event,
                   recoverable_err_msg, irrecoverable_err_msg,
                   func, *args):
     try:
@@ -57,6 +57,7 @@ def handle_errors(reddit, lock, dao,
             gobblogger.exception("Ran out of retries while handling " + func.__name__ + ":")
             retry_limit_event.set()
             raise
+        retry_decrement_event.set()
         dao.rollback()
     except:
         gobblogger.exception(irrecoverable_err_msg)

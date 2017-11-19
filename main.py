@@ -62,7 +62,7 @@ def thread_scan_reddit(r, retry_limit_event, close_event, praw_lock):
     :param close_event: threading.Event to signal to this thread that we're closing the program
     :param praw_lock: threading.Lock to share the reddit instance
     """
-    retry_count = 15
+    retry_count = 8
     while not close_event.is_set():
         gobblogger.info("Starting run")
         dao = db.DAO()
@@ -72,10 +72,12 @@ def thread_scan_reddit(r, retry_limit_event, close_event, praw_lock):
                 bot = GGGGobblerBot(r, dao)
                 bot.parse_reddit()
         # managing exceptions
-
-        ErrorHandling.handle_errors(r, praw_lock, dao, retry_count, retry_limit_event,
+        retry_decrement_event = threading.Event()
+        ErrorHandling.handle_errors(r, praw_lock, dao, retry_count, retry_limit_event, retry_decrement_event,
                                     "Hit recoverable exception: ", "Hit unexpected exception: ",
                                     func)
+        if retry_decrement_event.is_set():
+            retry_count -= 1
         gobblogger.info("Finished run")
         counter = secs_to_next_fraction_of_hour(settings.WAIT_TIME_MAIN)
         while not close_event.is_set() and counter > 0:
