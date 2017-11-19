@@ -1,17 +1,10 @@
-import threading
 import time
 import warnings
 import logging
 import re
-import os
-import errno
 
 import db
 import forum_parse as fparse
-import gobOauth
-import ErrorHandling
-import msgcfg
-import timeout
 import settings
 
 POE_URL = "pathofexile.com/forum/view-thread"
@@ -20,52 +13,8 @@ CSS_MAGIC_PREPEND = """#####&#009;\n\n######&#009;\n\n####&#009;\n\n"""
 
 warnings.simplefilter("ignore", ResourceWarning)
 
-# praw api
-global r
-
-def main():
-    praw_lock = threading.Lock()
-    close_event = threading.Event()
-    thread_main = threading.Timer(10, main_thread, (close_event, praw_lock))
-    thread_messages = threading.Timer(0, check_msgs_thread, (close_event, praw_lock))
-    thread_main.start()
-    thread_messages.start()
-    try:
-        while 1:
-            time.sleep(0.1)
-    except KeyboardInterrupt:
-        close_event.set()
-        raise
-
-def main_thread(close_event, praw_lock):
-    while not close_event.is_set():
-        logging.getLogger(settings.LOGGER_NAME).info("Starting run")
-        dao = db.DAO()
-        # run the bot
-        def func():
-            if msgcfg.currently_running_enabled():
-                bot = GGGGobblerBot(dao)
-                bot.parse_reddit()
-        # managing exceptions
-        ErrorHandling.handle_errors(r, func, dao, praw_lock)
-        logging.getLogger(settings.LOGGER_NAME).info("Finished run")
-        counter = settings.WAIT_TIME_MAIN
-        while not close_event.is_set() and counter > 0:
-            time.sleep(1)
-            counter -= 1
-
-def check_msgs_thread(close_event, praw_lock):
-    while not close_event.is_set():
-        with praw_lock:
-            msgcfg.check_messages(r)
-        counter = settings.WAIT_TIME_CHECK_MESSAGES
-        while not close_event.is_set() and counter > 0:
-            time.sleep(1)
-            counter -= 1
-
 class GGGGobblerBot:
-    global r
-    def __init__(self, dao=None):
+    def __init__(self, r, dao=None):
         self.r = r
         if dao is None:
             self.dao = db.DAO()
@@ -310,20 +259,3 @@ class GGGGobblerBot:
             submission = self.r.submission(thread[0])
             self.parse_submission(submission)
         print("Finished force update all")
-
-
-if __name__ == "__main__":
-    global r
-    # oauth stuff
-    r = gobOauth.get_refreshable_instance()
-    # setup logging
-    logger = logging.getLogger(settings.LOGGER_NAME)
-    fh = logging.FileHandler(settings.LOGFILE_NAME)
-    fmt = logging.Formatter('[%(levelname)s] [%(asctime)s]: %(message)s')
-    fh.setFormatter(fmt)
-    logger.addHandler(fh)
-    logger.setLevel(logging.INFO)
-    if not settings.LOGGING_ON:
-        logging.disable(logging.CRITICAL)
-    # start bot
-    main()
