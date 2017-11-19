@@ -41,16 +41,14 @@ def send_error_mail_thread(reddit, lock, message, retry_count):
     except:
         gobblogger.exception("Hit unexpected exception while trying to send error message: ")
         raise
-    finally:
-        lock.release()
 
 def handle_errors(reddit, lock, dao,
                   retry_count, retry_limit_event, retry_decrement_event,
                   recoverable_err_msg, irrecoverable_err_msg,
                   func, *args):
     try:
-        lock.acquire()
-        func(args)
+        with lock:
+            func(args)
     except RECOVERABLE_EXCEPTIONS:
         gobblogger.exception(recoverable_err_msg)
         if retry_count == 0:
@@ -63,5 +61,3 @@ def handle_errors(reddit, lock, dao,
         gobblogger.exception(irrecoverable_err_msg)
         dao.rollback()
         raise
-    finally:
-        lock.release()
