@@ -45,10 +45,10 @@ def send_error_mail_thread(reddit, lock, message, retry_count):
 def handle_errors(reddit, lock, dao,
                   retry_count, retry_limit_event, retry_decrement_event,
                   recoverable_err_msg, irrecoverable_err_msg,
-                  func, *args):
+                  func):
     try:
         with lock:
-            func(args)
+            func()
     except RECOVERABLE_EXCEPTIONS:
         gobblogger.exception(recoverable_err_msg)
         if retry_count == 0:
