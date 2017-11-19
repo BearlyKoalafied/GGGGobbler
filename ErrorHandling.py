@@ -1,5 +1,6 @@
 import traceback
 import threading
+import functools
 
 import forum_parse as fparse
 import gobblogger
@@ -18,44 +19,48 @@ RECOVERABLE_EXCEPTIONS = (APIException,
                           ServerError,
                           fparse.PathofexileDownException)
 
-def send_error_mail(reddit, message):
+
+def send_error_mail(reddit, lock, message):
     """
     Attempt to send an error message to my main reddit account
     """
-    try:
-        reddit.redditor(settings.REDDIT_ACC_OWNER).message("Bot Crashed", message)
-    except RECOVERABLE_EXCEPTIONS:
-        gobblogger.exception("Hit exception while sending error message: ")
-        raise
-    except:
-        gobblogger.exception("Hit Unexpected exception while sending error message: ")
-        raise
+    t_mail = threading.Thread(group=None, target=send_error_mail_thread,
+                              args=(reddit, lock, message, 5))
+    t_mail.start()
 
-def handle_err_send_error_mail_thread(reddit, message, lock, retry_count):
+
+def send_error_mail_thread(reddit, lock, message, retry_count):
     try:
         with lock:
-            send_error_mail(reddit, message)
+            reddit.redditor(settings.REDDIT_ACC_OWNER).message("Max retries reached", message)
     except RECOVERABLE_EXCEPTIONS:
-        if retry_count == 0:
-            gobblogger.exception("Ran out of retries while sending error message: ")
-            raise
-        # create threads trying to send mail until succession, or limit is reached
-        thread = threading.Timer(15, handle_err_send_error_mail_thread, (reddit, message, retry_count - 1,))
-        thread.start()
+        gobblogger.exception("Hit recoverable exception while trying to send error message: ")
+        t_mail = threading.Thread(group=None, target=send_error_mail_thread,
+                                  args=(reddit, lock, message, retry_count - 1))
+        t_mail.start()
+    except:
+        gobblogger.exception("Hit unexpected exception while trying to send error message: ")
+        raise
     finally:
         lock.release()
 
-def handle_errors(reddit, func, dao, lock):
+def handle_errors(reddit, lock, dao,
+                  retry_count, retry_limit_event,
+                  recoverable_err_msg, irrecoverable_err_msg,
+                  func, *args):
     try:
         lock.acquire()
-        func()
+        func(args)
     except RECOVERABLE_EXCEPTIONS:
-        gobblogger.exception("Hit Recoverable exception, output: ")
+        gobblogger.exception(recoverable_err_msg)
+        if retry_count == 0:
+            gobblogger.exception("Ran out of retries while handling " + func.__name__ + ":")
+            retry_limit_event.set()
+            raise
         dao.rollback()
     except:
-        gobblogger.exception("Hit Unexpected exception, output: ")
+        gobblogger.exception(irrecoverable_err_msg)
         dao.rollback()
-        handle_err_send_error_mail_thread(reddit, traceback.format_exc(), lock, 15)
         raise
     finally:
         lock.release()
