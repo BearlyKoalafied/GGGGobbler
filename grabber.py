@@ -52,7 +52,8 @@ def main_thread(close_event, praw_lock):
         logging.getLogger(settings.LOGGER_NAME).info("Finished run")
         counter = settings.WAIT_TIME_MAIN
         while not close_event.is_set() and counter > 0:
-            time.sleep(counter - 1)
+            time.sleep(1)
+            counter -= 1
 
 def check_msgs_thread(close_event, praw_lock):
     while not close_event.is_set():
@@ -61,7 +62,8 @@ def check_msgs_thread(close_event, praw_lock):
 
         counter = settings.WAIT_TIME_CHECK_MESSAGES
         while not close_event.is_set() and counter > 0:
-            time.sleep(counter - 1)
+            time.sleep(1)
+            counter -= 1
 
 
 class GGGGobblerBot:
