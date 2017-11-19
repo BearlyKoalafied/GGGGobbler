@@ -45,10 +45,9 @@ def secs_to_next_fraction_of_hour(n):
     :return: datetime
     """
     now = datetime.datetime.now()
-    prevHour = now.replace(microsecond=0, second=0, minute=0)
     # number of seconds into the current hour
     curSecs = now.second + now.minute * 60
-    return (int(curSecs / n)) + 1*n - curSecs
+    return (int(curSecs / n)+ 1)*n - curSecs
 
 def thread_scan_reddit(r, close_event, praw_lock):
     """
