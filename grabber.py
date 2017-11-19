@@ -35,7 +35,7 @@ def main_thread():
     logging.getLogger(settings.LOGGER_NAME).info("Starting run")
     dao = db.DAO()
 
-    @timeout.timeout(TIMEOUT_SECONDS, os.strerror(errno.ETIMEDOUT))
+    # @timeout.timeout(TIMEOUT_SECONDS, os.strerror(errno.ETIMEDOUT))
     def repeated_func():
         if msgcfg.currently_running_enabled():
             bot = GGGGobblerBot(dao)
