@@ -1,4 +1,5 @@
 import configparser
+import logging
 import settings
 
 CFG_FILE = "remote_config.ini"
@@ -23,21 +24,25 @@ def process(r, body):
         set_currently_running('on')
         send_confirmation_message(r, CFG_RESPONSE_MAIL_HEADER,
                                     'Turning Bot on')
+        logging.getLogger(settings.LOGGER_NAME).info("Received turn on config message")
 
     elif body.startswith('turn off'):
         set_currently_running('off')
         send_confirmation_message(r, CFG_RESPONSE_MAIL_HEADER,
                                     'Turning Bot off')
+        logging.getLogger(settings.LOGGER_NAME).info("Received turn off config message")
 
     elif body.startswith('errmsg on'):
         set_error_messaging('on')
         send_confirmation_message(r, CFG_RESPONSE_MAIL_HEADER,
                                     'Turning Error Messaging on')
+        logging.getLogger(settings.LOGGER_NAME).info("Received errmsg on config message")
 
     elif body.startswith('errmsg off'):
         set_error_messaging('off')
         send_confirmation_message(r, CFG_RESPONSE_MAIL_HEADER,
                                     'Turning Error Messaging off')
+        logging.getLogger(settings.LOGGER_NAME).info("Received errmsg off config message")
 
 def send_confirmation_message(reddit, header, body):
     reddit.redditor(settings.REDDIT_ACC_OWNER).message(header, body)
