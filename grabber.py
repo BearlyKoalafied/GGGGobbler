@@ -23,12 +23,13 @@ warnings.simplefilter("ignore", ResourceWarning)
 # praw and oauth api
 global r
 
-praw_lock = threading.Lock()
+# praw_lock = threading.Lock()
 
 def main():
+    praw_lock = threading.Lock()
     close_event = threading.Event()
-    thread_main = threading.Timer(10, main_thread, (close_event,))
-    thread_messages = threading.Timer(0, check_msgs_thread, (close_event,))
+    thread_main = threading.Timer(10, main_thread, (close_event, praw_lock))
+    thread_messages = threading.Timer(0, check_msgs_thread, (close_event, praw_lock))
     thread_main.start()
     thread_messages.start()
     try:
@@ -38,7 +39,7 @@ def main():
         close_event.set()
         raise
 
-def main_thread(close_event):
+def main_thread(close_event, praw_lock):
     while not close_event.is_set():
         logging.getLogger(settings.LOGGER_NAME).info("Starting run")
         dao = db.DAO()
@@ -49,13 +50,18 @@ def main_thread(close_event):
         # run the bot
         ErrorHandling.handle_errors(r, repeated_func, dao, praw_lock)
         logging.getLogger(settings.LOGGER_NAME).info("Finished run")
-        time.sleep(settings.WAIT_TIME_MAIN)
+        counter = settings.WAIT_TIME_MAIN
+        while not close_event.is_set() or counter <= 0:
+            time.sleep(counter - 1)
 
-def check_msgs_thread(close_event):
+def check_msgs_thread(close_event, praw_lock):
     while not close_event.is_set():
         with praw_lock:
             msgcfg.check_messages(r)
-        time.sleep(settings.WAIT_TIME_CHECK_MESSAGES)
+
+        counter = settings.WAIT_TIME_CHECK_MESSAGES
+        while not close_event.is_set() or counter <= 0:
+            time.sleep(counter - 1)
 
 
 class GGGGobblerBot:
