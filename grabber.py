@@ -28,33 +28,34 @@ praw_lock = threading.Lock()
 def main():
     thread_main = threading.Timer(10, main_thread)
     thread_messages = threading.Timer(0, check_msgs_thread)
+    close_event = threading.Event()
     thread_main.start()
     thread_messages.start()
+    try:
+        while 1:
+            time.sleep(0.1)
+    except KeyboardInterrupt:
+        close_event.set()
+        raise
 
-def main_thread():
-    logging.getLogger(settings.LOGGER_NAME).info("Starting run")
-    dao = db.DAO()
+def main_thread(close_event):
+    while not close_event.is_set():
+        logging.getLogger(settings.LOGGER_NAME).info("Starting run")
+        dao = db.DAO()
+        def repeated_func():
+            if msgcfg.currently_running_enabled():
+                bot = GGGGobblerBot(dao)
+                bot.parse_reddit()
+        # run the bot
+        ErrorHandling.handle_errors(r, repeated_func, dao, praw_lock)
+        logging.getLogger(settings.LOGGER_NAME).info("Finished run")
+        time.sleep(settings.WAIT_TIME_MAIN)
 
-    # @timeout.timeout(TIMEOUT_SECONDS, os.strerror(errno.ETIMEDOUT))
-    def repeated_func():
-        if msgcfg.currently_running_enabled():
-            bot = GGGGobblerBot(dao)
-            bot.parse_reddit()
-
-    # run the bot
-    ErrorHandling.handle_errors(r, repeated_func, dao, praw_lock)
-
-    # do it again later
-    thread = threading.Timer(settings.WAIT_TIME_MAIN, main_thread)
-    thread.start()
-    # next_sched.enter(settings.WAIT_TIME, 1, task, (next_sched,))
-    logging.getLogger(settings.LOGGER_NAME).info("Finished run")
-
-def check_msgs_thread():
-    with praw_lock:
-        msgcfg.check_messages(r)
-    thread = threading.Timer(settings.WAIT_TIME_CHECK_MESSAGES, check_msgs_thread)
-    thread.start()
+def check_msgs_thread(close_event):
+    while not close_event.is_set():
+        with praw_lock:
+            msgcfg.check_messages(r)
+        time.sleep(settings.WAIT_TIME_CHECK_MESSAGES)
 
 
 class GGGGobblerBot:
