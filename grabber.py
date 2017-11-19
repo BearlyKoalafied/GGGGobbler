@@ -26,9 +26,9 @@ global r
 praw_lock = threading.Lock()
 
 def main():
-    thread_main = threading.Timer(10, main_thread)
-    thread_messages = threading.Timer(0, check_msgs_thread)
     close_event = threading.Event()
+    thread_main = threading.Timer(10, main_thread, (close_event,))
+    thread_messages = threading.Timer(0, check_msgs_thread, (close_event,))
     thread_main.start()
     thread_messages.start()
     try:
