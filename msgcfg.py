@@ -50,29 +50,23 @@ def send_confirmation_message(reddit, header, body):
 
 def set_currently_running(new_setting):
     cfg = read_ini()
-    cfg.set('a', 'currently_running', new_setting)
+    cfg.set('a', 'currently_running', str(new_setting))
     with open(CFG_FILE, 'w') as cfgfile:
         cfg.write(cfgfile)
 
 def set_error_messaging(new_setting):
     cfg = read_ini()
-    cfg.set('a', 'error_reddit_messaging', new_setting)
+    cfg.set('a', 'error_reddit_messaging', str(new_setting))
     with open(CFG_FILE, 'w') as cfgfile:
         cfg.write(cfgfile)
 
 def currently_running_enabled():
     cfg = read_ini()
-    if cfg['a']['currently_running'] == 'on':
-        return True
-    else:
-        return False
+    return cfg.getboolean('a', 'currently_running')
 
 def error_messaging_enabled():
     cfg = read_ini()
-    if cfg['a']['error_reddit_messaging'] == 'on':
-        return True
-    else:
-        return False
+    return cfg.getboolean('a', 'error_messaging_enabled')
 
 def check_inbox_task():
     pass

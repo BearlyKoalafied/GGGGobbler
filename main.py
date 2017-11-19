@@ -15,19 +15,19 @@ def main():
     reddit = gobOauth.get_refreshable_instance()
     # setup logging
     gobblogger.prepare()
-    start_main_threads(reddit)
+    start_threads(reddit)
 
-def start_main_threads(reddit):
+def start_threads(reddit):
     praw_lock = threading.Lock()
     close_event = threading.Event()
     retry_limit_event = threading.Event()
-    t_scan_reddit = threading.Thread(group=None, target=thread_scan_reddit,
+    t_main = threading.Thread(group=None, target=thread_scan_reddit,
                                      args=(reddit, retry_limit_event, close_event, praw_lock))
     t_messages = threading.Thread(group=None, target=thread_check_msgs,
                                   args=(reddit, close_event, praw_lock))
     t_close = threading.Thread(group=None, target=thread_wait_for_close,
                                args=(close_event,))
-    t_scan_reddit.start()
+    t_main.start()
     t_messages.start()
     t_close.start()
     manage_threads(reddit, retry_limit_event, close_event, praw_lock)
@@ -35,7 +35,7 @@ def start_main_threads(reddit):
 def manage_threads(r, retry_limit_event, close_event, praw_lock):
     while not close_event.is_set():
         if retry_limit_event.is_set():
-            msgcfg.set_currently_running('off')
+            msgcfg.set_currently_running(False)
             ErrorHandling.send_error_mail(r, praw_lock, "Hit maximum retries with no solution, shutting down bot")
             retry_limit_event.clear()
         counter = secs_to_next_fraction_of_hour(settings.WAIT_TIME_MAIN)
@@ -55,8 +55,8 @@ def secs_to_next_fraction_of_hour(n):
 
 def thread_scan_reddit(r, retry_limit_event, close_event, praw_lock):
     """
-    This thread is responsible for monitoring reddit for forum posts and creating
-    corresponding reddit comments
+    This thread is responsible for monitoring reddit for forum posts, scraping pathofexile.com
+    for staff posts, and creating corresponding reddit comments
     :param r: reddit praw intsance
     :param close_event: threading.Event to signal to this thread that we're closing the program
     :param praw_lock: threading.Lock to share the reddit instance
@@ -70,11 +70,11 @@ def thread_scan_reddit(r, retry_limit_event, close_event, praw_lock):
             if msgcfg.currently_running_enabled():
                 bot = GGGGobblerBot(r, dao)
                 bot.parse_reddit()
-        # managing exceptions
         retry_decrement_event = threading.Event()
         ErrorHandling.handle_errors(r, praw_lock, dao, retry_count, retry_limit_event, retry_decrement_event,
-                                    "Hit recoverable exception: ", "Hit unexpected exception: ",
-                                    func)
+                                    "Hit recoverable exception with " + str(retry_count) + " retries remaining: ",
+                                    "Hit unexpected exception, stopping main thread: ", func)
+        # if func threw a RECOVERABLE_EXCEPTIONS, decrement the retry counter by 1
         if retry_decrement_event.is_set():
             retry_count -= 1
         gobblogger.info("Finished run")

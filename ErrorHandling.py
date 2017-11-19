@@ -2,6 +2,7 @@ import threading
 
 import forum_parse as fparse
 import gobblogger
+import grabber
 import msgcfg
 import settings
 
@@ -27,7 +28,6 @@ def send_error_mail(reddit, lock, message):
                               args=(reddit, lock, message, 5))
     t_mail.start()
 
-
 def send_error_mail_thread(reddit, lock, message, retry_count):
     try:
         with lock:
@@ -50,14 +50,15 @@ def handle_errors(reddit, lock, dao,
             func()
     except RECOVERABLE_EXCEPTIONS:
         gobblogger.exception(recoverable_err_msg)
+        # stop the main thread
         if retry_count <= 0:
             gobblogger.exception("Ran out of retries while handling " + func.__name__ + ":")
             retry_limit_event.set()
-            msgcfg.set_currently_running('off')
-            raise
+            msgcfg.set_currently_running(False)
         retry_decrement_event.set()
         dao.rollback()
     except:
         gobblogger.exception(irrecoverable_err_msg)
+        # stop the main thread from looping again
+        msgcfg.set_currently_running(False)
         dao.rollback()
-        raise
