@@ -12,7 +12,7 @@ def prepare():
         logging.disable(logging.CRITICAL)
 
 def info(message):
-    logging.getLogger(settings.LOGGER_NAME).info("Hit Recoverable exception, output: ")
+    logging.getLogger(settings.LOGGER_NAME).info(message)
 
 def exception(message):
-    logging.getLogger(settings.LOGGER_NAME).exception("Hit Recoverable exception, output: ")
+    logging.getLogger(settings.LOGGER_NAME).exception(message)
