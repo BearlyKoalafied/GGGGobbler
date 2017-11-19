@@ -1,6 +1,6 @@
 import threading
-import functools
 import time
+import datetime
 import logging
 
 
@@ -39,6 +39,17 @@ def start_main_threads(reddit):
         close_event.set()
         raise
 
+def secs_to_next_fraction_of_hour(n):
+    """
+    :param n: number of seconds out of an hour to size a fraction
+    :return: datetime
+    """
+    now = datetime.datetime.now()
+    prevHour = now.replace(microsecond=0, second=0, minute=0)
+    # number of seconds into the current hour
+    curSecs = now.second + now.minute * 60
+    return (int(curSecs / n)) + 1*n - curSecs
+
 def thread_scan_reddit(r, close_event, praw_lock):
     """
     This thread is responsible for monitoring reddit for forum posts and creating
@@ -58,7 +69,7 @@ def thread_scan_reddit(r, close_event, praw_lock):
         # managing exceptions
         ErrorHandling.handle_errors(r, func, dao, praw_lock)
         logging.getLogger(settings.LOGGER_NAME).info("Finished run")
-        counter = settings.WAIT_TIME_MAIN
+        counter = secs_to_next_fraction_of_hour(settings.WAIT_TIME_MAIN)
         while not close_event.is_set() and counter > 0:
             time.sleep(1)
             counter -= 1
@@ -74,7 +85,7 @@ def thread_check_msgs(r, close_event, praw_lock):
     while not close_event.is_set():
         with praw_lock:
             msgcfg.check_messages(r)
-        counter = settings.WAIT_TIME_CHECK_MESSAGES
+        counter = secs_to_next_fraction_of_hour(settings.WAIT_TIME_CHECK_MESSAGES)
         while not close_event.is_set() and counter > 0:
             time.sleep(1)
             counter -= 1

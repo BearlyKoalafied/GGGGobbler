@@ -1,11 +1,9 @@
 import logging
 import traceback
-import time
 import threading
 
 import forum_parse as fparse
 import timeout
-import msgcfg
 import settings
 
 from praw.exceptions import APIException, ClientException
