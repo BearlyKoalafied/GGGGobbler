@@ -51,7 +51,7 @@ def main_thread(close_event, praw_lock):
         ErrorHandling.handle_errors(r, repeated_func, dao, praw_lock)
         logging.getLogger(settings.LOGGER_NAME).info("Finished run")
         counter = settings.WAIT_TIME_MAIN
-        while not close_event.is_set() or counter <= 0:
+        while not close_event.is_set() and counter > 0:
             time.sleep(counter - 1)
 
 def check_msgs_thread(close_event, praw_lock):
@@ -60,7 +60,7 @@ def check_msgs_thread(close_event, praw_lock):
             msgcfg.check_messages(r)
 
         counter = settings.WAIT_TIME_CHECK_MESSAGES
-        while not close_event.is_set() or counter <= 0:
+        while not close_event.is_set() and counter > 0:
             time.sleep(counter - 1)
 
 
