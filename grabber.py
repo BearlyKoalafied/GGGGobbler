@@ -37,36 +37,31 @@ def main():
         close_event.set()
         raise
 
-# Decorator to have the 2 main threads loop forever with their specified wait time between each loop
-# and manages close_events to end the threads
-def loops_and_closes_on_kb_int(func):
-    def decorator(wait_time, *args, **kw):
-        while not kw['close_event'].is_set():
-            func(*args, **kw)
-            counter = wait_time
-            while not kw['close_event'].is_set() and counter > 0:
-                time.sleep(1)
-                counter -= 1
-    return decorator
-
-@loops_and_closes_on_kb_int(settings.WAIT_TIME_MAIN)
 def main_thread(close_event, praw_lock):
-    logging.getLogger(settings.LOGGER_NAME).info("Starting run")
-    dao = db.DAO()
-    # run the bot
-    def func():
-        if msgcfg.currently_running_enabled():
-            bot = GGGGobblerBot(dao)
-            bot.parse_reddit()
-    # managing exceptions
-    ErrorHandling.handle_errors(r, func, dao, praw_lock)
-    logging.getLogger(settings.LOGGER_NAME).info("Finished run")
+    while not close_event.is_set():
+        logging.getLogger(settings.LOGGER_NAME).info("Starting run")
+        dao = db.DAO()
+        # run the bot
+        def func():
+            if msgcfg.currently_running_enabled():
+                bot = GGGGobblerBot(dao)
+                bot.parse_reddit()
+        # managing exceptions
+        ErrorHandling.handle_errors(r, func, dao, praw_lock)
+        logging.getLogger(settings.LOGGER_NAME).info("Finished run")
+        counter = settings.WAIT_TIME_MAIN
+        while not close_event.is_set() and counter > 0:
+            time.sleep(1)
+            counter -= 1
 
-@loops_and_closes_on_kb_int(settings.WAIT_TIME_CHECK_MESSAGES)
 def check_msgs_thread(close_event, praw_lock):
-    with praw_lock:
-        msgcfg.check_messages(r)
-
+    while not close_event.is_set():
+        with praw_lock:
+            msgcfg.check_messages(r)
+        counter = settings.WAIT_TIME_CHECK_MESSAGES
+        while not close_event.is_set() and counter > 0:
+            time.sleep(1)
+            counter -= 1
 
 class GGGGobblerBot:
     global r
