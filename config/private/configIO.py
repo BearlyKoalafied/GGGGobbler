@@ -2,6 +2,8 @@ import configparser
 
 from util import filepather
 
+global cfg
+
 def set_value(section, item, value):
     global cfg
     cfg.set(section, item, str(value))
