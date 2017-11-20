@@ -1,10 +1,11 @@
-import requests
-import bs4
 import re
 import datetime
+import requests
+import bs4
 
-from data_structs import StaffPost
-import settings
+from db.data_structs import StaffPost
+from config import settings
+
 
 def get_page_soup(page_url):
     """
@@ -20,6 +21,7 @@ def get_page_soup(page_url):
 def url_of_id(thread_id):
     return "https://www.pathofexile.com/forum/view-thread/" + thread_id
 
+
 def filter_staff(thread_url):
     """
     Dirty and quick way to trim some stuff off the end of a url
@@ -31,6 +33,7 @@ def filter_staff(thread_url):
     else:
         return thread_url + "/filter-account-type/staff"
     return thread_url[:index] + "/filter-account-type/staff"
+
 
 def get_page_count(thread_url):
     """
@@ -50,9 +53,11 @@ def get_page_count(thread_url):
         target_button_contents = page_buttons[-2].contents[0]
     return int(target_button_contents)
 
+
 def forum_is_down(page):
     down_header = page.find("h1", class_="topBar")
     return down_header is not None and down_header.get_text() == "Down For Maintenance"
+
 
 def get_staff_forum_posts(thread_id, search_start=1):
     """
@@ -90,11 +95,13 @@ def get_staff_forum_posts(thread_id, search_start=1):
                 posts.append(StaffPost(post_id, thread_id, author, text, post_date))
     return posts, page_count
 
+
 def get_post_from_row(post_row):
     """
     extracts the post body from a post row
     """
     return post_row.find("td").find("div", class_="content")
+
 
 def get_post_author_from_row(post_row):
     """
@@ -120,6 +127,7 @@ def get_post_author_from_row(post_row):
     else:
         return tag_contents[1]
 
+
 def get_post_id_from_row(post_row):
     """
     returns the post id of the post
@@ -128,14 +136,15 @@ def get_post_id_from_row(post_row):
         info_row = post_row.parent.find("tr", class_="newsPostInfo")
         # they moved it into a slightly different spot
         post_id = info_row.find("td") \
-            .find("div", class_="posted-by")\
-            .find("a", class_="posted-by-link").get("href")[1:]
+                      .find("div", class_="posted-by") \
+                      .find("a", class_="posted-by-link").get("href")[1:]
     else:
         post_id = post_row.find("td", class_="post_info") \
             .find("div") \
             .find("div", class_="post_anchor").get("id")
 
     return post_id
+
 
 def get_post_date_from_row(post_row):
     """
@@ -158,6 +167,7 @@ def get_post_date_from_row(post_row):
     str_date = date.strftime(format)
     return str_date
 
+
 def convert_html_to_markdown(html):
     """
     returns a string containing markdown to represent the HTML markup of a given post body's HTML contents
@@ -170,9 +180,9 @@ def convert_html_to_markdown(html):
     for part in parts:
         if isinstance(part, bs4.element.NavigableString):
             if part.parent.name == "div" and (part.parent.has_attr("class") and \
-                    ("content" not in part.parent["class"]
-                    and "box-content" not in part.parent["class"]) \
-                    or not part.parent.has_attr("class")):
+                                                      ("content" not in part.parent["class"]
+                                                       and "box-content" not in part.parent["class"]) \
+                                                      or not part.parent.has_attr("class")):
                 markdown += part.strip() + "\n\n"
             else:
                 markdown += part.strip()
@@ -254,6 +264,7 @@ def convert_html_to_markdown(html):
                     markdown += "\n\n" + "[Youtube Video]" + "(" + link + ")" + "\n\n"
     return markdown
 
+
 def parse_quote(block_quote):
     """
     returns markdown for a blockquote element
@@ -265,11 +276,12 @@ def parse_quote(block_quote):
     markdown = markdown.replace("\n", "\n> ")
     return markdown + "\n\n> "
 
+
 def parse_table(parts, start_item_index):
     total_cell_count = 0
     i = start_item_index
     while "sbox-container" in parts[i]["class"] or \
-        "clear" in parts[i]["class"]:
+                    "clear" in parts[i]["class"]:
         total_cell_count += 1
         i += 1
     width = 3
@@ -284,6 +296,7 @@ def check_for_duplicate(posts, post_id):
         if post_id == post.post_id:
             return True
     return False
+
 
 class PathofexileDownException(Exception):
     """

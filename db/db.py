@@ -1,19 +1,21 @@
 import os.path
 import sqlite3
-from data_structs import StaffPost
+
+from util import filepather
+from db.data_structs import StaffPost
 
 DB_FILE_NAME = "GGGGobbler.sqlite"
 
 class DAO:
     def __init__(self):
-        if os.path.isfile(DB_FILE_NAME):
+        if os.path.isfile(filepather.relative_file_path(__file__, DB_FILE_NAME)):
             self.open()
         else:
             self.open()
             self.create_tables()
 
     def open(self):
-        self.db = sqlite3.connect(DB_FILE_NAME)
+        self.db = sqlite3.connect(filepather.relative_file_path(__file__, DB_FILE_NAME))
 
     def commit(self):
         self.db.commit()

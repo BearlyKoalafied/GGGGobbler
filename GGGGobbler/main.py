@@ -2,26 +2,26 @@ import threading
 import time
 import datetime
 
-from grabber import GGGGobblerBot
-import db
-import ErrorHandling
-import msgcfg
-import gobOauth
-import gobblogger
-import settings
+from GGGGobbler.grabber import GGGGobblerBot
+from db import db
+from config import config, messages, settings
+from GGGGobbler import goboauth, errorhandling
+from log import gobblogger
+
 
 def main():
     # connect using oauth to reddit
-    reddit = gobOauth.get_refreshable_instance()
+    reddit = goboauth.get_refreshable_instance()
     # setup logging
     gobblogger.prepare()
     start_threads(reddit)
+
 
 def start_threads(reddit):
     praw_lock = threading.Lock()
     close_event = threading.Event()
     t_main = threading.Thread(group=None, target=thread_scan_reddit,
-                                     args=(reddit, close_event, praw_lock))
+                              args=(reddit, close_event, praw_lock))
     t_messages = threading.Thread(group=None, target=thread_check_msgs,
                                   args=(reddit, close_event, praw_lock))
     t_close = threading.Thread(group=None, target=thread_wait_for_close,
@@ -31,16 +31,18 @@ def start_threads(reddit):
     t_close.start()
     # manage_threads(reddit, retry_limit_event, close_event, praw_lock)
 
+
 def manage_threads(r, retry_limit_event, close_event, praw_lock):
     while not close_event.is_set():
         if retry_limit_event.is_set():
-            msgcfg.set_currently_running(False)
-            ErrorHandling.send_error_mail(r, praw_lock, "Hit maximum retries with no solution, shutting down bot")
+            config.set_currently_running(False)
+            errorhandling.send_error_mail(r, praw_lock, "Hit maximum retries with no solution, shutting down bot")
             retry_limit_event.clear()
-        counter = secs_to_next_fraction_of_hour(settings.WAIT_TIME_MANAGER)
+        counter = secs_to_next_fraction_of_hour(config.wait_time_manager())
         while not close_event.is_set() and counter > 0:
             time.sleep(1)
             counter -= 1
+
 
 def secs_to_next_fraction_of_hour(n):
     """
@@ -49,8 +51,9 @@ def secs_to_next_fraction_of_hour(n):
     """
     now = datetime.datetime.now()
     # number of seconds into the current hour
-    curSecs = now.second + now.minute * 60
-    return (int(curSecs / n)+ 1)*n - curSecs
+    cur_secs = now.second + now.minute * 60
+    return (int(cur_secs / n) + 1) * n - cur_secs
+
 
 def thread_scan_reddit(r, close_event, praw_lock):
     """
@@ -65,7 +68,7 @@ def thread_scan_reddit(r, close_event, praw_lock):
     while not close_event.is_set():
         gobblogger.info("Starting run")
         dao = db.DAO()
-        # run the bot
+
         def func():
             bot = GGGGobblerBot(r, dao)
             bot.parse_reddit()
@@ -74,18 +77,19 @@ def thread_scan_reddit(r, close_event, praw_lock):
             retry_count = 8
         else:
             retry_decrement_event.clear()
-        if msgcfg.currently_running_enabled():
-            ErrorHandling.handle_errors(r, praw_lock, dao, retry_count, retry_decrement_event,
-                                    "Hit recoverable exception with " + str(retry_count) + " retries remaining: ",
-                                    "Hit unexpected exception, stopping main thread: ", func)
+        if config.currently_running_enabled():
+            errorhandling.handle_errors(r, praw_lock, dao, retry_count, retry_decrement_event,
+                                        "Hit recoverable exception with " + str(retry_count) + " retries remaining: ",
+                                        "Hit unexpected exception, stopping main thread: ", func)
         # if func threw a RECOVERABLE_EXCEPTIONS, decrement the retry counter by 1
         if retry_decrement_event.is_set():
             retry_count -= 1
         gobblogger.info("Finished run")
-        counter = secs_to_next_fraction_of_hour(settings.WAIT_TIME_MAIN)
+        counter = secs_to_next_fraction_of_hour(config.wait_time_main())
         while not close_event.is_set() and counter > 0:
             time.sleep(1)
             counter -= 1
+
 
 def thread_check_msgs(r, close_event, praw_lock):
     """
@@ -97,11 +101,12 @@ def thread_check_msgs(r, close_event, praw_lock):
     """
     while not close_event.is_set():
         with praw_lock:
-            msgcfg.check_messages(r)
-        counter = secs_to_next_fraction_of_hour(settings.WAIT_TIME_CHECK_MESSAGES)
+            messages.check_messages(r)
+        counter = secs_to_next_fraction_of_hour(config.wait_time_check_messages())
         while not close_event.is_set() and counter > 0:
             time.sleep(1)
             counter -= 1
+
 
 def thread_wait_for_close(close_event):
     s = input("Type Q to end: ")

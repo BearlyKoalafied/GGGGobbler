@@ -1,11 +1,13 @@
 import praw
 import configparser
 
-SAVEFILE = "oauth.ini"
+from util import filepather
+
 def read_ini():
     cfg = configparser.ConfigParser()
-    cfg.read(SAVEFILE)
+    cfg.read(filepather.relative_file_path(__file__, 'oauth.ini'))
     return cfg
+
 
 def get_refreshable_instance():
     cfg = read_ini()

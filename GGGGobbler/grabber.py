@@ -3,9 +3,9 @@ import warnings
 import logging
 import re
 
-import db
-import forum_parse as fparse
-import settings
+from db import db
+from GGGGobbler import forum_parse as fparse
+from config import settings
 
 POE_URL = "pathofexile.com/forum/view-thread"
 TIMEOUT_SECONDS = 300
