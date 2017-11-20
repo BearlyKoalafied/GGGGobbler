@@ -42,7 +42,7 @@ def send_error_mail_thread(reddit, lock, message, retry_count):
         raise
 
 def handle_errors(reddit, lock, dao,
-                  retry_count, retry_limit_event, retry_decrement_event,
+                  retry_count, retry_decrement_event,
                   recoverable_err_msg, irrecoverable_err_msg,
                   func):
     try:

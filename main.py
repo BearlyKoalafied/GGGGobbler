@@ -66,11 +66,12 @@ def thread_scan_reddit(r, close_event, praw_lock):
         dao = db.DAO()
         # run the bot
         def func():
-            if msgcfg.currently_running_enabled():
-                bot = GGGGobblerBot(r, dao)
-                bot.parse_reddit()
+            bot = GGGGobblerBot(r, dao)
+            bot.parse_reddit()
         retry_decrement_event = threading.Event()
-        ErrorHandling.handle_errors(r, praw_lock, dao, retry_count, retry_decrement_event,
+
+        if msgcfg.currently_running_enabled():
+            ErrorHandling.handle_errors(r, praw_lock, dao, retry_count, retry_decrement_event,
                                     "Hit recoverable exception with " + str(retry_count) + " retries remaining: ",
                                     "Hit unexpected exception, stopping main thread: ", func)
         # if func threw a RECOVERABLE_EXCEPTIONS, decrement the retry counter by 1
