@@ -2,8 +2,6 @@ import configparser
 
 from util import filepather
 
-global cfg
-
 def set_value(section, item, value):
     global cfg
     cfg.set(section, item, str(value))
@@ -11,11 +9,11 @@ def set_value(section, item, value):
 
 def get_boolean(section, item):
     global cfg
-    cfg.getboolean(section, item)
+    return cfg.getboolean(section, item)
 
 def get_int(section, item):
     global cfg
-    cfg.getint(section, item)
+    return cfg.getint(section, item)
 
 def _read_ini():
     global cfg
