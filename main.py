@@ -61,6 +61,7 @@ def thread_scan_reddit(r, close_event, praw_lock):
     :param praw_lock: threading.Lock to share the reddit instance
     """
     retry_count = 8
+    retry_decrement_event = threading.Event()
     while not close_event.is_set():
         gobblogger.info("Starting run")
         dao = db.DAO()
@@ -68,8 +69,11 @@ def thread_scan_reddit(r, close_event, praw_lock):
         def func():
             bot = GGGGobblerBot(r, dao)
             bot.parse_reddit()
-        retry_decrement_event = threading.Event()
-
+        # if we didn't trigger a retry last time, reset the count, otherwise clear the event
+        if not retry_decrement_event.is_set():
+            retry_count = 8
+        else:
+            retry_decrement_event.clear()
         if msgcfg.currently_running_enabled():
             ErrorHandling.handle_errors(r, praw_lock, dao, retry_count, retry_decrement_event,
                                     "Hit recoverable exception with " + str(retry_count) + " retries remaining: ",
