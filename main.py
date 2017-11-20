@@ -20,9 +20,8 @@ def main():
 def start_threads(reddit):
     praw_lock = threading.Lock()
     close_event = threading.Event()
-    retry_limit_event = threading.Event()
     t_main = threading.Thread(group=None, target=thread_scan_reddit,
-                                     args=(reddit, retry_limit_event, close_event, praw_lock))
+                                     args=(reddit, close_event, praw_lock))
     t_messages = threading.Thread(group=None, target=thread_check_msgs,
                                   args=(reddit, close_event, praw_lock))
     t_close = threading.Thread(group=None, target=thread_wait_for_close,
@@ -30,7 +29,7 @@ def start_threads(reddit):
     t_main.start()
     t_messages.start()
     t_close.start()
-    manage_threads(reddit, retry_limit_event, close_event, praw_lock)
+    # manage_threads(reddit, retry_limit_event, close_event, praw_lock)
 
 def manage_threads(r, retry_limit_event, close_event, praw_lock):
     while not close_event.is_set():
@@ -38,7 +37,7 @@ def manage_threads(r, retry_limit_event, close_event, praw_lock):
             msgcfg.set_currently_running(False)
             ErrorHandling.send_error_mail(r, praw_lock, "Hit maximum retries with no solution, shutting down bot")
             retry_limit_event.clear()
-        counter = secs_to_next_fraction_of_hour(settings.WAIT_TIME_MAIN)
+        counter = secs_to_next_fraction_of_hour(settings.WAIT_TIME_MANAGER)
         while not close_event.is_set() and counter > 0:
             time.sleep(1)
             counter -= 1
@@ -53,7 +52,7 @@ def secs_to_next_fraction_of_hour(n):
     curSecs = now.second + now.minute * 60
     return (int(curSecs / n)+ 1)*n - curSecs
 
-def thread_scan_reddit(r, retry_limit_event, close_event, praw_lock):
+def thread_scan_reddit(r, close_event, praw_lock):
     """
     This thread is responsible for monitoring reddit for forum posts, scraping pathofexile.com
     for staff posts, and creating corresponding reddit comments
@@ -71,7 +70,7 @@ def thread_scan_reddit(r, retry_limit_event, close_event, praw_lock):
                 bot = GGGGobblerBot(r, dao)
                 bot.parse_reddit()
         retry_decrement_event = threading.Event()
-        ErrorHandling.handle_errors(r, praw_lock, dao, retry_count, retry_limit_event, retry_decrement_event,
+        ErrorHandling.handle_errors(r, praw_lock, dao, retry_count, retry_decrement_event,
                                     "Hit recoverable exception with " + str(retry_count) + " retries remaining: ",
                                     "Hit unexpected exception, stopping main thread: ", func)
         # if func threw a RECOVERABLE_EXCEPTIONS, decrement the retry counter by 1

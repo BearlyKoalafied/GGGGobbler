@@ -61,4 +61,5 @@ def handle_errors(reddit, lock, dao,
         gobblogger.exception(irrecoverable_err_msg)
         # stop the main thread from looping again
         msgcfg.set_currently_running(False)
+        send_error_mail(reddit, lock, "Hit maximum retries with no solution, shutting down bot")
         dao.rollback()
