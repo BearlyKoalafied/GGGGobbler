@@ -27,3 +27,5 @@ def _write_out(cfg):
 
 def _get_filename():
     return filepather.relative_file_path(__file__, '../remote_config.ini')
+
+_read_ini()
