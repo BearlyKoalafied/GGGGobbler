@@ -7,7 +7,7 @@ from prawcore.exceptions import RequestException, ServerError
 from requests.exceptions import ConnectionError, HTTPError, ReadTimeout
 
 from GGGGobbler import forum_parse as fparse
-from config import messages, settings
+from config import config, settings
 from log import gobblogger
 
 RECOVERABLE_EXCEPTIONS = (APIException,
@@ -57,13 +57,27 @@ def handle_errors(reddit, lock, dao,
             gobblogger.exception("Ran out of retries while handling " + func.__name__ + ":")
             send_error_mail(reddit, lock, "Hit maximum retries with no solution, shutting down bot. " +
                             "Last trackback: " + traceback.format_exc())
-            messages.set_currently_running(False)
+            config.set_currently_running(False)
+        else:
+            gobblogger.exception("Hit recoverable exception in main thread: ")
         retry_decrement_event.set()
-        dao.rollback()
+        if dao is not None:
+            dao.rollback()
     except:
         gobblogger.exception(irrecoverable_err_msg)
         # stop the main thread from looping again
-        messages.set_currently_running(False)
+        config.set_currently_running(False)
         send_error_mail(reddit, lock, "Hit maximum retries with no solution, shutting down bot. " +
                         "Last trackback: " + traceback.format_exc())
-        dao.rollback()
+        if dao is not None:
+            dao.rollback()
+
+def handle_errors_check_messages(reddit, lock, recoverable_err_msg, irrecoverable_err_msg, func):
+    try:
+        with lock:
+            func()
+    except RECOVERABLE_EXCEPTIONS:
+        gobblogger.exception(recoverable_err_msg)
+    except:
+        gobblogger.exception(irrecoverable_err_msg)
+        raise

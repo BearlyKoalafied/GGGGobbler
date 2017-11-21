@@ -18,6 +18,9 @@ def set_wait_time_check_messages(new_setting):
 def set_wait_time_manager(new_setting):
     configIO.set_value('thread_delays', 'set_wait_time_manager', new_setting)
 
+def set_retry_cap(new_setting):
+    configIO.set_value('errors', 'retry_cap', new_setting)
+
 def currently_running_enabled():
     return configIO.get_boolean('features', 'currently_running')
 
@@ -32,3 +35,6 @@ def wait_time_check_messages():
 
 def wait_time_manager():
     return configIO.get_int('thread_delays', 'wait_time_manager')
+
+def retry_cap():
+    return configIO.get_int('errors', 'retry_cap')

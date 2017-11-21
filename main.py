@@ -63,7 +63,7 @@ def thread_scan_reddit(r, close_event, praw_lock):
     :param close_event: threading.Event to signal to this thread that we're closing the program
     :param praw_lock: threading.Lock to share the reddit instance
     """
-    retry_count = 8
+    retry_count = config.retry_cap()
     retry_decrement_event = threading.Event()
     while not close_event.is_set():
         gobblogger.info("Starting run")
@@ -74,12 +74,13 @@ def thread_scan_reddit(r, close_event, praw_lock):
             bot.parse_reddit()
         # if we didn't trigger a retry last time, reset the count, otherwise clear the event
         if not retry_decrement_event.is_set():
-            retry_count = 8
+            retry_count = config.retry_cap()
         else:
             retry_decrement_event.clear()
         if config.currently_running_enabled():
             errorhandling.handle_errors(r, praw_lock, dao, retry_count, retry_decrement_event,
-                                        "Hit recoverable exception with " + str(retry_count) + " retries remaining: ",
+                                        "Hit recoverable exception in main thread with " +
+                                        str(retry_count) + " retries remaining: ",
                                         "Hit unexpected exception, stopping main thread: ", func)
         # if func threw a RECOVERABLE_EXCEPTIONS, decrement the retry counter by 1
         if retry_decrement_event.is_set():
@@ -101,12 +102,14 @@ def thread_check_msgs(r, close_event, praw_lock):
     """
     while not close_event.is_set():
         with praw_lock:
-            messages.check_messages(r)
+            errorhandling.handle_errors_check_messages(r, praw_lock,
+                                                       "Hit recoverable exception in check messages thread: ",
+                                                       "Hit unexpected exception in check messages thread: ",
+                                                       messages.check_messages(r))
         counter = secs_to_next_fraction_of_hour(config.wait_time_check_messages())
         while not close_event.is_set() and counter > 0:
             time.sleep(1)
             counter -= 1
-
 
 def thread_wait_for_close(close_event):
     s = input("Type Q to end: ")
