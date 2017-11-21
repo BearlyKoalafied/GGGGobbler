@@ -75,7 +75,7 @@ def handle_errors(reddit, lock, dao,
 def handle_errors_check_messages(reddit, lock, recoverable_err_msg, irrecoverable_err_msg, func):
     try:
         with lock:
-            func()
+            func(reddit)
     except RECOVERABLE_EXCEPTIONS:
         gobblogger.exception(recoverable_err_msg)
     except:

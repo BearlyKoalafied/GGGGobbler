@@ -101,11 +101,10 @@ def thread_check_msgs(r, close_event, praw_lock):
     :param praw_lock: threading.Lock to share the reddit instance
     """
     while not close_event.is_set():
-        with praw_lock:
-            errorhandling.handle_errors_check_messages(r, praw_lock,
-                                                       "Hit recoverable exception in check messages thread: ",
-                                                       "Hit unexpected exception in check messages thread: ",
-                                                       messages.check_messages(r))
+        errorhandling.handle_errors_check_messages(r, praw_lock,
+                                                   "Hit recoverable exception in check messages thread: ",
+                                                   "Hit unexpected exception in check messages thread: ",
+                                                   messages.check_messages)
         counter = secs_to_next_fraction_of_hour(config.wait_time_check_messages())
         while not close_event.is_set() and counter > 0:
             time.sleep(1)
