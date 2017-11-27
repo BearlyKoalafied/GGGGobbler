@@ -2,7 +2,6 @@ import configparser
 
 from config.private import configIO
 
-
 def set_currently_running(new_setting):
     configIO.set_value('features', 'currently_running', new_setting)
 
