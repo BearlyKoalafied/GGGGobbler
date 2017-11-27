@@ -118,12 +118,13 @@ def passes_value_rules(commandID, value):
     if commandID == enum.CmndID.ACTIVATE or commandID == enum.CmndID.ERRMSG:
         return value == 'on' or value == 'off' or value == 'true' or value == 'false'
     elif commandID == enum.CmndID.WAITTIME:
-        if not isinstance(value, int):
+        if not value.isdigit():
             return False
         if 3600 % value != 0:
             return False
         if value <= 0:
             return True
+    return False
 
 def send_response_message(reddit, header, body):
     reddit.redditor(settings.REDDIT_ACC_OWNER).message(header, body)
