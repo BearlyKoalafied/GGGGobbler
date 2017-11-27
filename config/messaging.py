@@ -1,7 +1,19 @@
 from log import gobblogger
 from config import config, settings
 from config.private import enum
-from config.private.commands import COMMANDS, passes_value_rules
+
+COMMANDS = {
+    enum.CmndID.ACTIVATE: "turn",
+    enum.CmndID.ERRMSG: "errmsg",
+    enum.CmndID.WAITTIME: "waittime",
+    enum.CmndID.HELP: "help",
+}
+
+WAITTIME_OPTNS = {
+    enum.WaittimeID.MAIN: 'main',
+    enum.WaittimeID.MSGS: 'msgs',
+}
+
 
 CFG_RESPONSE_HEADER = "Config confirmed"
 CFG_RESPONSE_HEADER_FAIL = "Config failed!"
@@ -89,9 +101,9 @@ def command_waittime(r, split):
     # test if the value qualifies
     if not passes_value_rules(enum.CmndID.WAITTIME, value):
         return False
-    if option == enum.WaittimeID.MAIN:
+    if option == WAITTIME_OPTNS[enum.WaittimeID.MAIN]:
         config.set_wait_time_main(value)
-    elif option == enum.WaittimeID.MSGS:
+    elif option == WAITTIME_OPTNS[enum.WaittimeID.MSGS]:
         config.set_wait_time_check_messages(value)
     else:
         return False
@@ -101,6 +113,17 @@ def command_help(r, split):
     # we don't care much about qualifying here, just the above check if the first term is 'help' will do
     # including this function anyway for consistency
     return True
+
+def passes_value_rules(command_name, value):
+    if command_name == enum.CmndID.ACTIVATE or command_name == enum.CmndID.ERRMSG:
+        return value == 'on' or value == 'off' or value == 'true'  or value == 'false'
+    elif command_name == enum.CmndID.WAITTIME:
+        if not isinstance(value, int):
+            return False
+        if 3600 % value != 0:
+            return False
+        if value <= 0:
+            return True
 
 def send_response_message(reddit, header, body):
     reddit.redditor(settings.REDDIT_ACC_OWNER).message(header, body)
