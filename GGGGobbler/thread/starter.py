@@ -5,6 +5,7 @@ import enum
 
 from GGGGobbler.thread.private import tasks
 from config import config
+from util import timemath
 
 
 def start_threads(r):
@@ -40,7 +41,7 @@ def consume_jobs(job_queue, r):
 def produce_main_jobs(job_queue, close_event):
     while not close_event.is_set():
         job_queue.put(TaskID.MAIN)
-        c = config.wait_time_main()
+        c = timemath.secs_to_next_fraction_of_hour(config.wait_time_main())
         while not close_event.is_set() and c > 0:
             time.sleep(1)
             c -= 1
@@ -48,7 +49,7 @@ def produce_main_jobs(job_queue, close_event):
 def produce_check_messages_jobs(job_queue, close_event):
     while not close_event.is_set():
         job_queue.put(TaskID.CHECK_MESSAGES)
-        c = config.wait_time_check_messages()
+        c = timemath.secs_to_next_fraction_of_hour(config.wait_time_check_messages())
         while not close_event.is_set() and c > 0:
             time.sleep(1)
             c -= 1
