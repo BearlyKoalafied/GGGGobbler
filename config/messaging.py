@@ -114,10 +114,10 @@ def command_help(r, split):
     # including this function anyway for consistency
     return True
 
-def passes_value_rules(command_name, value):
-    if command_name == COMMANDS[enum.CmndID.ACTIVATE] or command_name == COMMANDS[enum.CmndID.ERRMSG]:
+def passes_value_rules(commandID, value):
+    if commandID == enum.CmndID.ACTIVATE or commandID == enum.CmndID.ERRMSG:
         return value == 'on' or value == 'off' or value == 'true' or value == 'false'
-    elif command_name == COMMANDS[enum.CmndID.WAITTIME]:
+    elif commandID == enum.CmndID.WAITTIME:
         if not isinstance(value, int):
             return False
         if 3600 % value != 0:
