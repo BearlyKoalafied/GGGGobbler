@@ -15,7 +15,7 @@ def passes_value_rules(option, value):
     elif option == CmndID.WAITTIME:
         if not isinstance(value, int):
             return False
-        if value % 60 != 0:
+        if 3600 % value != 0:
             return False
         if value <= 0:
             return True
