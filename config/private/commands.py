@@ -8,10 +8,8 @@ COMMANDS = {
 }
 
 def passes_value_rules(option, value):
-    if option == CmndID.ACTIVATE:
-        return isinstance(value, bool) and (value is True or value is False)
-    elif option == CmndID.ERRMSG:
-        return isinstance(value, bool) and (value is True or value is False)
+    if option == CmndID.ACTIVATE or option == CmndID.ERRMSG:
+        return value == 'on' or value == 'off' or value == 'true'  or value == 'false'
     elif option == CmndID.WAITTIME:
         if not isinstance(value, int):
             return False

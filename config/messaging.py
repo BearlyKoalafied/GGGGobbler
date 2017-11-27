@@ -23,7 +23,7 @@ def scan_inbox(r):
     unread = r.inbox.unread()
     for new in unread:
         if new.author == settings.REDDIT_ACC_OWNER and new.subject == "cfg":
-            process(r, new.body)
+            process(r, new.body.lower())
             new.mark_read()
 
 def process(r, body):

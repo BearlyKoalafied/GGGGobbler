@@ -48,7 +48,7 @@ def produce_main_jobs(job_queue, close_event):
 def produce_check_messages_jobs(job_queue, close_event):
     while not close_event.is_set():
         job_queue.put(TaskID.CHECK_MESSAGES)
-        c = config.wait_time_main()
+        c = config.wait_time_check_messages()
         while not close_event.is_set() and c > 0:
             time.sleep(1)
             c -= 1
