@@ -120,9 +120,9 @@ def passes_value_rules(commandID, value):
     elif commandID == enum.CmndID.WAITTIME:
         if not value.isdigit():
             return False
-        if 3600 % value != 0:
+        if 3600 % int(value) != 0:
             return False
-        if value <= 0:
+        if int(value) <= 0:
             return True
     return False
 
