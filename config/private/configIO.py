@@ -1,22 +1,23 @@
 import configparser
-
+import os
 from util import filepather
 
+FILENAME = "remote_config.ini"
+
 def set_value(section, item, value):
-    global cfg
+    cfg = _read_ini()
     cfg.set(section, item, str(value))
     _write_out(cfg)
 
 def get_boolean(section, item):
-    global cfg
+    cfg = _read_ini()
     return cfg.getboolean(section, item)
 
 def get_int(section, item):
-    global cfg
+    cfg = _read_ini()
     return cfg.getint(section, item)
 
 def _read_ini():
-    global cfg
     cfg = configparser.ConfigParser()
     cfg.read(_get_filename())
     return cfg
@@ -26,6 +27,6 @@ def _write_out(cfg):
         cfg.write(cfgfile)
 
 def _get_filename():
-    return filepather.relative_file_path(__file__, '../remote_config.ini')
+    return filepather.relative_file_path(__file__, os.path.join(os.pardir, FILENAME))
 
 _read_ini()

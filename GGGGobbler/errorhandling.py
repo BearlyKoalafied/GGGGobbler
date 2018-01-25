@@ -2,7 +2,7 @@ import threading
 import traceback
 
 from praw.exceptions import APIException, ClientException
-from prawcore.exceptions import RequestException, ServerError
+from prawcore.exceptions import RequestException, ResponseException, ServerError
 
 from requests.exceptions import ConnectionError, HTTPError, ReadTimeout
 
@@ -16,6 +16,7 @@ RECOVERABLE_EXCEPTIONS = (APIException,
                           HTTPError,
                           ReadTimeout,
                           RequestException,
+                          ResponseException,
                           ServerError,
                           fparse.PathofexileDownException)
 

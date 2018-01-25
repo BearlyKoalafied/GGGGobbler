@@ -5,6 +5,7 @@ class CmndID(enum.Enum):
     ERRMSG = 2
     WAITTIME = 3
     HELP = 4
+    SHOWVALUES = 5
 
 class WaittimeID(enum.Enum):
     MAIN = 1

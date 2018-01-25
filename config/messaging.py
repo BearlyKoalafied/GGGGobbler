@@ -7,6 +7,7 @@ COMMANDS = {
     enum.CmndID.ERRMSG: "errmsg",
     enum.CmndID.WAITTIME: "waittime",
     enum.CmndID.HELP: "help",
+    enum.CmndID.SHOWVALUES: "showvalues",
 }
 
 WAITTIME_OPTNS = {
@@ -41,36 +42,40 @@ def scan_inbox(r):
 def process(r, body):
     split = body.split(' ')
     if split[0] == COMMANDS[enum.CmndID.ACTIVATE]:
-        if command_activate(r, split):
+        if command_activate(split):
             send_response_message(r, CFG_RESPONSE_HEADER, "Turning bot " + split[1])
         else:
             send_response_message(r, CFG_RESPONSE_HEADER_FAIL, "Failed to read command: " + body)
             gobblogger.info("Received invalid config command: " + body)
     elif split[0] == COMMANDS[enum.CmndID.ERRMSG]:
-        if command_errmsg(r, split):
+        if command_errmsg(split):
             send_response_message(r, CFG_RESPONSE_HEADER, "Turning Error Messaging " + split[1])
         else:
             send_response_message(r, CFG_RESPONSE_HEADER_FAIL, "Failed to read command: " + body)
             gobblogger.info("Received invalid config command: " + body)
     elif split[0] == COMMANDS[enum.CmndID.WAITTIME]:
-        if command_waittime(r, split):
+        if command_waittime(split):
             send_response_message(r, CFG_RESPONSE_HEADER, "Setting wait time " + split[1] + " to " + split[2])
         else:
             send_response_message(r, CFG_RESPONSE_HEADER_FAIL, "Failed to read command: " + body)
             gobblogger.info("Received invalid config command: " + body)
+    # not parsing values for validity in these, just reading out information
     elif split[0] == COMMANDS[enum.CmndID.HELP]:
-        if command_help(r, split):
-            send_response_message(r, CFG_RESPONSE_HEADER, CFG_HELP)
-        else:
-            send_response_message(r, CFG_RESPONSE_HEADER_FAIL, "Help command failed")
-            gobblogger.info("Received invalid config command: " + body)
+        send_response_message(r, CFG_RESPONSE_HEADER, CFG_HELP)
+    elif split[0] == COMMANDS[enum.CmndID.SHOWVALUES]:
+        output = "currently running: " + str(config.currently_running_enabled()) + "\n\n" \
+               + "error msg enabled: " + str(config.error_messaging_enabled()) + "\n\n" \
+               + "wait time main: " + str(config.wait_time_main()) + "\n\n" \
+               + "wait time check messages: " + str(config.wait_time_check_messages()) + "\n\n" \
+               + "retry cap: " + str(config.retry_cap()) + "\n\n"
+        send_response_message(r, CFG_RESPONSE_HEADER, output)
     else:
         send_response_message(r, CFG_RESPONSE_HEADER_FAIL, "Not a valid command - type 'help' for information")
         gobblogger.info("Received invalid config command: " + body)
         return
     gobblogger.info("Received config command: " + body)
 
-def command_activate(r, split):
+def command_activate(split):
     # test if the passes command qualifies as valid
     if len(split) != 2:
         return False
@@ -81,7 +86,7 @@ def command_activate(r, split):
     config.set_currently_running(value)
     return True
 
-def command_errmsg(r, split):
+def command_errmsg(split):
     # test if the passed command qualifies as valid
     if len(split) != 2:
         return False
@@ -92,7 +97,7 @@ def command_errmsg(r, split):
     config.set_error_messaging(value)
     return True
 
-def command_waittime(r, split):
+def command_waittime(split):
     # test if the passed command qualifies as valid
     if len(split) != 3:
         return False
@@ -109,11 +114,6 @@ def command_waittime(r, split):
         return False
     return True
 
-def command_help(r, split):
-    # we don't care much about qualifying here, just the above check if the first term is 'help' will do
-    # including this function anyway for consistency
-    return True
-
 def passes_value_rules(commandID, value):
     if commandID == enum.CmndID.ACTIVATE or commandID == enum.CmndID.ERRMSG:
         return value == 'on' or value == 'off' or value == 'true' or value == 'false'
@@ -127,4 +127,5 @@ def passes_value_rules(commandID, value):
     return False
 
 def send_response_message(reddit, header, body):
-    reddit.redditor(settings.REDDIT_ACC_OWNER).message(header, body)
+    reddit.redditor(name=settings.REDDIT_ACC_OWNER).message(header, body)
+
