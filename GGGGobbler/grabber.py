@@ -46,14 +46,15 @@ class GGGGobblerBot:
         self.dao.close()
 
     def parse_submission(self, submission):
-        posts = self.get_current_posts(submission.url)
+        cleaned_url = self.clean_url(submission.url)
+        posts = self.get_current_posts(cleaned_url)
         # only bother doing stuff if we found staff posts
         if posts == []:
             self.dao.commit()
             return
         # posts = self.remove_unchanged_posts(posts)
         # if a GGG post was linked to directly, put that one up at the top
-        result = re.search("#p[0-9]*", submission.url)
+        result = re.search("#p[0-9]*", cleaned_url)
         if result is not None:
             target_post_id = result.group(0)[1:]
             for i in range(len(posts)):
@@ -64,7 +65,7 @@ class GGGGobblerBot:
 
         comments_to_post = self.create_divided_comments(posts)
         if not self.dao.reddit_thread_exists(submission.id):
-            self.dao.add_reddit_thread(submission.id, self.extract_poe_id_from_url(submission.url))
+            self.dao.add_reddit_thread(submission.id, self.extract_poe_id_from_url(cleaned_url))
             logging.getLogger(settings.LOGGER_NAME).info("New reddit thread discovered, thread id = "
                                                          + submission.id)
 
@@ -72,6 +73,11 @@ class GGGGobblerBot:
         # saving db state between submissions
         self.dao.commit()
 
+    def clean_url(self, url):
+        if '?' not in url:
+            return url
+        else:
+            return url[:url.find("?")]
 
     def get_current_posts(self, url):
         poe_thread_id = self.extract_poe_id_from_url(url)
