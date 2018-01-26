@@ -24,7 +24,7 @@ def currently_running_enabled():
     return configIO.get_boolean('features', 'currently_running')
 
 def error_messaging_enabled():
-    return configIO.get_boolean('features', 'error_messaging_enabled')
+    return configIO.get_boolean('features', 'error_reddit_messaging')
 
 def wait_time_main():
     return configIO.get_int('thread_delays', 'wait_time_main')
