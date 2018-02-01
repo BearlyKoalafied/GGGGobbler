@@ -4,6 +4,7 @@ import requests
 import bs4
 
 from db.data_structs import StaffPost
+from GGGGobbler import htmltomd
 from config import settings
 
 
@@ -86,9 +87,8 @@ def get_staff_forum_posts(thread_id, search_start=1):
                 continue
             author = get_post_author_from_row(row)
             post_id = get_post_id_from_row(row)
-            # enclose the whole text within a blockquote
-            text = re.sub(r"[\n\r]+", "\n\n> ",
-                          "> " + convert_html_to_markdown(get_post_from_row(row)))
+            # convert the retrieved html into markdown
+            text = htmltomd.convert(get_post_from_row(row))
             post_date = get_post_date_from_row(row)
             # a bug in the website sometimes causes 2 pages of forum posts to return the same forum post
             if not check_for_duplicate(posts, post_id):
@@ -166,125 +166,6 @@ def get_post_date_from_row(post_row):
     date = date + datetime.timedelta(hours=-settings.TIMEZONE_OFFSET)
     str_date = date.strftime(format)
     return str_date
-
-
-def convert_html_to_markdown(html):
-    """
-    returns a string containing markdown to represent the HTML markup of a given post body's HTML contents
-    """
-    if isinstance(html, bs4.element.NavigableString):
-        return html.strip()
-    markdown = ""
-    parts = html.contents
-    sbox_num = 0
-    for part in parts:
-        if isinstance(part, bs4.element.NavigableString):
-            if part.parent.name == "div" and (part.parent.has_attr("class") and \
-                                                      ("content" not in part.parent["class"]
-                                                       and "box-content" not in part.parent["class"]) \
-                                                      or not part.parent.has_attr("class")):
-                markdown += part.strip() + "\n\n"
-            else:
-                markdown += part.strip()
-        elif isinstance(part, bs4.element.Tag):
-            if part.name == "div" and not part.has_attr("class"):
-                markdown += convert_html_to_markdown(part) + "\n\n"
-            elif part.name == "div" and "s-pad" in part["class"]:
-                markdown += convert_html_to_markdown(part) + "\n\n"
-            # these things are confusing.  They appear to be used to make tables, but
-            # I'm having trouble figuring out what the pattern is to it.
-            elif part.name == "div" and "sbox-container" in part["class"]:
-                markdown += convert_html_to_markdown(part)
-                if markdown.strip() != "":
-                    markdown += " : "
-                sbox_num += 1
-                if sbox_num >= 3:
-                    markdown += "\n\n"
-                    sbox_num = 0
-            # This appears to mark the end of a table.  Kinda probably.
-            elif part.name == "div" and "clear" in part["class"]:
-                sbox_num = 0
-            elif part.name == "div":
-                markdown += convert_html_to_markdown(part)
-            elif part.name == "p":
-                markdown += convert_html_to_markdown(part)
-            elif part.name == "br":
-                markdown += "\n\n"
-            # lists
-            elif part.name == "ul":
-                markdown += "\n\n"
-                for list_item in part.find_all("li"):
-                    markdown += "* " + convert_html_to_markdown(list_item) + "\n\n"
-            # headers
-            elif part.name == "h2":
-                markdown += "## " + part.get_text() + "\n\n"
-            elif part.name == "h3":
-                markdown += "### " + part.get_text() + "\n\n"
-            # bold
-            elif part.name == "strong":
-                markdown += " **" + part.get_text().rstrip(" ") + "** "
-            # italics
-            elif part.name == "em":
-                markdown += " *" + convert_html_to_markdown(part).rstrip(" ") + "* "
-            # this is how the forum marks up underlines.  Markdown (for good enough reason)
-            # doesn't have underlining syntax, so i'll put <strong> tags instead I guess
-            elif part.name == "span" and part.has_attr("style") \
-                    and "text-decoration: underline;" in part["style"]:
-                markdown += "**" + part.get_text() + "**"
-            elif part.name == "blockquote":
-                markdown += parse_quote(part)
-            # <a href> links
-            elif part.name == "a" and len(part.contents) != 0:
-                # empty anchor tags?  come on now... :(
-                content = part.contents[0]
-                link = part["href"]
-                # image links... idk it's probably an image I guess
-                if isinstance(content, bs4.element.Tag) and content.name == "img":
-                    # not sure what I should output so I guess I'll do this
-                    text = "Graphic that links somewhere"
-                    if content.has_attr("alt") and content["alt"] != "":
-                        text = content["alt"]
-                    markdown += "[" + text + "]" + "(" + link + ")"
-                else:
-                    # text links
-                    text = convert_html_to_markdown(content)
-                    markdown += "[ " + text + " ]" + "(" + link + ")"
-            elif part.name == "img":
-                markdown += "[Image Link]" + "(" + part["src"] + ")"
-            # <iframe> tags.  I'm going to assume it's a youtube video and link it,
-            # otherwise I'll ignore the tag
-            elif part.name == "iframe":
-                src = part["src"]
-                if "youtube.com/embed" in src:
-                    # get the video identifier
-                    index = src.rfind("/")
-                    video_id = src[index + 1:]
-                    # make the youtube link
-                    link = "https://youtube.com/watch?v=" + video_id
-                    markdown += "\n\n" + "[Youtube Video]" + "(" + link + ")" + "\n\n"
-    return markdown
-
-
-def parse_quote(block_quote):
-    """
-    returns markdown for a blockquote element
-    """
-    markdown = "> "
-    # just get the text body for now
-    body = block_quote.find("div", class_="bot")
-    markdown += convert_html_to_markdown(body)
-    markdown = markdown.replace("\n", "\n> ")
-    return markdown + "\n\n> "
-
-
-def parse_table(parts, start_item_index):
-    total_cell_count = 0
-    i = start_item_index
-    while "sbox-container" in parts[i]["class"] or \
-                    "clear" in parts[i]["class"]:
-        total_cell_count += 1
-        i += 1
-    width = 3
 
 
 def check_for_duplicate(posts, post_id):
