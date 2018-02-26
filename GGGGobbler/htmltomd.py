@@ -6,7 +6,6 @@ def convert(html, parser='html.parser'):
     html = re.sub("<br\s*>", "<br/>", html)
     # remove whitespace from between tags
     soup = BeautifulSoup(re.sub(">\s*<","><", html), parser)
-
     return process_tag(soup)
 
 

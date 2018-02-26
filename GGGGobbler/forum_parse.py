@@ -88,7 +88,7 @@ def get_staff_forum_posts(thread_id, search_start=1):
             author = get_post_author_from_row(row)
             post_id = get_post_id_from_row(row)
             # convert the retrieved html into markdown
-            text = htmltomd.convert(get_post_from_row(row))
+            text = htmltomd.quote_boxify(htmltomd.convert(get_post_from_row(row)))
             post_date = get_post_date_from_row(row)
             # a bug in the website sometimes causes 2 pages of forum posts to return the same forum post
             if not check_for_duplicate(posts, post_id):
