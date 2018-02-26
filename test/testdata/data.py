@@ -48,5 +48,68 @@ values = {
     "blockquote_output": "> * p1\n\n"
                          "> * p2\n\n"
                          "> * p3\n\n",
+    "complex_input": """<tr class="newsPost">
+		            <td colspan="2"><div class="content">
+<div class="lbox-container" style=""><div class="lbox"><div class="box-content s-pad">
+<img src="https://web.poecdn.com/public/news/2018-03-24/news/BEChallengeRewardsHeader.jpg" alt="">
+</div></div></div><div class="lbox-container" style=""><div class="lbox"><div class="box-content m-pad">
+In the Bestiary League, you will have the option to complete 40 new challenges and earn exclusive microtransaction rewards! At 12, 24 and 36 challenges you will earn the Bestiary Helmet, Bestiary Wings and Bestiary Portal respectively. Completing challenges also grants you pieces of the Bestiary Totem Pole Hideout decoration.
+<br><br>
+<iframe width="900" height="506" src="//www.youtube.com/embed/J0v6IAnWvPk" frameborder="0" allowfullscreen="">
+            </iframe>
+<br><br>
+Traditionally, we post the challenges alongside the rewards. This always puts us in an awkward situation because we try not to change stuff after it has been announced, but the final week before release is a critical period for fine-tuning and testing. We have decided not to announce the challenges before the league starts, so that the team have freedom to keep adjusting the challenges as final testing continues. This league's challenges follow a similar format to the ones you're familiar with, so there should be no unexpected surprises there.
+<br><br>
+You'll be able to check them out when you jump into Bestiary League on March 2nd!
+</div></div></div></div></td>
+</tr>
+""",
+    "complex_output": """> [Image Link](https://web.poecdn.com/public/news/2018-03-24/news/BEChallengeRewardsHeader.jpg)
 
+> In the Bestiary League, you will have the option to complete 40 new challenges and earn exclusive microtransaction rewards! At 12, 24 and 36 challenges you will earn the Bestiary Helmet, Bestiary Wings and Bestiary Portal respectively. Completing challenges also grants you pieces of the Bestiary Totem Pole Hideout decoration.
+
+> [Youtube Video](//www.youtube.com/embed/J0v6IAnWvPk)
+
+> Traditionally, we post the challenges alongside the rewards. This always puts us in an awkward situation because we try not to change stuff after it has been announced, but the final week before release is a critical period for fine-tuning and testing. We have decided not to announce the challenges before the league starts, so that the team have freedom to keep adjusting the challenges as final testing continues. This league's challenges follow a similar format to the ones you're familiar with, so there should be no unexpected surprises there.
+
+> You'll be able to check them out when you jump into Bestiary League on March 2nd!
+
+""",
+    "complex_2_input": """<tr class="newsPost">
+		            <td colspan="2"><div class="content">
+<div class="lbox-container" style=""><div class="lbox"><div class="box-content s-pad">
+<img src="https://web.poecdn.com/public/news/2018-01-25/3.1.3PatchHeader.jpg" alt="">
+</div></div></div><div class="lbox-container" style=""><div class="lbox"><div class="box-content m-pad">
+Tomorrow (Friday NZDT), we're planning to release Patch 3.1.3 which contains <a href="https://www.youtube.com/watch?v=cfk3-0Ds15c">a new, faster, Burning Ground effect</a> and some other high-priority bug fixes. As a preview to this update, we're making the patch notes available to share today.
+<br><br><ul><li>We have made a new effect for Burning Ground which doesn't have the performance issues that the previous one did. While it has a few visual bugs still, we are releasing it for feedback and to get the improvement onto the realm as soon as possible. We plan to update the other ground effects in a similar way in the future.</li><li>Fixed a client crash that occurred when typing various symbols into the search box in the Map Stash Tab.</li><li>Fixed a client crash that occurred when right clicking on a Map Stash Tab if that tab was not already loaded.</li><li>Fixed a bug causing the effects for a skill in the High Templar Avarius encounter to not be displayed.</li><li>Fixed a bug where some Rogue Exiles were not counting towards the "Kill Rogue Exiles" challenge.</li><li>Fixed a bug where Desecrate cast by monsters would not create any corpses.</li><li>Fixed a bug where a Divine Vessel was incorrectly consumed if the Map boss was replaced by the Elder or an Elder Guardian.</li><li>Fixed a bug where Vaal Spectral Throw was not interacting correctly with the Volley Support gem.</li><li>Fixed a bug where the quest tracker was displaying incorrect quest information while in Maps.</li><li>Fixed a bug where the Twice Blessed Darkshrine effect was not always given to the player who clicked the Darkshrine.</li><li>Fixed a rare bug preventing some characters from completing the Lighting the Way quest.</li></ul>
+
+</div></div></div></div></td>
+		        </tr>""",
+    "complex_2_output": """> [Image Link](https://web.poecdn.com/public/news/2018-01-25/3.1.3PatchHeader.jpg)
+
+> Tomorrow (Friday NZDT), we're planning to release Patch 3.1.3 which contains [a new, faster, Burning Ground effect](https://www.youtube.com/watch?v=cfk3-0Ds15c) and some other high-priority bug fixes. As a preview to this update, we're making the patch notes available to share today.
+
+> * We have made a new effect for Burning Ground which doesn't have the performance issues that the previous one did. While it has a few visual bugs still, we are releasing it for feedback and to get the improvement onto the realm as soon as possible. We plan to update the other ground effects in a similar way in the future.
+
+> * Fixed a client crash that occurred when typing various symbols into the search box in the Map Stash Tab.
+
+> * Fixed a client crash that occurred when right clicking on a Map Stash Tab if that tab was not already loaded.
+
+> * Fixed a bug causing the effects for a skill in the High Templar Avarius encounter to not be displayed.
+
+> * Fixed a bug where some Rogue Exiles were not counting towards the "Kill Rogue Exiles" challenge.
+
+> * Fixed a bug where Desecrate cast by monsters would not create any corpses.
+
+> * Fixed a bug where a Divine Vessel was incorrectly consumed if the Map boss was replaced by the Elder or an Elder Guardian.
+
+> * Fixed a bug where Vaal Spectral Throw was not interacting correctly with the Volley Support gem.
+
+> * Fixed a bug where the quest tracker was displaying incorrect quest information while in Maps.
+
+> * Fixed a bug where the Twice Blessed Darkshrine effect was not always given to the player who clicked the Darkshrine.
+
+> * Fixed a rare bug preventing some characters from completing the Lighting the Way quest.
+
+""",
 }

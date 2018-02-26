@@ -52,6 +52,14 @@ class ConvertTestCase(unittest.TestCase):
         md_output = "> * bullet 1\n\n> * bullet2\n\n> * bullet3\n\n"
         self.assertEqual(htmltomd.quote_boxify(md_input), md_output)
 
+    def test_complex(self):
+        html, expected_output = self.load_values('complex')
+        self.assertEqual(htmltomd.quote_boxify(htmltomd.convert(html)), expected_output)
+
+    def test_complex_2(self):
+        html, expected_output = self.load_values('complex_2')
+        self.assertEqual(htmltomd.quote_boxify(htmltomd.convert(html)), expected_output)
+
     def load_values(self, data_name):
         html = data.values[data_name + "_input"]
         expected_output = data.values[data_name + "_output"]
