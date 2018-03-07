@@ -35,6 +35,8 @@ def convert_tag(tag):
         return "*" + content_inside_this_tag + "*"
     elif tag.name == "img":
         return process_img(tag)
+    elif tag.name == "noscript":
+        return ""
 
     # tags below here insert a newline if not already inserted by previous call to convert_tag
     if tag.name == "p":
@@ -105,4 +107,10 @@ def contains_tags(tag):
     for child in tag:
         if isinstance(child, Tag):
             return True
+    return False
+
+def is_excluded_tag(tag):
+    # I don't know why these are here but I'm ignoring them
+    if tag.name == "noscript":
+        return True
     return False
