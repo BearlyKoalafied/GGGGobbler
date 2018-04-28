@@ -234,12 +234,12 @@ class GGGGobblerBot:
         return markdown
 
     def create_ggg_post_section(self, post):
-        markdown = "> **Posted by " + post.author + "** on " + post.date + " UTC\n\n"
+        markdown = "> **Posted by " + post.author + "** on " + post.date + " UTC\n>\n"
         # body text
         body = post.md_text
         markdown += body
         # post separator
-        footer = "\n\n> ***\n\n"
+        footer = "\n>\n> ***\n\n"
         markdown += footer
         return markdown
 
