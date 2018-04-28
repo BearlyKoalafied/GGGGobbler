@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup, NavigableString, Tag
 import re
 
+ITEM_SEPARATOR = "\n\n"
+
 def convert(html, parser='html.parser'):
     # filter out br tags because html.parser treats these incorrectly
     html = re.sub("<br\s*>", "<br/>", html)
@@ -35,6 +37,8 @@ def convert_tag(tag):
         return "*" + content_inside_this_tag + "*"
     elif tag.name == "img":
         return process_img(tag)
+    elif tag.name == "ul":
+        return ITEM_SEPARATOR + content_inside_this_tag
     elif tag.name == "noscript":
         return ""
 
@@ -54,12 +58,17 @@ def convert_tag(tag):
     elif tag.name == "iframe":
         output = process_iframe(tag)
     elif tag.name == "video":
-        output = "[Embedded Video](" + tag["src"] + ")"
+        if tag.has_attr("src"):
+            output = "[Embedded Video](" + tag["src"] + ")"
+        elif tag.children is not None and tag.find("source").has_attr("src"):
+            output = "[Embedded Video](" + tag.find("source")["src"] + ")"
+        else:
+            output = content_inside_this_tag
     else:
         # default case should be fine for remaining tags
         output = content_inside_this_tag
-    if output[-2:] != "\n\n":
-        output += "\n\n"
+    if output[-len(ITEM_SEPARATOR):] != ITEM_SEPARATOR and output[-3:] != "\n>\n":
+        output += ITEM_SEPARATOR
     return output
 
 
@@ -95,13 +104,11 @@ def process_iframe(iframe):
 
 def quote_boxify(md):
     output = []
-    for line in md.split("\n\n"):
+    for line in md.split(ITEM_SEPARATOR):
         line = line.strip()
-        if not line:
-            continue
-        output.append("> " + line + "\n\n")
+        if line:
+            output.append("> " + line + "\n>\n")
     return "".join(output)
-
 
 def contains_tags(tag):
     for child in tag:
