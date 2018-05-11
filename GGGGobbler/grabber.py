@@ -239,7 +239,7 @@ class GGGGobblerBot:
         body = post.md_text
         markdown += body
         # post separator
-        footer = "\n>\n> ***\n\n"
+        footer = "\n>\n> ***\n>\n"
         markdown += footer
         return markdown
 
