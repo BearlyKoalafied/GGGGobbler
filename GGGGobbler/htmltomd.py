@@ -96,11 +96,23 @@ def process_quote_box(quotebox):
 def process_iframe(iframe):
     # these are used for youtube videos.  I'll make the text something else
     # if the src doesn't point to youtube
-    if "youtube" in iframe["src"]:
+    src = iframe["src"]
+    if "youtube" in src:
         text = "Youtube Video"
     else:
         text = "Embedded content"
-    return "[" + text + "](" + iframe["src"] + ")"
+    # do some filtering for different kinds of youtube links
+    id_indicators = ["youtube.com/embed/", "youtube.com/watch?v="]
+    video_id = ""
+    for indic in id_indicators:
+        if src.find(indic) != -1:
+            video_id = src[src.find(indic) + len(indic):]
+
+    if video_id:
+        link = "https://www.youtube.com/watch?v=" + video_id
+    else:
+        link = src
+    return "[" + text + "](" + link + ")"
 
 def quote_boxify(md):
     output = []

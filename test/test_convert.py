@@ -52,6 +52,14 @@ class ConvertTestCase(unittest.TestCase):
         md_output = "> * bullet 1\n>\n> * bullet2\n>\n> * bullet3\n>\n"
         self.assertEqual(md_output, htmltomd.quote_boxify(md_input))
 
+    def test_iframe_basic(self):
+        html, expected_output = self.load_values('iframe_basic')
+        self.assertEqual(expected_output, htmltomd.convert(html))
+
+    def test_iframe_embed(self):
+        html, expected_output = self.load_values('iframe_embed')
+        self.assertEqual(expected_output, htmltomd.convert(html))
+
     def test_complex(self):
         html, expected_output = self.load_values('complex')
         self.assertEqual(expected_output, htmltomd.quote_boxify(htmltomd.convert(html)))

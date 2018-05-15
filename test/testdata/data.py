@@ -48,6 +48,10 @@ values = {
     "blockquote_output": "> * p1\n>\n"
                          "> * p2\n>\n"
                          "> * p3\n>\n",
+    "iframe_basic_input": "<iframe width=\"900\" height=\"506\" src=\"www.youtube.com/watch?v=sFumzUFaQvE\" frameborder=\"0\" allowfullscreen=\"\"></iframe>",
+    "iframe_basic_output": "[Youtube Video](https://www.youtube.com/watch?v=sFumzUFaQvE)\n\n",
+    "iframe_embed_input": "<iframe width=\"900\" height=\"506\" src=\"//www.youtube.com/embed/sFumzUFaQvE\" frameborder=\"0\" allowfullscreen=\"\"></iframe>",
+    "iframe_embed_output": "[Youtube Video](https://www.youtube.com/watch?v=sFumzUFaQvE)\n\n",
     "complex_input": """<tr class="newsPost">
 		            <td colspan="2"><div class="content">
 <div class="lbox-container" style=""><div class="lbox"><div class="box-content s-pad">
@@ -68,7 +72,7 @@ You'll be able to check them out when you jump into Bestiary League on March 2nd
 >
 > In the Bestiary League, you will have the option to complete 40 new challenges and earn exclusive microtransaction rewards! At 12, 24 and 36 challenges you will earn the Bestiary Helmet, Bestiary Wings and Bestiary Portal respectively. Completing challenges also grants you pieces of the Bestiary Totem Pole Hideout decoration.
 >
-> [Youtube Video](//www.youtube.com/embed/J0v6IAnWvPk)
+> [Youtube Video](https://www.youtube.com/watch?v=J0v6IAnWvPk)
 >
 > Traditionally, we post the challenges alongside the rewards. This always puts us in an awkward situation because we try not to change stuff after it has been announced, but the final week before release is a critical period for fine-tuning and testing. We have decided not to announce the challenges before the league starts, so that the team have freedom to keep adjusting the challenges as final testing continues. This league's challenges follow a similar format to the ones you're familiar with, so there should be no unexpected surprises there.
 >
