@@ -148,7 +148,7 @@ class GGGGobblerBot:
                 if cur_comment == "":
                     cur_comment = cont_preamble
                 chars_to_split_off = settings.COMMENT_CHAR_LIMIT - len(cur_comment)
-                index_to_split_at = section[:chars_to_split_off].rfind("\n\n") + 2
+                index_to_split_at = section[:chars_to_split_off].rfind("\n>\n") + 2
                 part = cur_comment + section[:index_to_split_at]
                 cur_comment = ""
                 parts.append(part)
@@ -156,7 +156,7 @@ class GGGGobblerBot:
             if section != "":
                 if len(cont_preamble + section) > settings.COMMENT_CHAR_LIMIT:
                     chars_to_split_off = settings.COMMENT_CHAR_LIMIT - len(cont_preamble)
-                    index_to_split_at = section[:chars_to_split_off].rfind("\n\n") + 2
+                    index_to_split_at = section[:chars_to_split_off].rfind("\n>\n") + 2
                     parts.extend([cont_preamble + section[:index_to_split_at], section[index_to_split_at:]])
                 else:
                     parts.append(cont_preamble + section)
