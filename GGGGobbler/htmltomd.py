@@ -39,7 +39,7 @@ def convert_tag(tag):
         return process_img(tag)
     elif tag.name == "ul":
         return ITEM_SEPARATOR + content_inside_this_tag
-    elif tag.name == "noscript":
+    elif is_excluded_tag(tag):
         return ""
 
     # tags below here insert a newline if not already inserted by previous call to convert_tag
@@ -130,6 +130,5 @@ def contains_tags(tag):
 
 def is_excluded_tag(tag):
     # I don't know why these are here but I'm ignoring them
-    if tag.name == "noscript":
-        return True
-    return False
+    excluded = ['noscript', 'style']
+    return tag.name in excluded
