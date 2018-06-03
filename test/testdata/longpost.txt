@@ -1,0 +1,1144 @@
+> **Content Update 3.3.0 -- Path of Exile: Incursion**
+>
+> **The Incursion Challenge League**
+>
+> * Challenge leagues are a great opportunity for a fresh start in a new economy. All of your old characters and items are still present in the Standard and Hardcore leagues, but you're encouraged to join the new leagues, complete challenges and demonstrate your mastery of Path of Exile!
+>
+> * With 3.3.0, there are Standard and Hardcore, and Solo Self-Found Standard and Hardcore, variations of the Incursion challenge league available. They have the same core mechanics and items.
+>
+> * In the Incursion Challenge League, explorer Alva Valai is searching for the ancient Vaal treasure temple of Atzoatl. Travel back in time to discover the location of the temple and change its history to maximise your reward.
+>
+> * Each time you encounter Alva in the wilderness, she can open a time portal, allowing you to visit the Temple of Atzoatl during its construction. Your brief visit can be extended by laying waste to its inhabitants. These visits allow Alva to learn its location in the present day, and allow you to influence its contents and reap its rewards.
+>
+> * After 11 Temporal Incursions, Alva will have narrowed down the present-day location of the Temple of Atzoatl. Together, you can explore the jungle, discover the temple and claim its treasures. Each type of room in the temple has its own unique risks and rewards.
+>
+> * Your actions in the past have significant consequences. By killing the Vaal Architects who guide the temple's construction, you can influence what rooms appear in the present-day version. During your Incursions, you may find keys that can be used to unlock doors in the past, allowing access to additional rooms in the future.
+>
+> * By traveling into the past and influencing the Vaal Architects to upgrade the rooms they are building, you can access even greater treasures. Many upgraded rooms come with rewards worthy of the significant danger they introduce into the temple.
+>
+> * The new challenge leagues include a set of 40 new challenges. When you complete 12 challenges, you will receive the Incursion Bandana. At 24, you will receive the Incursion Cloak. When you complete your 36th challenge, you will receive the Incursion Portal Effect. These microtransactions are only obtainable in this league.
+>
+> * From the 19th challenge onwards and for every third challenge after that, you will receive pieces of the Incursion Totem Pole decoration to display in your hideout. The Totem Pole permanently showcases how many of the Incursion challenges you completed during the league.
+>
+> **Major New Content and Features**
+>
+> * Added a new Strength gem - Vaal Earthquake: Smash the ground, dealing damage in an area and cracking the earth. The crack will erupt in a powerful aftershock after a short delay. Your steps will deal damage around you for a duration, cracking the earth if the previous cracks have erupted.
+>
+> * Added a new Intelligence gem - Vaal Blight: Apply a powerful debuff which deals chaos damage over time to enemies around. Then apply two additional layers in a larger area, growing greatly in size each time. Enemies are also substantially hindered, slowing their movement for a shorter secondary duration.
+>
+> * Added a new Dexterity gem - Vaal Blade Vortex: Create an independently-moving vortex of ethereal blades which last for a duration. The vortex moves towards nearby enemies, repeatedly damaging enemies that it passes through.
+>
+> * Added a new Strength/Intelligence gem - Vaal Impurity of Fire: Casts an aura that reduces fire damage taken and provides ignite immunity to you and nearby allies, and makes hits against nearby enemies ignore their fire resistance.
+>
+> * Added a new Dexterity/Intelligence gem - Vaal Impurity of Ice: Casts an aura that reduces cold damage taken and provides freeze and chill immunity to you and nearby allies, and makes hits against nearby enemies ignore their cold resistance.
+>
+> * Added a new Intelligence gem - Vaal Impurity of Lightning: Casts an aura that reduces lightning damage taken and provides shock immunity to you and nearby allies, and makes hits against nearby enemies ignore their lightning resistance.
+>
+> * Added a new Dexterity/Intelligence gem - Charged Traps Support: Supported trap skills have a chance to gain frenzy and power charges when your traps are triggered by an enemy. Also grants increased trap throwing speed per frenzy charge and added critical strike multiplier for traps per power charge.
+>
+> * Added a new Dexterity/Intelligence gem - Flamethrower Trap: Throw a trap that releases a number of flames in different directions around it when triggered. The flames last for a duration, rotating around the trap and repeatedly dealing damage. Burning enemies are dealt more damage.
+>
+> * Added a new Dexterity/Intelligence gem - Seismic Trap: Throw a trap which, once triggered, repeatedly releases a number of waves for a duration. Each wave deals damage in a series of small bursts in a line, ending with a larger burst. Modifiers to cast speed affect how frequently it releases waves.
+>
+> * Added a new Dexterity/Intelligence gem - Explosive Trap: Throw a trap that creates a large explosion when triggered, dealing spell damage in an area. A number of smaller explosions occur around this area in quick succession after the first.
+>
+> * Added a new Intelligence/Dexterity gem - Siphoning Trap: Throw a trap that applies debuff beams to a number of nearby enemies for a duration. The beams chill and deal cold damage over time. A beam is also applied to you, granting life and mana regeneration based on the number of debuff beams affecting enemies.
+>
+> * Added a new Intelligence/Dexterity gem - Lightning Spire Trap: Throw a trap which, once triggered, will repeatedly strike multiple areas around it for a duration, dealing lightning damage. Modifiers to cast speed affects how frequently it strikes. Has a higher chance to critically strike shocked enemies.
+>
+> * Added 31 new unique items, 4 of which were designed by our supporters.
+>
+> * Added 2 new Rogue Exiles, based on submissions by competition winners.
+>
+> * Added 22 new Divination Cards.
+>
+> * Added new corrupted implicits which can appear on items corrupted by Vaal orbs, bringing the total to approximately 176. Many of the old implicits were buffed or moved to different items, and some were disabled. Generally, corrupted implicits are now more powerful on average.
+>
+> * Added a new feature - Always Attack Without Moving: This feature prevents your character from moving while using skills where this is toggled on, as if you are holding down your "Attack in Place" key. This can be toggled on and off of individual skills in the skill bar. This feature can also be used on movement skills to prevent the skill from "namelocking" (ie. locking onto an enemy).
+>
+> **Minor New Content and Features**
+>
+> * Added 39 new Labyrinth Enchantments for existing skills, and 43 for new skills. Enchantments for existing skills which have undergone significant reworking may not appear any more due to mechanical changes making them nonfunctional, such as enchantments which modify the cooldown of trap skills. Existing versions of these enchantments will now grant increased damage with that skill at the same value.
+>
+> * Added 6 dangerous new Nemesis mods.
+>
+> * Added 8 new Grandmasters to the Hall of Grandmasters unique map, and replaced 2 existing ones.
+>
+> * Added 3D art for the following unique items: Ambu's Charge, Apep's Rage, Bloodseeker, Chin Sol, Cloak of Tawm'r Isley, Cospri's Malice, Cospri's Will, Darkray Vectors, Death's Hand, Doomfletch, Doomsower, Doon Cuebiyari, Dreamfeather, Dying Breath, Empire's Grasp, Great Old One's Ward, Greed's Embrace, Haemophilia, Ichimonji, Infernal Mantle, Infractem, Innsbury Edge, Kingsguard, Kondo's Pride, Kongor's Undying Rage, Maligaro's Lens, Maloney's Nightfall, Mon'tregul's Grasp, Moonsorrow, Nomic's Storm, Null's Inclination, Pillar of the Caged God, Piscator's Vigil, Queen of the Forest, Reaper's Pursuit, Repentance, Sentari's Answer, Shackles of the Wretched, Sin Trek, Snakebite, Soul Mantle, Terminus Est, The Baron, The Beast Fur Shawl, The Broken Crown, The Goddess Bound, The Restless Ward, Veil of the Night, Victario's Charity, Voltaxic Rift, Wyrmsign
+>
+> * Updated the 2D and 3D art of Tabula Rasa to look less like a sweatshirt your grandmother gave you that was several sizes too large.
+>
+> * Updated the appearance of the totems found in the Beast areas in Acts 4 and 9.
+>
+> * Targets for the Pale Council Prophecy chains now show up on the minimap.
+>
+> * Ground effects of all types (such as chilled ground) have been updated. They should be clearer to see and better for performance.
+>
+> * Made several skill performance optimisations, most notably Molten Strike's performance at high projectile volumes.
+>
+> * World and Map areas can now have multiple sub-areas. This means you can now, for example, find a Zana mission in the same map as a Labyrinth trial, Abyssal Depths, or an Elder Guardian. Please note that only the most recently opened sub-area of any given area will stay open indefinitely, and others will eventually expire as if it were any other inactive instance. Expired sub-areas become inaccessible, rather than simply resetting.
+>
+> * The item filter now supports sorting by gem levels, stack sizes and explicit item mods.
+>
+> * You can now filter the social panel with Ctrl+F.
+>
+> * Updated the Loreweave, Kingmaker, and The Taming vendor recipes to give Shaper and Elder results if all the inputs were Shaper or Elder items. Elder/Shaper Breach items now also maintain their status if they are transformed with a Blessing.
+>
+> * Continued to incrementally improve the sound, art, effects and environments.
+>
+> **Character Balance**
+>
+> * Modifiers to skill duration no longer modify the duration of traps, totems or mines, but will continue to modify the duration of skills cast by traps, totems and mines if those skills have a duration.
+>
+> * Ignite now deals 50% of the igniting hit's damage per second over 4 seconds (up from 40% per second).
+>
+> * You can now have up to 15 traps active at a time (up from 3).
+>
+> **Skill Balance**
+>
+> * Supports which cause skills to create traps, totems or mines will no longer grant that skill the duration tag.
+>
+> **Traps**
+>
+> * The interaction between trap skills with cooldowns and sources of additional traps thrown (such as the Multiple Traps or Cluster Trap Supports) has been changed, and now work as they did with Vaal Lightning Trap previously. Namely, additional traps can only be thrown if the skill has at least one extra trap cooldown stockpiled, and only as many additional traps will be thrown as there are cooldowns stockpiled. In other words, if you have three Seismic Traps stockpiled and have the Shaper's additional trap glove mod, you'll throw two traps and consume two Seismic Trap cooldowns. If you only have two cooldowns stockpiled and attempt to throw three Seismic Traps via the Multitrap support, you will only throw two traps.
+>
+> * As a result of this change to trap cooldowns, the following trap skills no longer have a cooldown: Fire Trap, Lightning Trap, Ice Trap.
+>
+> * The trap model has been updated.
+>
+> **Fire Trap**
+>
+> * No longer has a cooldown.
+>
+> * Now requires level 12.
+>
+> * Now deals 7-11 fire damage when triggered at gem level 1 (up from 2-4), up to 410-616 at gem level 20.
+>
+> * The burning ground it creates now deals 24.1 fire damage per second at gem level 1 (up from 3.6), up to 1362.8 fire damage per second at gem level 20 (up from 701.2). This damage is now modified by spell damage modifiers.
+>
+> * Base duration of the burning ground is now 1.75 seconds (down from 8 seconds).
+>
+> * Now has 1% increased fire damage per 1% gem quality (previously had 3% increased burning damage per 2% gem quality).
+>
+> * Now deals added fire damage against burning enemies.
+>
+> * Now has an added damage effectiveness of 200% (up from 100%).
+>
+> **Bear Trap**
+>
+> * Now applies a debuff on the affected enemy. The debuff lingers for a duration after the immobilising effects wear off.  While debuffed, enemies take 15% increased damage from traps and mines, and have 80% less movement speed. This movement speed gradually recovers back to normal over the course of the debuff's duration.
+>
+> * Now has a 4 second cooldown (up from 3).
+>
+> * Mana cost has been lowered at all levels. Now costs 6 mana at gem level 1 (down from 11), up to 23 mana at gem level 20 (down from 46)
+>
+> * Now has a base critical strike chance of 6% (up from 5%).
+>
+> **Lightning Trap**
+>
+> * No longer has a cooldown.
+>
+> * Now deals 14-41 lightning damage at gem level 1 (from 3-62), up to 279-838 at gem level 20 (from 52-979).
+>
+> * Now has 1% increased lightning damage per 1% gem quality, and 1% increased effect of shock per 2% gem quality (previously had 1% increased trap throwing speed per 2% gem quality). Incredible value!
+>
+> * Now has 80% increased critical strike chance against shocked enemies, growing as the gem levels, up to 118% at gem level 20.
+>
+> * Now has a lower mana cost at higher gem levels, up to 20 mana at gem level 20 (from 24).
+>
+> * Now has a base critical strike chance of 6% (up from 5%).
+>
+> * Now has an added damage effectiveness of 100% (up from 90%).
+>
+> * Now fires projectiles with a random rotation, as opposed to targeting an enemy.
+>
+> **Ice Trap**
+>
+> * No longer has a cooldown.
+>
+> * Now deals 48 -72 cold damage at gem level 1 (from 60-90), up to 414-620 at gem level 20 (from 519-778).
+>
+> * Now has a lower mana cost at higher gem levels, up to 22 mana at gem level 20 (from 25).
+>
+> **Conversion Trap**
+>
+> * Trap duration lowered to 4 seconds (from 8).
+>
+> * Mana cost has been lowered at all levels. Now costs 6 mana at gem level 1 (down from 16), up to 23 mana at gem level 20 (down from 37)
+>
+> **Specific Skill Changes**
+>
+> Many skills have received significant balance or mechanical changes. As always, these changes affect all sources of the skill.
+>
+> The following skills have received significant mechanical changes:
+>
+> **Infernal Blow**
+>
+> * Previously placed a debuff for 0.5 seconds on enemies hit by the skill. If the targed died while the debuff was active, it exploded, dealing fire damage equal to 10% of its maximum life to other nearby enemies.
+>
+> * Now places a debuff for 0.8 seconds. Repeated hits refresh the duration of the debuff and add another stack. If the target dies while debuffed, it explodes, dealing 6% of the monster's base maximum life to nearby enemies, plus 66% of base attack damage per debuff. At 6 stacks of the debuff, the target explodes for 66% of base attack damage per debuff and the debuffs are consumed. Monsters slain by this explosion will still explode, dealing damage based on its life.
+>
+> * Now requires level 12.
+>
+> * Now has an added damage effectiveness and base damage of 100% at gem level 1 (down from 130%), up to 123% at gem level 20 (down from 160%).
+>
+> * Now grants additional melee range as it levels, up to +3 at gem level 20.
+>
+> **Rain of Arrows**
+>
+> * Previously dealt damage in an area based on weapon damage.
+>
+> * Now fires a number of arrows across the area, dealing damage based on weapon damage with each one. Half of these arrows will target enemies in the area, while the rest will target the area at set ranges from the centre at random.
+>
+> * Now has an added damage effectiveness and base damage of 40% at gem level 1 (down from 110%), up to 50% at gem level 20 (down from 129%).
+>
+> **Charged Dash**
+>
+> * Previously moved a projection of the attacker in a straight line while channelling, dealing damage along that path based on attack speed and distance travelled only when the skill ceased channelling.
+>
+> * Now moves a projection of the attacker in a direction based on the cursor's position relative to the player (not just in a straight line). Deals pulses of damage along this path every 2 stages while channelling. When channeling ends, it deals 75% of base damage per stage. If the skill has reached its maximum number of stages or maximum distance, it deals 150% more base damage with each pulse.
+>
+> * The projection's path is limited by a set distance from the player as well as by the total distance travelled by the projection. Movement speed affects this distance.
+>
+> * Now has an added damage effectiveness and base damage of 75% at gem level 1 (down from 90%), up to 92.1% at gem level 20 (down from 109%).
+>
+> **Incinerate**
+>
+> * Previously fired short-duration projectiles in front of the caster while channelling, dealing 50% more damage with hits and ailments for each stage.
+>
+> * Now deals area-of-effect damage in a cone in front of the caster while channelling, dealing 25% more damage with hits and ailments for each stage. The angle of the cone increases by up to 300% while channelling. When the channeling ends, a final wave is released which deals 500% more damage with hits and Ignite. This final wave always ignites.
+>
+> * Now increases fire damage by 1% per 1% quality on the skill gem (previously increased projectile speed by 2% per 1% quality).
+>
+> **Ground Slam**
+>
+> * Previously dealt damage in a cone in front of the attacker, based on weapon damage.
+>
+> * Now deals damage in a cone in front of the attacker, based on weapon damage, but also deals up to 40% more damage to closer targets at gem level 1, up to 49% at gem level 20.
+>
+> * Now has a significantly wider area of effect.
+>
+> * Now has an added damage effectiveness and base damage of 100% at gem level 1 (up from 90%), up to 123% at gem level 20 (up from 120%).
+>
+> **Cold Snap**
+>
+> * Previously dealt cold damage in an area.
+>
+> * Now deals cold damage in an area, then creates an area of chilled ground which deals cold damage over time and expands over its duration to up to twice its original size. This effect lasts 6 seconds.
+>
+> * Now deals 24-35 cold damage at gem level 1 (up from 9-13), up to 534-800 cold damage at gem level 20 (up from 462-693).
+>
+> * Now has a cooldown of 3 seconds (down from 4), which can be bypassed by expending a frenzy charge (previously required a power charge).
+>
+> * Now requires level 16.
+>
+> * Now requires 18 dexterity at gem level 1 (Previously only required intelligence).
+>
+> * Now has an added damage effectiveness of 180% (up from 120%).
+>
+> * Now has a 25% chance to grant a frenzy charge when an enemy dies while affected by the skill's cold damage over time.
+>
+> **Power Siphon**
+>
+> * Now has an added damage effectiveness and base damage of 125% at gem level 1 (down from 130%), up to 150.7% at gem level 20 (down from 160.4%).
+>
+> * Now has a mana cost of 7 at gem level 1 (down from 13), up to 11 at gem level 20 (down from 15).
+>
+> * "Now has 20% increased critical strike chance per power charge.	"
+>
+> * "Now has +10% to critical strike multiplier per power charge.	"
+>
+> * Now has 20% chance to gain a power charge when you hit a rare or unique enemy.
+>
+> * Now fires 4 additional projectiles at gem level 1, up to 7 at gem level 20.
+>
+> * Now automatically targets enemies in front of you. Each projectile will target a different enemy.
+>
+> **Double Strike**
+>
+> * Now deals 3-5 additional physical damage against bleeding enemies at gem level 1, up to 113-169 additional physical damage against bleeding enemies at gem level 20.
+>
+> * Now has an added damage effectiveness and base damage of 93.9% at gem level 20 (down from 96.6%).
+>
+> * Now grants additional melee range as it levels, up to +3 at gem level 20.
+>
+> **Lacerate**
+>
+> * Now has an added damage effectiveness and base damage of 60% at gem level 1 (down from 95%), up to 73.7% at gem level 20 (down from 117.8%).
+>
+> * Now gains up to +9 to area of effect radius at gem level 20 (up from +5).
+>
+> * Now has 25% chance to cause bleeding on hit.
+>
+> * Now deals 25% more damage with hits and ailments against bleeding enemies.
+>
+> * No longer has 25% less attack speed.
+>
+> **Arc**
+>
+> * Now has an added damage effectiveness of 90% (up from 70%).
+>
+> * Now deals 7-37 lightning damage at gem level 1 (up from 2-35), up to 152-862 lightning damage at gem level 20 (up from 47-886).
+>
+> * Now deals 15% more damage for each remaining chain.
+>
+> * Can now split to an extra enemy whenever it chains. These splits cannot then chain.
+>
+> * Chains 4 times at level 1, up to 7 times at level 20.
+>
+> **Elemental Hit**
+>
+> * Previously added damage of a random element to an attack against a single target.
+>
+> * Now adds damage of all three element to attacks, selects one at random, and deals no damage of any other type. It tries not to pick the same element twice in a row. If the skill hits an enemy, it also deals damage in a small area around it. If the enemy is suffering from that element's associated ailment (ie. if it hits an ignited enemy with fire damage), the area component of the attack gets 80% more radius.
+>
+> * Now deals 10% more damage per elemental ailment on enemies.
+>
+> * Now has 30% chance to freeze, shock and ignite (up from 10%), which grows as the gem levels, up to 49% at gem level 20.
+>
+> * Now requires level 12.
+>
+> * Now actually shows the correct DPS in the tooltip.
+>
+> The following skills have recieved numerical balance changes.
+>
+> **Storm Burst**
+>
+> * Now deals 31-47 lightning damage at gem level 1 (up from 9-13), up to 183-275 lightning damage at gem level 20 (up from 50-76).
+>
+> * Now deals 65% more area damage (down from 250% more), triggered when channelling ceases.
+>
+> * Now has an added damage effectiveness of 40% (up from 10%).
+>
+> * Area of effect increased by 10%.
+>
+> **Orb of Storms**
+>
+> * Now deals 2-5 lightning damage at gem level 1 (up from 1-3), up to 118-353 lightning damage at gem level 20 (up from 59-177).
+>
+> * Now has an added damage effectiveness of 45% (up from 20%).
+>
+> * Increases to cast speed now affect Orb of Storms strike rate.
+>
+> **Ball Lightning**
+>
+> * Now deals 2-35 lightning damage at gem level 1 (up from 2-32), up to 22-420 lightning damage at gem level 20 (up from 14-260). Dank.
+>
+> * Now has an added damage effectiveness of 35% (up from 20%).
+>
+> * The projectile's base speed is now 33% faster. The projectile hits 33% more frequently to compensate.
+>
+> * The base radius has increased by 10%.
+>
+> **Bladefall**
+>
+> * Now has 100% increased critical strike chance.
+>
+> * Now has 20% reduced critical strike chance per volley, as well as 6% less damage per volley. Previously there was no penalty per volley to critical strike chance.
+>
+> * Now has a cast time of 0.7 seconds (down from 0.8)
+>
+> **Earthquake**
+>
+> * The base delay between the intial attack and the aftershock is now 1 second (down from 1.5 seconds).
+>
+> * The aftershock now deals more damage as the gem levels, dealing 69% more damage at gem level 20 (up from 50%).
+>
+> **Flame Surge**
+>
+> * Now deals even more damage with hits against burning enemies as the gem levels up, up to 88% more at gem level 20 (up from 50% at all levels.)
+>
+> * Now has an added damage effectiveness of 120% (up from 100%).
+>
+> **Firestorm**
+>
+> * Now deals 4-11 fire damage at gem level 1 (up from 4-10), up to 202-302 fire damage at gem level 20 (up from 162-243).
+>
+> **Frost Bomb**
+>
+> * Now deals 14-21 cold damage at gem level 1 (up from 10-14), up to 959-1439 cold damage at gem level 20 (up from 521-781).
+>
+> * Now has a 2 second delay before exploding, and applies a debuff which lasts 5 seconds and grants -25% cold resistance to affected enemies. (Previously had a 3.5 second delay before exploding, and applied a debuff which lasted 2 seconds and granted -20% cold resistance to affected enemies.)
+>
+> * Now has an added damage effectiveness of 200% (up from 130%).
+>
+> **Fireball**
+>
+> * Now deals 7-10 fire damage at gem level 1 (same as previously), up to 890 to 1335 fire damage at gem level 20 (up from 739-1109).
+>
+> * Now has a cast time of 0.75 seconds (down from 0.85 seconds).
+>
+> * Now gains up to +4 to the explosion's radius at gem level 20 (up from +3).
+>
+> * Now has an added damage effectiveness of 160% (up from 100%).
+>
+> * Now deals 50% more damage with Ignite at gem level 1, up to 88% more at gem level 20.
+>
+> **Flameblast**
+>
+> * Now deals 90% more damage with ailments for each stage (up from 50%).
+>
+> * Now has +5% chance to ignite for each stage.
+>
+> * Now costs 3 mana at gem level 1 (down from 6), up to 6 mana at gem level 20 (down from 9).
+>
+> **Magma Orb**
+>
+> * Now deals 8-10 fire damage at gem level 1 (up from 6-9), up to 699-1049 fire damage at gem level 20 (up from 637-956).
+>
+> * The speed at which the projectile bounces has been significantly increased.
+>
+> **Spark**
+>
+> * Now deals 1-20 lightning damage at gem level 1 (same as previously), up to 52-997 damage at gem level 20 (up from 44-832).
+>
+> * Now gains 1% increased projectile speed per gem level, up to 19% increased projectile speed at gem level 20.
+>
+> * Projectiles now have a base duration of 2 seconds (up from 1.5).
+>
+> * Now has an added damage effectiveness of 100% (up from 70%).
+>
+> **Bodyswap**
+>
+> * Now has a cast time of 0.6 seconds (down from 0.8)
+>
+> **Blade Vortex**
+>
+> * Now has 35% increased hit rate for each blade (up from 10%).
+>
+> * Now deals 35% more damage with hits and ailments for each blade (up from 30% for hits and 20% for ailments).
+>
+> * Now has 10% increased critical strike chance for each blade.
+>
+> * Now has a limit of 10 active spinning blades (down from 20).
+>
+> **Ethereal Knives**
+>
+> * Now deals 6-9 physical damage at gem level 1 (up from 4-6), up to 457-685 physical damage at gem level 20 (down from 459-688).
+>
+> **Blast Rain**
+>
+> * Now converts 100% of physical damage to fire (up from 50%).
+>
+> * Now penetrates 15% fire resistance at gem level 1, up to 25% at gem level 20.
+>
+> **Barrage**
+>
+> * Now has an added damage effectiveness and base damage of 40% at gem level 1 (down from 50%), up to 47.6% at gem level 20 (down from 61.4%).
+>
+> * Now fires 4 additional projectiles (up from 3).
+>
+> **Freezing Pulse**
+>
+> * Now deals 7-11 cold damage at gem level 1, up to 798-1197 cold damage at gem level 20 (up from 689-1034).
+>
+> * The projectile now moves more quickly at the start and slowly decelerates.
+>
+> * The damage now drops to 50% at maximum distance (up from 0%).
+>
+> **Ice Crash**
+>
+> * Can now be supported by Multistrike.
+>
+> **Doryani's Touch**
+>
+> * Can now be supported by Multistrike.
+>
+> **Static Strike**
+>
+> * Now correctly states that the explosion cannot be evaded or dodged.
+>
+> **Wither**
+>
+> * Clarified the skill's description.
+>
+> **Essence Drain**
+>
+> * Now specifies it cannot be used by traps or mines.
+>
+> **Phase Run**
+>
+> * Cast time lowered to 0.25 seconds (from 0.5).
+>
+> **Tempest Shield**
+>
+> * Cast time lowered to 0.25 seconds (from 0.5).
+>
+> **Flame Dash**
+>
+> * When targeting an unwalkable area, it will now teleport you as close to the edge as it can, rather than not casting.
+>
+> **Frost Wall**
+>
+> * Now correctly has a random orientation when it targets the caster or has no specific target.
+>
+> **Vaal Skill Changes**
+>
+> * Vaal skill gems now also grant the base version of the skill at the same level and quality as the Vaal gem. For example, a Vaal Burning Arrow skill gem now grants both the Vaal Burning Arrow and the Burning Arrow skills.
+>
+> * Using a Vaal skill now prevents you from gaining souls for all Vaal skills for a short period of time after the skill is used. The duration of this effect varies from skill to skill.
+>
+> * Whereas previously the cost of Vaal skills would increase in areas after Act 5, and again after Act 10, the cost of all Vaal skills is now consistent throughout the game. This is worth keeping in mind when looking at the following changes, as although many Vaal skill costs have been raised when compared to their base cost previously, they are typically now lower than the cost you would have paid in higher-level areas.
+>
+> * Damaging rare enemies now generates 1 Vaal soul per 2% life it loses, with a 1 second cooldown.
+>
+> * Damaging unique enemies now generates 3 Vaal souls per 2% life it loses, with a 1 second cooldown.
+>
+> **Specific Skill Changes**
+>
+> The following skills have received significant mechanical changes:
+>
+> **Vaal Lightning Strike**
+>
+> * Previously infused enemies it hit with lightning, causing lightning to arc to other nearby enemies.
+>
+> * Now attaches an orb of lightning to the enemy it hits, or the ground if it does not hit an enemy. This orb fires lightning projectiles to other nearby enemies (or in random directions if there are no enemies close enough) for the skill's duration. This also damages any enemy it is attached to.
+>
+> * Now has an added damage effectiveness and base damage of 80% at gem level 1 (down from 100%), up to 98.2% at gem level 20 (down from 122.8%).
+>
+> * Now lasts 8 seconds at all gem levels (previously lasted 5 seconds at gem level 1, up to 8.8 at gem level 20).
+>
+> * Now requires 20 souls per use (up from 16), and can store 1 use (down from 3)
+>
+> * Now prevents you from gaining Vaal souls for 8 seconds after use.
+>
+> **Vaal Arc**
+>
+> * Previously chained +40 times.
+>
+> * Now deals 38-64 lightning damage at gem level 1 (up from 2-35), up to 924-1539 lightning damage at gem level 20 (up from 49-939)
+>
+> * Now requires 25 souls per use (down from 32).
+>
+> * Now deals 15% more damage for each remaining chain.
+>
+> * Now increases shock duration by 100%.
+>
+> * Now increases the effect of shock by 100%.
+>
+> * Now chains 5 times, but each chain can split to another enemy (from which it can also chain). This number grows as it levels.
+>
+> * Now causes your Arc damage to be lucky for 4 seconds.
+>
+> * Now has an added damage effectiveness of 180% (up from 80%).
+>
+> * Now prevents you from gaining Vaal souls for 4 seconds after use.
+>
+> **Vaal Cold Snap**
+>
+> * Previously created a snowflake-shaped area of chilled ground which lasted 10 seconds.
+>
+> * Now deals 35-53 cold damage at gem level 1 (up from 11-17), up to 800 to 1201 cold damage at gem level 20 (up from 600-901).
+>
+> * Now creates an area of chilled ground in a circle around the caster, which deals cold damage over time for 5 seconds.
+>
+> * Now requires 35 souls to use (up from 32).
+>
+> * Now prevents you from gaining Vaal souls for 10 seconds after use.
+>
+> * Now has a 100% chance to grant a frenzy charge when an enemy dies while affected by the skill's cold damage over time.
+>
+> **Vaal Detonate Dead**
+>
+> * Would previously chain to other nearby corpses until there were no other nearby corpses left.
+>
+> * Now places a marker then detonates the nearest corpse, then after a short delay finds and detonates the next closest corpse in a large radius. It repeats this until there are no corpses in the large radius of the marker, or until it has detonated 22 corpses, with the delay growing slightly every time it repeats.
+>
+> * Now deals 15 to 21 fire damage at gem level 1 (up from 3-5), up to 1235-1852 at gem level 20 (up from 251-376), in addition to fire damage equal to 9% of the detonated corpse's maximum life (up from 8%).
+>
+> * Now gains 1% increased area damage per 1% gem quality (previously gained 1% increased cast speed per 1% gem quality).
+>
+> * Now prevents you from gaining Vaal souls for 8 seconds after use.
+>
+> * Now has an added damage effectiveness of 150% (up from 100%).
+>
+> **Vaal Double Strike**
+>
+> * Previously generated a double of your character which would attack enemies for a duration of 3.6 seconds at gem level 1, up to 5.5 seconds at gem level 20.
+>
+> * Previously required 16 souls to use, with the capacity to store 3 uses.
+>
+> * Now has an added damage effectiveness and base damage of 33% at gem level 1 (down from 70%), up to 40% at gem level 20 (down from 85%).
+>
+> * Now creates two doubles of your character for a duration of 8 seconds at all levels.
+>
+> * Now adds melee range as it levels up, up to +3 at gem level 20.
+>
+> * Now deals 3-5 additional physical damage against bleeding enemies at gem level 1, up to 113-169 additional physical damage against bleeding enemies at gem level 20.
+>
+> * Now requires 30 souls to use, with the capacity to store 2 uses.
+>
+> * Now prevents you from gaining Vaal souls for 6 seconds after use.
+>
+> **Vaal Rain of Arrows**
+>
+> * Previously dealt damage in an area of effect, pinning enemies hit by it in place for a duration.
+>
+> * Now fires a number of arrows across the area, dealing damage based on weapon damage with each one. Half of these arrows will target enemies in the area, while the rest will target the area at set ranges from the centre at random. This is then repeated 3 additional times.
+>
+> * Now maims on hit, with 150% increased effect of maim.
+>
+> * Now has an added damage effectiveness and base damage of 80% at gem level 1 (down from 140%), up to 100.1% at gem level 20 (down from 169%).
+>
+> * Now prevents you from gaining Vaal souls for 5 seconds after use.
+>
+> **Vaal Ground Slam**
+>
+> * No longer knocks back enemies.
+>
+> * No longer has 100% increased knockback distance.
+>
+> * Now deals 185% of base damage at gem level 1 (up from 160%), up to 226.8% at gem level 20 (up from 198%).
+>
+> * Now increases stun duration by 200%.
+>
+> * Now deals up to 40% more damage to closer enemies at gem level 1, up to 49% at gem level 20.
+>
+> * Now gains up to +9 to radius as it levels up (up from +6).
+>
+> * Now requires 15 souls to use (down from 24) and can store up to 3 uses.
+>
+> * Now prevents you from gaining Vaal souls for 2 seconds after use.
+>
+> **Vaal Righteous Fire**
+>
+> * Previously removed all of your energy shield and all but one life, instantaneously dealing fire damage to all nearby enemies based on the amount of life and energy shield lost.
+>
+> * Now removes 30% of your life and energy shield and creates a Righteous Fire aura around you which burns enemies within its radius based on the amount of life and energy shield lost for 4 seconds. It also looks pretty neat now.
+>
+> * Now deals 161% of life and energy shield lost as burning damage per second at gem level 1, up to 180% at gem level 20.
+>
+> * Now also grants 20% more spell damage while active at gem level 1, up to 39% more spell damage at gem level 20. This is multiplicative with Righteous Fire's more spell damage effect.
+>
+> * Now gains 1% increased burning damage per 1% gem quality (previously gained 1% increased spell damage per 1% quality).
+>
+> * Now requires 40 souls per use (up from 16).
+>
+> * Now prevents you from gaining Vaal souls for 10 seconds after use.
+>
+> **Vaal Flameblast**
+>
+> * Previously created a flameblast which grew without needing to be channelled until it reached 10 stages, then exploded.
+>
+> * Now creates a flameblast which shrinks without needing to be channelled, and explodes every 5 stages, until it reaches 15 stages. Each subsequent explosion is stronger than the last.
+>
+> * Now deals 90% more damage with ailments for each stage (up from 55%).
+>
+> * Now has +5% chance to ignite for each stage.
+>
+> * Now requires 30 souls per use (up from 16).
+>
+> * Now prevents you from gaining Vaal souls for 6 seconds after use.
+>
+> **Vaal Storm Call**
+>
+> * No longer triggers other Vaal Storm Calls at the end of its duration.
+>
+> * Now deals 14-26 lightning damage at gem level 1 (previously 13-25), up to 370-687 lightning damage at gem level 20 (previously 302-560).
+>
+> * The frequency of lightning strikes has been adjusted. It will now strike less frequently but can strike the same target multiple times in a row (previously, each target had a short cooldown which prevented this).
+>
+> * Lightning strikes now deal damage in an area, not just to the struck enemy.
+>
+> * The period of time between strikes now scales alongside the skill's duration. Reducing Vaal Storm Call's duration will now also shorten the delay between lightning strikes.
+>
+> * Now has a base duration of 6 seconds (up from 3).
+>
+> * Now prevents you from gaining Vaal souls for 6 seconds after use.
+>
+> * Area of effect of the primary strike (the final one) increased by approximately 33%.
+>
+> **Vaal Power Siphon**
+>
+> * Now has an added damage effectiveness and base damage of 150% at gem level 1 (up from 125%), up to 184.2% at gem level 20 (up from 155.4%).
+>
+> * Now requires 15 souls per use (down from 24) and can store 2 uses.
+>
+> * Now has 20% increased critical strike chance per power charge.
+>
+> * Now has +10% to critical strike multiplier per power charge.
+>
+> * Now grants a power charge when you hit a rare or unique enemy.
+>
+> * Now prevents you from gaining Vaal souls for 4 seconds after use.
+>
+> The following skills have received numerical balance changes.
+>
+> **Vaal Lightning Trap**
+>
+> * Now deals 14-41 lightning damage at gem level 1 (from 3-62), up to 279-838 at gem level 20 (from 52-979).
+>
+> * Now costs 20 souls per use (up from 16) and can store 3 uses.
+>
+> * Now prevents you from gaining Vaal souls for 5 seconds after use.
+>
+> * Now fires projectiles with a random rotation, as opposed to targeting an enemy.
+>
+> **Vaal Spectral Throw**
+>
+> * Now deals 91% of base damage at gem level 1 (up from 70%), up to 135.5% of base damage at gem level 20 (up from 104.2%).
+>
+> * Now fires 4 additional projectiles.
+>
+> * Now requires 10 souls per use (up from 8) and can store 3 uses.
+>
+> * Now prevents you from gaining Vaal souls for 6 seconds after use.
+>
+> **Vaal Burning Arrow**
+>
+> * Now has 30% chance to ignite enemies at gem level 1 (up from 20%), up to 49% chance to ignite enemies at gem level 20.
+>
+> * Now deals 30% more damage with ignite at gem level 1, up to 68% more damage with ignite at gem level 20. No longer grants increased burning damage.
+>
+> * Explosion radius is now 13% larger.
+>
+> * Now pierces 3 additional targets (rather than all).
+>
+> * Now requires 20 souls per use (up from 12) and can store 3 uses.
+>
+> * Now prevents you from gaining Vaal souls for 2 seconds after use.
+>
+> **Vaal Fireball**
+>
+> * Now deals 7-10 fire damage at gem level 1 (down from 8-11), up to 890-1335 fire damage at gem level 20 (up from 560-841).
+>
+> * Now has 20% chance to ignite enemies at gem level 1, up to 39% at gem level 20.
+>
+> * Now gains up to +4 to the explosion's radius at gem level 20.
+>
+> * Now deals 50% more damage with Ignite at gem level 1, up to 88% more at gem level 20.
+>
+> * Now gains 1% chance to ignite enemies per 2% gem quality (down from 2% chance to ignite per 1% gem quality).
+>
+> * Now has an added damage effectiveness of 160% (up from 125%).
+>
+> * Now requires 30 souls per use (down from 32).
+>
+> * Now prevents you from gaining Vaal souls for 5 seconds after use.
+>
+> **Vaal Spark**
+>
+> * Now requires 30 souls per use (down from 48).
+>
+> * Now prevents you from gaining Vaal souls for 6 seconds after use.
+>
+> * Now gains increased projectile speed as the gem levels up.
+>
+> **Vaal Summon Skeletons**
+>
+> * Now requires 50 souls per use (up from 32).
+>
+> * Now prevents you from gaining Vaal souls for 10 seconds after use.
+>
+> **Vaal Glacial Hammer**
+>
+> * Now requires 15 souls per use (up from 12).
+>
+> * Now prevents you from gaining Vaal souls for 4 seconds after use.
+>
+> **Vaal Cyclone**
+>
+> * Now requires 35 souls per use (up from 32).
+>
+> * Now prevents you from gaining Vaal souls for 5 seconds after use.
+>
+> **Vaal Molten Shell**
+>
+> * Now requires 50 souls per use (up from 48).
+>
+> * Now prevents you from gaining Vaal souls for 5 seconds after use.
+>
+> **Vaal Clarity**
+>
+> * Now requires 30 souls per use (up from 16).
+>
+> * Now prevents you from gaining Vaal souls for 12 seconds after use.
+>
+> **Vaal Discipline**
+>
+> * Now requires 50 souls per use (up from 24).
+>
+> * Now prevents you from gaining Vaal souls for 5 seconds after use.
+>
+> **Vaal Grace**
+>
+> * Now requires 50 souls per use (up from 24).
+>
+> * Now prevents you from gaining Vaal souls for 9 seconds after use.
+>
+> **Vaal Haste**
+>
+> * Now requires 50 souls per use (up from 24).
+>
+> * Now prevents you from gaining Vaal souls for 6 seconds after use.
+>
+> **Vaal Immortal Call**
+>
+> * Now requires 100 souls per use (up from 48).
+>
+> * Now prevents you from gaining Vaal souls for 8 seconds after use.
+>
+> * Can no longer be obtained via corruption, Vaal side area, or divination card.
+>
+> **Vaal Lightning Warp**
+>
+> * Now requires 20 souls per use (up from 16).
+>
+> * Now prevents you from gaining Vaal souls for 2 seconds after use.
+>
+> * Can no longer be obtained via corruption, Vaal side area, or divination card.
+>
+> **Vaal Ice Nova**
+>
+> * Now requires 25 souls per use (up from 24)
+>
+> * Now prevents you from gaining Vaal souls for 4 seconds after use.
+>
+> **Vaal Reave**
+>
+> * Now requires 35 souls per use (up from 24).
+>
+> * Can now store up to 2 uses (from 1).
+>
+> * Now prevents you from gaining Vaal souls for 4 seconds after use.
+>
+> **Vaal Breach**
+>
+> * Now requires 100 souls per use (up from 48).
+>
+> * Now prevents you from gaining Vaal souls for 40 seconds after use.
+>
+> **Gluttony of Elements**
+>
+> * Now has a base duration of 5 seconds (down from 6).
+>
+> * Now has a cast time of 0.5 seconds (down from 1 second).
+>
+> * Now requires 100 souls per use (up from 48).
+>
+> * Now prevents you from gaining Vaal souls for 16 seconds after use.
+>
+> **Support Gem Balance**
+>
+> **Trap Support**
+>
+> * No longer grants supported skills more trap damage.
+>
+> * No longer has a cooldown.
+>
+> * Now has a mana multiplier of 110% (down from 140%).
+>
+> * Now grants supported skills increased trap throwing speed, up to 10% at gem level 20.
+>
+> **Multiple Traps Support**
+>
+> * Now has a mana multiplier of 140% (down from 160%).
+>
+> **Trap Cooldown Support/Advanced Traps Support**
+>
+> * Has been renamed to Advanced Traps Support.
+>
+> * Now grants supported trap skills 15% increased cooldown recovery speed at gem level 1 (down from 30%), up to 25% increased cooldown recovery speed at gem level 20 (down from 49%).
+>
+> * Now grants supported trap skills 10% increased skill duration at gem level 1, up to 29% at gem level 20.
+>
+> * Now grants supported trap skills 15% increased trap throwing speed at gem level 1, up to 34% at gem level 20.
+>
+> * Now has a mana multiplier of 120% (up from 110%)
+>
+> **Trap and Mine Damage Support**
+>
+> * Now grants supported skills 30% more trap and mine damage at gem level 1 (up from 20%), up to 49% at gem level 20 (up from 39%).
+>
+> **Endurance Charge on Melee Stun Support**
+>
+> * Now causes supported skills to deal 4% more damage per endurance charge (up from 3%).
+>
+> **Chance to Ignite Support/Combustion Support**
+>
+> * Has been renamed to Combustion Support.
+>
+> * Now lowers the fire resistance of enemies ignited by supported skills, inflicting -10% fire resistance at gem level 1, down to -19% at gem level 20.
+>
+> **Hypothermia Support**
+>
+> * Now causes supported skills to deal 20% more cold damage over time at gem level 1, up to 39% at gem level 20.
+>
+> * Now supports skills which deal damage over time.
+>
+> **Power Charge on Critical Support**
+>
+> * Now causes supported skills to deal 4% more damage per power charge.
+>
+> **Deadly Ailments Support**
+>
+> * Now causes supported skills to deal 45% more damage with ailments at gem level 1 (up from 40%), up to 64% at gem level 20 (up from 59%).
+>
+> * Now causes supported skills to deal 10% less damage with hits (down from 20%).
+>
+> **Elemental Proliferation Support**
+>
+> * Elemental ailments caused by supported skills now spread in a radius of 12 at gem level 1 (up from 10). This now grows as the gem levels, up to 15 at gem level 20.
+>
+> **Ignite Proliferation Support**
+>
+> * Ignites caused by supported skills now spread in a radius of 14 at gem level 1, up to a radius of 20 at gem level 20 (up from 16).
+>
+> * Now causes supported skills to deal 20% more damage with ignite at gem level 1 (up from 0), up to 39% at gem level 20 (up from 19%).
+>
+> **Ancestral Call Support**
+>
+> * Can no longer support Vaal skills.
+>
+> **Passive Tree Balance**
+>
+> * There were two primary goals with the passive tree adjustments: Provide more power to ignite builds without providing more power to other burning damage builds, and rebalance trap and mine passives. To that end, most of the reductions to trap and mine passives occur to trap throwing speed and mine placement speed. This was to bring them more closely in line with cast speed. Trap cooldown recovery was also targeted, as many bread-and-butter traps no longer have cooldowns, and the traps introduced in this patch are strong enough to warrant their longer cooldowns.
+>
+> * To better enable trap builds from level 1, the Shadow's starting area has received numerous changes.
+>
+> * The first two passives of the Shadow's top starting path now both grant increased damage (rather than increased elemental damage).
+>
+> * The top passives of the Shadow's starting top cluster now grant increased trap and mine damage (rather than increased cast speed).
+>
+> * The bottom passives of the Shadow's starting bottom cluster now grant increased cast speed as well as attack speed.
+>
+> * Trickery (near the Shadow's start) now grants increased damage (rather than increased elemental damage).
+>
+> * The Saboteur cluster (near the Shadow) has moved even closer to the Shadow. One of its small passives now grants 4% increased trap throwing speed and 4% increased mine laying speed (down from 8%).
+>
+> * The passives leading to Clever Construction on the trap and mine wheel near the shadow now each grant 4% increased trap throwing speed and 4% increased mine laying speed (down from 5%).
+>
+> * The far side of the trap and mine wheel near the Shadow has a new notable - Devastating Devices: 50% increased critical strike chance with traps and mines, 40% increased trap trigger area of effect, and 40% mine detonation area of effect.
+>
+> * The passive skills on either side of Devastating Devices have completely changed. One grants +15% to trap and mine critical strike multiplier, the other grants 20% increased critical strike chance with traps and mines.
+>
+> * The Master Sapper cluster (previously near the Ranger) has been moved between the Ranger and the Shadow. It now has 4 passives (down from 6), and grants a total of 68% increased trap damage (down from 92%), 4% increased trap throwing speed (down from 12%), and 20% increased trap trigger area of effect (down from 40%).
+>
+> * The Expeditious Munitions cluster has moved where Saboteur used to be. It now grants 20% increased trap damage (up from 15%) and 8% increased trap throwing speed (down from 15%). The two passives leading to the notable now each grant 4% increased trap throwing speed (down from 6%).
+>
+> * Hasty Reconstruction (between the Witch and Shadow) now grants 10% increased cooldown recovery speed for throwing traps (down from 20%) and the passive immediately before it now grants 5% increased cooldown recovery speed for throwing traps (down from 10%).
+>
+> * Celestial Judgement's (near the Templar) elemental resistance penetrations are now 5% (up from 2%).
+>
+> * Heart of Flame (near the Witch) now causes damage to penetrate 6% fire resistance (up from 3%). The passives leading to it now grant a total of 57% increased fire damage (up from 46%).
+>
+> * Breath of Flames (right next to Heart of Flame) now grants 20% increased ignite duration (up from 10%), 20% increased burning damage (down from 30%), 20% chance to ignite (up from 5%) and 20% increased fire damage (up from not giving any at all). The three passives leading to it now give a total of 20% increased burning damage (down from 40%), and 30% increased fire damage (previously none).
+>
+> * Heart of Thunder (also near the Witch) now causes damage to penetrate 6% lightning resistance (up from 3%). The passives leading to it now grant a total of 57% increased lightning damage (up from 48%).
+>
+> * Breath of Lightning (next to Heart of Thunder) now grants 20% increased lightning damage (up from 12%). The three passives leading to it now each grant 10% increased lightning damage (up from 8%).
+>
+> * Heart of Ice (guess where!) now causes damage to penetrate 6% cold resistance (up from 3%). The passives leading to it now grant a total of 57% increased cold damage (up from 48%).
+>
+> * Breath of Rime (Near the Duelist. Kidding! It's next to Heart of Ice) now grants 20% increased cold damage (up from 12%). The three passives leading to it now each grant 10% increased cold damage (up from 8%).
+>
+> * Holy Fire (between the Witch and Templar) now grants 40% increased burning damage (down from 60%), 20% increased fire damage (previously none), and 15% chance to ignite (previously none). The passives leading to it which previously granted 20% increased burning damage now grant 12% increased burning damage and 8% increased fire damage. The passive next to Holy Fire which grants 5% chance to ignite now also grants 8% increased fire damage.
+>
+> **Ascendancy Balance**
+>
+> * The Elementalist's Beacon of Ruin now proliferates elemental ailments in a radius of 18 (up from 12). It no longer grants 20% increased effect of non-damaging ailments, and instead grants 20% more damage with ignite.
+>
+> * Each of the Saboteur's passives which previously granted increased elemental damage now grant increased trap and mine damage instead.
+>
+> * Each of the Saboteur's small passives which previously granted 8% increased trap throwing speed now grant 5% increased trap throwing speed.
+>
+> * Each of the Saboteur's small passives which previously granted 8% increased mine laying speed now grant 5% increased mine laying speed.
+>
+> * The Saboteur's Perfect Crime now grants 10% increased cooldown recovery speed for throwing traps (down from 20%).
+>
+> * The Saboteur's Chain Reaction now grants 15% increased cooldown recovery speed for throwing traps (down from 30%).
+>
+> **Item Balance**
+>
+> * The Merciless and Eternal Labyrinth Arc enchantments that grant additional chains now grants +1 to chain from the Merciless Labyrinth (down from 2) and +2 chains in the Eternal Labyrinth (down from +3). Existing enchantments won't change unless a Blessed Orb is used, so don't do that.
+>
+> * The Merciless and Eternal Labyrinth Bear Trap enchantments that grant increased cooldown recovery speed now grant half as much. Existing versions won't change unless a Blessed Orb is used.
+>
+> * The Merciless and Eternal Labyrinth Charged Dash enchantments that grant added radius to the skill's final area of effect now grants +4 radius from the Merciless Labyrinth (down from +6) and +6 radius from the Eternal Labyrinth (down from +9). Existing versions won't change unless a Blessed Orb is used, but why on earth would you do that?
+>
+> * There may be further changes to existing Labyrinth enchantments over the coming days, related to the broad skill rebalance.
+>
+> * Disabled the "Avoid Stun While Casting Storm Burst" enchantment from appearing.
+>
+> * Disabled the "Reduced Ball Lightning Projectile Speed" enchantment from appearing.
+>
+> * Several sources of accuracy on weapons which should have been local to the weapon were global. These have been changed to local. This primarily affects weapons crafted with accuracy on Vagan's Sharpening Wheel, as well as several unique items (see the unique item balance section below). Implicit increases to accuracy such as the ones found on sword basetypes are now all global.
+>
+> * Descriptions of dodge and spell-dodge chance have been standardised.
+>
+> * Vaal vessels found in Vaal side areas or by placing a Vaal fragment in the map device now drop more items.
+>
+> * The Unearth skill gem now correctly drops at or above level 10.
+>
+> * The "of Warding" flask suffix can now appear on flasks with the Seething prefix.
+>
+> * The glowing effect on the Demigod's Triumph unique helmet is now part of the skin and can be transferred with a skin transfer.
+>
+> * The "detonates nearby corpses" mod on strongboxes will now detonate corpses more quickly.
+>
+> * The 5-for-1 magic or rare vendor recipe no longer maintains Shaper/Elder item status.
+>
+> * Updated the description of the Petrification Statue skill found on the Gorgon's Gaze item.
+>
+> **Unique Item Balance**
+>
+> * The following items have had their global accuracy modifiers replaced with local accuracy modifiers. Only builds which were dual-wielding any pair of these items will be affected. The affected items are: Rigwald's Command, Piscator's Vigil, Silverbranch, Silverbough, Quill Rain, Dreamfeather, Izaro's Dilemma, Rigwald's Charge, Kaom's Primacy, Marohi Erqi, Infractem, and Wideswing.
+>
+> * The Writhing Jar: Worms spawned from The Writhing Jar are now destroyed when hit. This overrides effects which would otherwise prevent them from dying, such as the one found on the unique gloves Southbound.
+>
+> * Stormfire: The "increased Burning Damage for each Enemy you have Shocked Recently" mod now only applies to enemies that were not already shocked. The description has been updated to clarify this.
+>
+> * Dyadus: No longer has the mod "Enemies chilled by you take 100% increased burning damage". Dyadus now has "100% increased Damage with Ignites inflicted on Chilled Enemies".
+>
+> * Rapid Expansion: Now limited to 2. With at least 40 Strength in Radius, it now grants Ground Slam a 35% chance to grant an Endurance Charge when you Stun an Enemy (up from 25%), and a 50% increased angle (up from 35%). Existing versions of this jewel can be updated with a Divine Orb.
+>
+> * Malachai's Artifice: Now correctly has 25% reduced effect of Elemental Equilibrium. It previously had 40%, despite saying 25%.
+>
+> * Primordial Harmony: Now grants your golems 30-45% increased cooldown recovery speed, to compensate for a bug that was fixed. Existing versions of this jewel can be updated with a Divine Orb.
+>
+> * Atziri's Reign: Now has a limit of 2. Existing copies of this jewel will automaticaly be updated to have this limit.
+>
+> * Perandus Manor: Now has a 100% chance to spawn Cadiro Perandus somewhere in it.
+>
+> * Xoph's Inception: Now proliferates Ignites in a radius of 15 (up from 12). Existing versions of this item can be updated with a Divine Orb.
+>
+> * Winter's Bounty: Now changes the skill from generating and having a cooldown override of Frenzy Charges to Power Charges. It now has a limit of 1. Existing copies of this jewel will automatically be updated to this new behaviour.
+>
+> * Bubonic Trail: Now has a neat new effect.
+>
+> **Monster Balance**
+>
+> * Added two new monster types to the Control Blocks in Act 10, as well as to maps. Several existing Kitava-themed monsters have also been added to maps.
+>
+> * Monsters which use Detonate Dead and Vaal Detonate Dead have been updated to use a version similar to the one used by Alira and Tolman in maps.
+>
+> * Shivershell now telegraphs that he will use his Detonate Dead skill before he uses it.
+>
+> * All versions of Alira now have a shorter cast time for her Detonate Dead.
+>
+> * Normal and Magic monsters from Breaches now drop significantly fewer items.
+>
+> * The boss of Thicket, The Primal One, no longer has a cooldown on his sunder when he enrages.
+>
+> * Several monsters which raised zombies were incorrectly using the player version of the skill, resulting in very strong zombies capable of slamming. They've been swapped over to a different version of the skill.
+>
+> * The attack range of Desecrated Thralls (Kitava's skeletons) has been increased by 25%.
+>
+> * Na'em, Bending Stone now deals the same damage with his projectiles at all ranges. The damage has been lowered by 30% to compensate. This skill now has a 4 second cooldown.
+>
+> * The cast time on Bameth, Shifting Darkness's Detonate Dead has been lowered.
+>
+> * Monsters which use Elemental Hit (such as Vaal Constructs) now use the cool new version.
+>
+> * The monster waves while attempting to open Weylam's War Chest will transition more quickly if you're killing them quickly.
+>
+> * The Elder now drops all of its loot, including the Watcher's Eye, at the very end of the encounter.
+>
+> * Maker of Mires in the Hallowed Ground map will now create clones more reliably.
+>
+> * The number and locations of spiders spawned during the Weaver encounter has been slightly adjusted.
+>
+> **Map Balance**
+>
+> * Once you have completed 20 maps while the Elder and its guardians are on your atlas without actually defeating any of them, there is a chance for the Elder and its guardians to disappear and remove the Elder-influence from the maps they were on. This will make it difficult to maintain an "Elder Ring", but will also allow players who weren't capable of defeating the Elder or its guardians to clear them from their atlas.
+>
+> * Shaper memory fragments XI through to XV no longer require you to defeat the Elder or its guardians in specific map tiers. Instead, defeating each guardian and the elder within ANY red-tier map will get you one of these fragments.
+>
+> * You can no longer get Shaper memory fragments XI through to XV from a map if you are not the map's owner.
+>
+> * Zana's Onslaught mod now also increases monster movement speed. Previously, this was not the case.
+>
+> * Pit of the Chimera is now more linear. Has slightly fewer monsters on average now to compensate.
+>
+> * Crystal Ore is also now more linear and has had its monster spawns slightly reduced to compensate.
+>
+> * The Vaal Temple map can no longer roll the Twinned mod or have the Deadly Twins prophecy trigger on it.
+>
+> * Malformation's layout has been significantly reworked to be more pleasant to run.
+>
+> * The magic monsters in the Burial Chambers boss room won't spawn so close to the entrance now.
+>
+> * The Perandus Manor is once again on the Atlas, connected to Chateau.
+>
+> **Zana League Mods Available During 3.3.0**
+>
+> * Level 2: Invasion (costs 2 Chaos Orbs): Area is inhabited by an additional Invasion boss. 20% increased quantity of items found in this area.
+>
+> * Level 3: Warbands (costs 3 Chaos Orbs): Area is inhabited by 3 additional Warbands. 20% increased quantity of items found in this area.
+>
+> * Level 4: Anarchy (costs 3 Chaos Orbs): Area is inhabited by 3 additional Rogue Exiles. 20% increased quantity of items found in this area.
+>
+> * Level 4: Fortune Favours the Brave: (costs 4 Chaos Orbs) One of these options will be applied at random, including those you have not yet unlocked.
+>
+> * Level 5: Beyond (costs 4 Chaos Orbs): Slaying enemies close together can attract monsters from Beyond. 20% increased quantity of items found.
+>
+> * Level 6: Domination (costs 4 Chaos Orbs): Area contains 3 extra Shrines.
+>
+> * Level 7: Abyss (costs 5 Chaos Orbs): Area contains an additional Abyss.
+>
+> * Level 8: Breach (costs 6 Chaos Orbs): Area contains 2 additional Breaches.
+>
+> **Quest Rewards**
+>
+> * The Templar and Marauder can now both purchase Onslaught Support from a vendor after completing the prerequisite quest.
+>
+> * The Witch is now offered Herald of Ash as a quest reward, and can also purchase it from it a vendor after completing the prerequisite quest.
+>
+> * Changes to Cold Snap mean it is now available as a quest reward for the Witch and Shadow in Act 2, and is available to the Templar and Ranger from a vendor after completing the prerequisite quest.
+>
+> **PvP Balance**
+>
+> * In light of the extensive skill balance changes, PvP balance is still ongoing. We have PvP balance changes coming, and we'll add these notes when we have them.
+>
+> **Bug Fixes**
+>
+> * Fixed a bug where Soul Eater's buff description said it granted physical damage reduction and elemental resistances when it doesn't.
+>
+> * Fixed a bug where Sentari's Answer on an Animated Guardian owned by a player who also had Sentari's Answer and Necromantic Aegis would result in unintendedly high-level curses.
+>
+> * Fixed a bug where stats added to a skill by skill-specific mods would be copied to minions created by that skill. This caused a variety of unintended effects, the most notable of which was the cooldown modifier to Golem skills found on the unique jewel Primordial Harmony. In addition to its regular effect, the cooldown modifier was carried through to the Golem's cooldown skills, lowering those cooldowns as well.
+>
+> * Fixed a client crash that could occur during the Kitava encounter when Kitava hurls burning planks.
+>
+> * Fixed a bug where Yugul would fail to correctly transition between his various phases.
+>
+> * Fixed a bug where tutorial pages could retain their 'unread' exclamation marks even after being read.
+>
+> * Fixed a bug where shield crab shells would spontaneously vanish once knocked off.
+>
+> * Fixed a bug where Arakaali could become immune and unkillable if she hid while at extremely low life.
+>
+> * Fixed a bug with the Wither skill in which the duration of the debuffs it was applying were not being modified by all of the correct modifiers.
+>
+> * Fixed a bug where certain support combinations could allow Arcane Surge to support and trigger from attacks. This was unintended.
+>
+> * Fixed a bug where Arcane Surge would appear to not be able to support traps, totems and mines when viewing gem links when it in fact can.
+>
+> * Fixed some display issues with the Microtransactions Shop UI and other UI elements.
+>
+> * Fixed a crash that could occur while using Arborix, Augyre or Vulconus.
+>
+> * Fixed a bug where the Occultist's Forbidden Power would only grant a power charge once during sustained channelling, not every time the mana threshold was crossed.
+>
+> * Fixed a bug where weapon-swapping a weapon with Cremation while you had an instance of Cremation active would cause the Cremation to remain visually but actually stop functioning (now it will correctly disappear).
+>
+> * Fixed a bug where Izaro could introduce Argus after the player had already snuck in and killed Izaro's most loyal friend.
+>
+> * Fixed a bug where shrines could spawn atop rocks in the Vastiri Desert and Foothills areas (and other areas that used those tilesets).
+>
+> * Fixed a bug where Yeena's fireflies could spawn in unreachable locations.
+>
+> * Fixed a bug where the Rebirth prophecy could cause Bannon to become unrescuable in Act 10.
+>
+> * Fixed a bug where Doedre could occasionally use a skill while changing forms, causing the skill to come from an invisible entity.
+>
+> * Fixed a rare bug that could cause you to still have the Bandit Quest on your quest tracker despite already having Eramir's 2 skill point reward from completing that quest.
+>
+> * Fixed a bug which could cause you to not automatically be offered one of two quest rewards in Act 9 on turn-in.
+>
+> * Fixed a bug where Blood Rage was not counted as a buff for the purposes of Mantra of Flames.
+>
+> * Fixed a bug where swapping support gems in your mainhand weapon could cause your totems to die.
+>
+> * Fixed a bug where the Frost Blades effect was appearing farther back than intended.
+>
