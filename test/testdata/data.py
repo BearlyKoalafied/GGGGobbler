@@ -27,8 +27,20 @@ values = {
     "a_no_href_input": "<a>tag with no href</a>",
     "a_no_href_output": "tag with no href",
 
+    "italics_input": "<em>italics text</em>",
+    "italics_output": "*italics text*",
+
+    "italics_whitespace_input": "<em>italics with space at end </em>",
+    "italics_whitespace_output": "*italics with space at end* ",
+
+    "italics_inline_input": "<p>here is some text <em>here is some more italicised text</em> more text...</p>",
+    "italics_inline_output": "here is some text *here is some more italicised text* more text...\n\n",
+
     "strong_input": "<strong>strong text</strong>",
     "strong_output": "**strong text**",
+
+    "strong_whitespace_input": "<strong>The realm goes down and patching begins at: </strong>",
+    "strong_whitespace_output": "**The realm goes down and patching begins at:** ",
 
     "strong_inline_input": "<p>here is some text <strong>here is some strong text</strong> more text...</p>",
     "strong_inline_output": "here is some text **here is some strong text** more text...\n\n",

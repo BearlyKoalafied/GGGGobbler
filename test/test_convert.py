@@ -26,8 +26,24 @@ class ConvertTestCase(unittest.TestCase):
         html, expected_output = self.load_values('a_no_href')
         self.assertEqual(expected_output, htmltomd.convert(html))
 
+    def test_italics(self):
+        html, expected_output = self.load_values('italics')
+        self.assertEqual(expected_output, htmltomd.convert(html))
+
+    def test_italics_whitespace(self):
+        html, expected_output = self.load_values('italics_whitespace')
+        self.assertEqual(expected_output, htmltomd.convert(html))
+
+    def test_italics_inline(self):
+        html, expected_output = self.load_values('italics_inline')
+        self.assertEqual(expected_output, htmltomd.convert(html))
+
     def test_strong(self):
         html, expected_output = self.load_values('strong')
+        self.assertEqual(expected_output, htmltomd.convert(html))
+
+    def test_strong_whitespace(self):
+        html, expected_output = self.load_values('strong_whitespace')
         self.assertEqual(expected_output, htmltomd.convert(html))
 
     def test_strong_inline(self):

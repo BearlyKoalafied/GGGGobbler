@@ -30,11 +30,11 @@ def convert_tag(tag):
     elif tag.name == "a":
         return content_inside_this_tag
     elif tag.name == "strong":
-        return "**" + content_inside_this_tag + "**"
+        return process_strong(content_inside_this_tag)
     elif tag.name == "span":
         return content_inside_this_tag
     elif tag.name == "em":
-        return "*" + content_inside_this_tag + "*"
+        return process_italics(content_inside_this_tag)
     elif tag.name == "img":
         return process_img(tag)
     elif tag.name == "ul":
@@ -75,6 +75,19 @@ def convert_tag(tag):
 def process_string(nav_string):
     return nav_string
 
+def process_strong(content):
+    # get leading whitespace
+    leading_whitespace = content[:len(content)-len(content.lstrip())]
+    # get trailing whitespace
+    trailing_whitespace = content[len(content.rstrip()):]
+    return leading_whitespace + "**" + content.strip() + "**" + trailing_whitespace
+
+def process_italics(content):
+    # get leading whitespace
+    leading_whitespace = content[:len(content)-len(content.lstrip())]
+    # get trailing whitespace
+    trailing_whitespace = content[len(content.rstrip()):]
+    return leading_whitespace + "*" + content.strip() + "*" + trailing_whitespace
 
 def process_img(img):
     text = "Image Link"
