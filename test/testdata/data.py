@@ -45,6 +45,9 @@ values = {
     "strong_inline_input": "<p>here is some text <strong>here is some strong text</strong> more text...</p>",
     "strong_inline_output": "here is some text **here is some strong text** more text...\n\n",
 
+    "img_input":'<img src="https://www.example.com/2.jpg" alt="">',
+    "img_output":"[Image Link](https://www.example.com/2.jpg)",
+
     "nested_types_input": "<li><p>Point 1 <strong>with strong</strong>...</p></li>"
                           "<li><p>Point 2 <strong>with strong</strong>...</p></li>"
                           "<li><p>Point 3 <strong>with strong</strong>...</p></li>",

@@ -59,9 +59,9 @@ def convert_tag(tag):
         output = process_iframe(tag)
     elif tag.name == "video":
         if tag.has_attr("src"):
-            output = "[Embedded Video](" + tag["src"] + ")"
+            output = linkify("Embedded Video", tag["src"])
         elif tag.children is not None and tag.find("source").has_attr("src"):
-            output = "[Embedded Video](" + tag.find("source")["src"] + ")"
+            output = linkify("Embedded Video", tag.find["source"]["src"])
         else:
             output = content_inside_this_tag
     else:
@@ -95,7 +95,7 @@ def process_img(img):
     if img.has_attr("alt") and img["alt"]:
         text = img["alt"]
     link = img["src"]
-    return "[" + text + "](" + link + ")"
+    return linkify(text, link)
 
 def process_quote_box(quotebox):
     for child in quotebox:
@@ -125,7 +125,7 @@ def process_iframe(iframe):
         link = "https://www.youtube.com/watch?v=" + video_id
     else:
         link = src
-    return "[" + text + "](" + link + ")"
+    return linkify(text, link)
 
 def quote_boxify(md):
     output = []
@@ -134,6 +134,15 @@ def quote_boxify(md):
         if line:
             output.append("> " + line + "\n>\n")
     return "".join(output)
+
+def linkify(text, link):
+    link_builder = list(link)
+    escaped = ["(", ")"]
+    for i in range(len(link_builder) - 1, -1, -1):
+        if link_builder[i] in escaped:
+            link_builder.insert(i, '\\')
+
+    return "[" + text + "](" + "".join(link_builder) + ")"
 
 def contains_tags(tag):
     for child in tag:
