@@ -63,6 +63,17 @@ values = {
     "blockquote_output": "> * p1\n>\n"
                          "> * p2\n>\n"
                          "> * p3\n>\n",
+
+    "nested_quote_input": "<blockquote>"
+                          "<div class='bot'>"
+                          "Nested blockquote"
+                          "</div>"
+                          "</blockquote>"
+                          "unnested blockquote",
+    "nested_quote_output": "> > Nested blockquote\n"
+                           "> >\n"
+                           "> unnested blockquote\n"
+                           ">\n",
     "iframe_basic_input": "<iframe width=\"900\" height=\"506\" src=\"www.youtube.com/watch?v=sFumzUFaQvE\" frameborder=\"0\" allowfullscreen=\"\"></iframe>",
     "iframe_basic_output": "[Youtube Video](https://www.youtube.com/watch?v=sFumzUFaQvE)\n\n",
     "iframe_embed_input": "<iframe width=\"900\" height=\"506\" src=\"//www.youtube.com/embed/sFumzUFaQvE\" frameborder=\"0\" allowfullscreen=\"\"></iframe>",

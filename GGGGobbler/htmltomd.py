@@ -102,7 +102,7 @@ def process_quote_box(quotebox):
         if child.has_attr("class") and child["class"] == 'top':
             # author_info = "> " + child.find("a").
             pass
-        if child.has_attr("class") and child["class"] == 'bot':
+        elif child.has_attr("class") and child["class"] == 'bot':
             return quote_boxify(process_tag(child))
     return quote_boxify(process_tag(quotebox))
 
@@ -129,10 +129,20 @@ def process_iframe(iframe):
 
 def quote_boxify(md):
     output = []
-    for line in md.split(ITEM_SEPARATOR):
+    for line in md.replace('\n>\n', ITEM_SEPARATOR).split(ITEM_SEPARATOR):
         line = line.strip()
         if line:
-            output.append("> " + line + "\n>\n")
+            blockquote_char_count = int(nested_level_of_line(line) + 1)
+            newline_builder = []
+            for i in range(blockquote_char_count):
+                newline_builder.append("> ")
+            newline_builder.append(line.strip('>').strip() + "\n")
+            for i in range(blockquote_char_count):
+                newline_builder.append("> ")
+            # cut off extraneous space for compatibility
+            newline_builder.pop()
+            newline_builder.append(">\n")
+            output.append("".join(newline_builder))
     return "".join(output)
 
 def linkify(text, link):
@@ -154,3 +164,11 @@ def is_excluded_tag(tag):
     # I don't know why these are here but I'm ignoring them
     excluded = ['noscript', 'style']
     return tag.name in excluded
+
+def nested_level_of_line(line):
+    if len(line) < 2:
+        return False
+    index = 0
+    while line[index:index+2] == "> ":
+        index += 2
+    return index / 2
