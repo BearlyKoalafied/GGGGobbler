@@ -128,5 +128,6 @@ def passes_value_rules(commandID, value):
             return True
     return False
 
+@errorhandling.RetryExceptions(errorhandling.RECOVERABLE_EXCEPTIONS, logger=gobblogger, retry_limit=20, retry_delay=5000)
 def send_response_message(reddit, header, body):
     reddit.redditor(name=settings.REDDIT_ACC_OWNER).message(header, body)
