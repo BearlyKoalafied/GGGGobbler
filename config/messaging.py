@@ -1,6 +1,7 @@
 from log import gobblogger
 from config import config, settings
 from config.private import enum
+from GGGGobbler import errorhandling
 
 COMMANDS = {
     enum.CmndID.ACTIVATE: "turn",
@@ -32,6 +33,7 @@ help - this info
 
 """
 
+@errorhandling.RetryExceptions(errorhandling.RECOVERABLE_EXCEPTIONS, logger=gobblogger, retry_delay=5000, retry_backoff_multiplier=1.05)
 def scan_inbox(r):
     unread = r.inbox.unread()
     for new in unread:
@@ -128,4 +130,3 @@ def passes_value_rules(commandID, value):
 
 def send_response_message(reddit, header, body):
     reddit.redditor(name=settings.REDDIT_ACC_OWNER).message(header, body)
-

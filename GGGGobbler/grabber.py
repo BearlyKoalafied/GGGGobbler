@@ -4,7 +4,8 @@ import logging
 import re
 
 from db import db
-from GGGGobbler import forum_parse as fparse
+from GGGGobbler import errorhandling, forum_parse as fparse
+from log import gobblogger
 from config import settings
 
 POE_URL = "pathofexile.com/forum/view-thread"
@@ -21,6 +22,7 @@ class GGGGobblerBot:
         else:
             self.dao = dao
 
+    @errorhandling.RetryExceptions(errorhandling.RECOVERABLE_EXCEPTIONS, logger=gobblogger, retry_delay=5000, retry_backoff_multiplier=1.1)
     def parse_reddit(self):
         subreddit = self.r.subreddit(settings.SUBREDDIT)
         # collect submissions that link to poe.com

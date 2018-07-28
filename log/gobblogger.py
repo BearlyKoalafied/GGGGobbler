@@ -18,3 +18,6 @@ def info(message):
 
 def exception(message):
     logging.getLogger(settings.LOGGER_NAME).exception(message)
+
+def log(level, message):
+    logging.getLogger(settings.LOGGER_NAME).log(level, message)
