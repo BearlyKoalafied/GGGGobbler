@@ -2,15 +2,30 @@ import time
 import warnings
 import logging
 import re
+import tenacity
+
+from praw.exceptions import APIException, ClientException
+from prawcore.exceptions import RequestException, ResponseException, ServerError
+from requests.exceptions import ConnectionError, HTTPError, ReadTimeout
 
 from db import db
-from GGGGobbler import errorhandling, forum_parse as fparse
+from GGGGobbler import forum_parse as fparse
 from log import gobblogger
 from config import settings
 
 POE_URL = "pathofexile.com/forum/view-thread"
 TIMEOUT_SECONDS = 300
 CSS_MAGIC_PREPEND = """#####&#009;\n\n######&#009;\n\n####&#009;\n\n"""
+
+RECOVERABLE_EXCEPTIONS = (APIException,
+                          ClientException,
+                          ConnectionError,
+                          HTTPError,
+                          ReadTimeout,
+                          RequestException,
+                          ResponseException,
+                          ServerError,
+                          fparse.PathofexileDownException)
 
 warnings.simplefilter("ignore", ResourceWarning)
 
@@ -22,7 +37,10 @@ class GGGGobblerBot:
         else:
             self.dao = dao
 
-    @errorhandling.RetryExceptions(errorhandling.RECOVERABLE_EXCEPTIONS, logger=gobblogger, retry_delay=5000, retry_backoff_multiplier=1.1)
+    @tenacity.retry(wait=tenacity.wait_fixed(10),
+                    reraise=True,
+                    retry=tenacity.retry_if_exception_type(RECOVERABLE_EXCEPTIONS),
+                    after=tenacity.after_log(gobblogger.logger(), logging.ERROR))
     def parse_reddit(self):
         subreddit = self.r.subreddit(settings.SUBREDDIT)
         # collect submissions that link to poe.com

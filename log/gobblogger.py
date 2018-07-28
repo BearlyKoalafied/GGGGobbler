@@ -13,6 +13,9 @@ def prepare():
     if not settings.LOGGING_ON:
         logging.disable(logging.CRITICAL)
 
+def logger():
+    return logging.getLogger(settings.LOGGER_NAME)
+
 def info(message):
     logging.getLogger(settings.LOGGER_NAME).info(message)
 

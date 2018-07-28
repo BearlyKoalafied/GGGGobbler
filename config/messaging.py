@@ -1,7 +1,22 @@
+import tenacity
+import logging
+
+from praw.exceptions import APIException, ClientException
+from prawcore.exceptions import RequestException, ResponseException, ServerError
+from requests.exceptions import ConnectionError, HTTPError, ReadTimeout
+
 from log import gobblogger
 from config import config, settings
 from config.private import enum
-from GGGGobbler import errorhandling
+
+RECOVERABLE_EXCEPTIONS = (APIException,
+                          ClientException,
+                          ConnectionError,
+                          HTTPError,
+                          ReadTimeout,
+                          RequestException,
+                          ResponseException,
+                          ServerError)
 
 COMMANDS = {
     enum.CmndID.ACTIVATE: "turn",
@@ -33,7 +48,10 @@ help - this info
 
 """
 
-@errorhandling.RetryExceptions(errorhandling.RECOVERABLE_EXCEPTIONS, logger=gobblogger, retry_delay=5000, retry_backoff_multiplier=1.05)
+@tenacity.retry(wait=tenacity.wait_fixed(10),
+                reraise=True,
+                retry=tenacity.retry_if_exception_type(RECOVERABLE_EXCEPTIONS),
+                after=tenacity.after_log(gobblogger.logger(), logging.ERROR))
 def scan_inbox(r):
     unread = r.inbox.unread()
     for new in unread:
@@ -128,6 +146,10 @@ def passes_value_rules(commandID, value):
             return True
     return False
 
-@errorhandling.RetryExceptions(errorhandling.RECOVERABLE_EXCEPTIONS, logger=gobblogger, retry_limit=20, retry_delay=5000)
+@tenacity.retry(wait=tenacity.wait_fixed(60),
+                stop=tenacity.stop_after_attempt(30),
+                reraise=True,
+                retry=tenacity.retry_if_exception_type(RECOVERABLE_EXCEPTIONS),
+                after=tenacity.after_log(gobblogger.logger(), logging.ERROR))
 def send_response_message(reddit, header, body):
     reddit.redditor(name=settings.REDDIT_ACC_OWNER).message(header, body)
