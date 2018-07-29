@@ -12,7 +12,7 @@ def scan_reddit(r, retry_count):
         try:
             GGGGobblerBot(r, dao).parse_reddit()
         except:
-            gobblogger.exception("Fatal Error on main thread: " + traceback.format_exc())
+            gobblogger.exception("Fatal Error on main thread: ")
             messaging.send_response_message(r, "Fatal Error on main thread", traceback.format_exc())
             raise
     gobblogger.info("Finished run")
@@ -22,6 +22,6 @@ def check_messages(r):
     try:
         messaging.scan_inbox(r)
     except:
-        gobblogger.exception("Fatal Error on check messages thread: " + traceback.format_exc())
+        gobblogger.exception("Fatal Error on check messages thread: ")
         messaging.send_response_message(r, "Fatal Error on check messages thread", traceback.format_exc())
         raise
