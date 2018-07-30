@@ -12,6 +12,7 @@ def scan_reddit(r, retry_count):
         try:
             GGGGobblerBot(r, dao).parse_reddit()
         except:
+            dao.rollback()
             gobblogger.exception("Fatal Error on main thread: ")
             messaging.send_response_message(r, "Fatal Error on main thread", traceback.format_exc())
             raise
