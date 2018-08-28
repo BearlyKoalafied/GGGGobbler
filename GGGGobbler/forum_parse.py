@@ -161,7 +161,7 @@ def get_post_date_from_row(post_row):
             .find("div", class_="posted-by") \
             .find("span", class_="post_date").get_text()
     # convert to GMT+0 timezone
-    format = "%b %d, %Y %I:%M:%S %p"
+    format = "%b %d, %Y, %I:%M:%S %p"
     date = datetime.datetime.strptime(str_date, format)
     date = date + datetime.timedelta(hours=-settings.TIMEZONE_OFFSET)
     str_date = date.strftime(format)
