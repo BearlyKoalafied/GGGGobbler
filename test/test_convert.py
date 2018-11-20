@@ -106,6 +106,10 @@ class ConvertTestCase(unittest.TestCase):
         html, expected_output = self.load_values('complex_2')
         self.assertEqual(expected_output, htmltomd.quote_boxify(htmltomd.convert(html)))
 
+    def test_raw_embedded_video(self):
+        html, expected_output = self.load_values('raw_embedded_video')
+        self.assertEqual(expected_output, htmltomd.convert(html))
+
     def load_values(self, data_name):
         html = data.values[data_name + "_input"]
         expected_output = data.values[data_name + "_output"]

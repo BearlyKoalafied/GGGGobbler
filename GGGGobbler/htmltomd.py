@@ -61,7 +61,7 @@ def convert_tag(tag):
         if tag.has_attr("src"):
             output = linkify("Embedded Video", tag["src"])
         elif tag.children is not None and tag.find("source").has_attr("src"):
-            output = linkify("Embedded Video", tag.find["source"]["src"])
+            output = linkify("Embedded Video", tag.find("source")["src"])
         else:
             output = content_inside_this_tag
     else:
@@ -146,6 +146,7 @@ def quote_boxify(md):
     return "".join(output)
 
 def linkify(text, link):
+    link = clear_leading_slashes(link)
     link_builder = list(link)
     escaped = ["(", ")"]
     for i in range(len(link_builder) - 1, -1, -1):
@@ -172,3 +173,10 @@ def nested_level_of_line(line):
     while line[index:index+2] == "> ":
         index += 2
     return index / 2
+
+def clear_leading_slashes(text):
+    if len(text) == 0:
+        return text
+    while text[0] == "/":
+        text = text[1:]
+    return text
