@@ -146,7 +146,7 @@ def quote_boxify(md):
     return "".join(output)
 
 def linkify(text, link):
-    link = clear_leading_slashes(link)
+    link = clear_leading_slashes_of_links(link)
     link_builder = list(link)
     escaped = ["(", ")"]
     for i in range(len(link_builder) - 1, -1, -1):
@@ -174,9 +174,9 @@ def nested_level_of_line(line):
         index += 2
     return index / 2
 
-def clear_leading_slashes(text):
-    if len(text) == 0:
-        return text
-    while text[0] == "/":
-        text = text[1:]
-    return text
+def clear_leading_slashes_of_links(url):
+    if len(url) == 0 or url[0] != "/":
+        return url
+    while url[0] == "/":
+        url = url[1:]
+    return "https://" + url

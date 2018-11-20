@@ -145,5 +145,5 @@ Tomorrow (Friday NZDT), we're planning to release Patch 3.1.3 which contains <a 
     "raw_embedded_video_input": """<video id="ascendancy-video" autoplay="" loop="" muted="" style="width: 100%;">
   <source src="//i.imgur.com/Ftma8bj.mp4?v=2" type="video/mp4">
 </video>""",
-    "raw_embedded_video_output": "[Embedded Video](i.imgur.com/Ftma8bj.mp4?v=2)\n\n"
+    "raw_embedded_video_output": "[Embedded Video](https://i.imgur.com/Ftma8bj.mp4?v=2)\n\n"
 }
