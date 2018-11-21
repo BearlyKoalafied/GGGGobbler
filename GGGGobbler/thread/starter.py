@@ -40,7 +40,8 @@ def consume_jobs(job_queue, r):
 
 def produce_main_jobs(job_queue, close_event):
     while not close_event.is_set():
-        job_queue.put(TaskID.MAIN)
+        if len(job_queue) < 3:
+            job_queue.put(TaskID.MAIN)
         c = timemath.secs_to_next_fraction_of_hour(config.wait_time_main())
         while not close_event.is_set() and c > 0:
             time.sleep(1)
@@ -48,7 +49,8 @@ def produce_main_jobs(job_queue, close_event):
 
 def produce_check_messages_jobs(job_queue, close_event):
     while not close_event.is_set():
-        job_queue.put(TaskID.CHECK_MESSAGES)
+        if len(job_queue) < 3:
+            job_queue.put(TaskID.CHECK_MESSAGES)
         c = timemath.secs_to_next_fraction_of_hour(config.wait_time_check_messages())
         while not close_event.is_set() and c > 0:
             time.sleep(1)
