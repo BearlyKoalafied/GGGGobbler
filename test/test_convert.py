@@ -95,7 +95,6 @@ class ConvertTestCase(unittest.TestCase):
 
     def test_quote_challenge_titles(self):
         html, expected_output = self.load_values_v2('challenge_quote')
-        self.outputfile(htmltomd.quote_boxify(htmltomd.convert(html)))
         self.assertEqual(expected_output, htmltomd.quote_boxify(htmltomd.convert(html)))
 
     def test_complex(self):
@@ -108,6 +107,10 @@ class ConvertTestCase(unittest.TestCase):
 
     def test_raw_embedded_video(self):
         html, expected_output = self.load_values('raw_embedded_video')
+        self.assertEqual(expected_output, htmltomd.convert(html))
+
+    def test_table_tag(self):
+        html, expected_output = self.load_values_v2('table')
         self.assertEqual(expected_output, htmltomd.convert(html))
 
     def load_values(self, data_name):

@@ -37,6 +37,8 @@ def convert_tag(tag):
         return process_italics(content_inside_this_tag)
     elif tag.name == "img":
         return process_img(tag)
+    elif tag.name == "table":
+        return process_table(tag)
     elif tag.name == "ul":
         return ITEM_SEPARATOR + content_inside_this_tag
     elif is_excluded_tag(tag):
@@ -126,6 +128,44 @@ def process_iframe(iframe):
     else:
         link = src
     return linkify(text, link)
+
+def process_table(table):
+    headers = get_table_headers(table)
+    table_width = len(headers)
+    rows = get_table_rows(table)
+    header_line = "|".join(headers)
+    header_underline = "-" + ("|-" * (table_width - 1))
+    rows_concatenated = "\n".join(rows)
+    return header_line + "\n" + header_underline + "\n" + rows_concatenated + "\n\n"
+
+def get_table_headers(table):
+    output = []
+    for tag in table.children:
+        if tag.name == "th":
+            output.append(process_string(tag.text))
+        else:
+            output += (get_table_headers(tag))
+            # if we found any headers, we can return immediately
+            if len(output) > 0:
+                return output
+    return output
+
+def get_table_rows(table):
+    output = []
+    for tag in table.children:
+        if tag.name == "tr":
+            items = get_table_row_items(tag)
+            output.append("|".join(items))
+        if tag.name == "tbody":
+            output += (get_table_rows(tag))
+    return output
+
+def get_table_row_items(tr):
+    output = []
+    for tag in tr:
+        # should all be td tags just containing text
+        output.append(tag.text)
+    return output
 
 def quote_boxify(md):
     output = []
