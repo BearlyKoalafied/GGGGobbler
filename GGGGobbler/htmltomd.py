@@ -29,6 +29,9 @@ def convert_tag(tag):
         return "[" + content_inside_this_tag + "]" + "(" + tag["href"] + ")"
     elif tag.name == "a":
         return content_inside_this_tag
+    # these can be handled the same as far as I can tell
+    elif tag.name == "code" or tag.name == "pre":
+        return process_code(tag)
     elif tag.name == "strong":
         return process_strong(content_inside_this_tag)
     elif tag.name == "span":
@@ -98,6 +101,13 @@ def process_img(img):
         text = img["alt"]
     link = img["src"]
     return linkify(text, link)
+
+def process_code(tag):
+    content = process_tag(tag)
+    if len(content.split("\n"))  > 1:
+        return "```" + content + "```\n\n"
+    else:
+        return "`" + content + "`"
 
 def process_quote_box(quotebox):
     for child in quotebox:

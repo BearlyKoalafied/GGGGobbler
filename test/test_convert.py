@@ -93,6 +93,14 @@ class ConvertTestCase(unittest.TestCase):
         html, expected_output = self.load_values('iframe_embed')
         self.assertEqual(expected_output, htmltomd.convert(html))
 
+    def test_pre_basic(self):
+        html, expected_output = self.load_values_v2('pre_basic')
+        self.assertEqual(expected_output, htmltomd.convert(html))
+
+    def test_inline_code(self):
+        html, expected_output = self.load_values_v2('inline_code')
+        self.assertEqual(expected_output, htmltomd.convert(html))
+
     def test_quote_challenge_titles(self):
         html, expected_output = self.load_values_v2('challenge_quote')
         self.assertEqual(expected_output, htmltomd.quote_boxify(htmltomd.convert(html)))
