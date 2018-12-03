@@ -104,12 +104,20 @@ def process_img(img):
 
 def process_code(tag):
     content = process_tag(tag)
-    if len(content.split("\n"))  > 1:
-        if content[0] != "\n":
-            content = "\n" + content
-        if content[-1] != "\n":
-            content = content + "\n"
-        return "```" + content + "```\n\n"
+    split_content = content.split("\n")
+    if len(split_content) > 1:
+        # add 4 spaces to each line
+        out = []
+        for line in split_content:
+            if line.strip() != "":
+                out.append("    " + line + "\n")
+        content_with_four_spaces = "".join(out)
+        # add newlines either end if not present
+        if content_with_four_spaces[0] != "\n":
+            content_with_four_spaces = "\n" + content_with_four_spaces
+        if content_with_four_spaces[-1] != "\n":
+            content_with_four_spaces = content_with_four_spaces + "\n"
+        return "```" + content_with_four_spaces + "```\n\n"
     else:
         return "`" + content + "`"
 
