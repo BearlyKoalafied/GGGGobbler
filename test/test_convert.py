@@ -109,6 +109,13 @@ class ConvertTestCase(unittest.TestCase):
         html, expected_output = self.load_values_v2('challenge_quote')
         self.assertEqual(expected_output, htmltomd.quote_boxify(htmltomd.convert(html)))
 
+    def test_code_quoteboxed(self):
+        html, expected_output = self.load_values_v2('code_quoteboxed')
+        md = htmltomd.convert(html)
+        q = htmltomd.quote_boxify_pre(md)
+        self.outputfile(q)
+        self.assertEqual(expected_output, htmltomd.quote_boxify_pre(htmltomd.convert(html)))
+
     def test_complex(self):
         html, expected_output = self.load_values('complex')
         self.assertEqual(expected_output, htmltomd.quote_boxify(htmltomd.convert(html)))

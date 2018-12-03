@@ -207,6 +207,18 @@ def quote_boxify(md):
             output.append("".join(newline_builder))
     return "".join(output)
 
+def quote_boxify_pre(pre):
+    # specific function for quote boxifying pre tags that use 1 \n to divide items
+    output = []
+    for line in pre.split("\n"):
+        blockquote_char_count = int(nested_level_of_line(line) + 1)
+        newline_builder = []
+        for i in range(blockquote_char_count):
+            newline_builder.append("> ")
+        newline_builder.append(line.strip('>') + "\n")
+        output.append("".join(newline_builder))
+    return "".join(output)
+
 def linkify(text, link):
     link = clear_leading_slashes_of_links(link)
     link_builder = list(link)
