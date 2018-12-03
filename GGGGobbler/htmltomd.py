@@ -105,6 +105,10 @@ def process_img(img):
 def process_code(tag):
     content = process_tag(tag)
     if len(content.split("\n"))  > 1:
+        if content[0] != "\n":
+            content = "\n" + content
+        if content[-1] != "\n":
+            content = content + "\n"
         return "```" + content + "```\n\n"
     else:
         return "`" + content + "`"

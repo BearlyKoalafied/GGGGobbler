@@ -101,6 +101,11 @@ class ConvertTestCase(unittest.TestCase):
         html, expected_output = self.load_values_v2('inline_code')
         self.assertEqual(expected_output, htmltomd.convert(html))
 
+    def test_pre_oomplex(self):
+        html, expected_output = self.load_values_v2('pre_complex')
+        self.outputfile(htmltomd.convert(html))
+        self.assertEqual(expected_output, htmltomd.convert(html))
+
     def test_quote_challenge_titles(self):
         html, expected_output = self.load_values_v2('challenge_quote')
         self.assertEqual(expected_output, htmltomd.quote_boxify(htmltomd.convert(html)))
