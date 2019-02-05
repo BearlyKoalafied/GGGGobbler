@@ -1,14 +1,17 @@
 import threading
+import signal
 import queue
 import time
 import enum
 
 from GGGGobbler.thread.private import tasks
+from log import gobblogger
 from config import config
 from util import timemath
 
 
 def start_threads(r):
+    gobblogger.info("Starting bot...")
     job_queue = queue.Queue()
     close_event = threading.Event()
     t_consumer                = threading.Thread(group=None, target=consume_jobs,
@@ -56,15 +59,20 @@ def produce_check_messages_jobs(job_queue, close_event):
             time.sleep(1)
             c -= 1
 
-# this thread monitors a console input for a (q)uit instruction
+# this thread waits for
 def wait_for_close(job_queue, close_event):
-    s = input("Type Q to end: ")
-    while s != "q" and s != "Q":
-        s = input("Type Q to end: ")
-    # signal consumer to halt
-    job_queue.put(None)
-    # signal other threads to halt
-    close_event.set()
+    def close_handler(sig, frame):
+        gobblogger.info("Stopping bot due to system signal...")
+        # signal consumer to halt
+        job_queue.put(None)
+        # signal other threads to halt
+        close_event.set()
+
+
+    signal.signal(signal.SIGINT, close_handler)
+    signal.signal(signal.SIGTERM, close_handler)
+    signal.pause()
+
 
 class TaskID(enum.Enum):
     MAIN = 1
