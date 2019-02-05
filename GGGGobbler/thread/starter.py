@@ -20,12 +20,24 @@ def start_threads(r):
                                                  args=(job_queue, close_event))
     t_produce_check_msgs_jobs = threading.Thread(group=None, target=produce_check_messages_jobs,
                                                  args=(job_queue, close_event))
-    t_close_monitor           = threading.Thread(group=None, target=wait_for_close,
-                                                 args=(job_queue, close_event))
+    # t_close_monitor           = threading.Thread(group=None, target=wait_for_close, args=(job_queue, close_event))
     t_consumer.start()
     t_produce_main_jobs.start()
     t_produce_check_msgs_jobs.start()
-    t_close_monitor.start()
+    # t_close_monitor.start()
+
+    # wait for a system signal to stop the bot
+    def close_handler(sig, frame):
+        gobblogger.info("Stopping bot due to system signal...")
+        # signal consumer to halt
+        job_queue.put(None)
+        # signal other threads to halt
+        close_event.set()
+
+
+    signal.signal(signal.SIGINT, close_handler)
+    signal.signal(signal.SIGTERM, close_handler)
+    signal.pause()
 
 def consume_jobs(job_queue, r):
     retry_counter = config.retry_cap()
@@ -58,21 +70,6 @@ def produce_check_messages_jobs(job_queue, close_event):
         while not close_event.is_set() and c > 0:
             time.sleep(1)
             c -= 1
-
-# this thread waits for
-def wait_for_close(job_queue, close_event):
-    def close_handler(sig, frame):
-        gobblogger.info("Stopping bot due to system signal...")
-        # signal consumer to halt
-        job_queue.put(None)
-        # signal other threads to halt
-        close_event.set()
-
-
-    signal.signal(signal.SIGINT, close_handler)
-    signal.signal(signal.SIGTERM, close_handler)
-    signal.pause()
-
 
 class TaskID(enum.Enum):
     MAIN = 1
