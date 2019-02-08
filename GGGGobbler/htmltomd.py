@@ -153,11 +153,22 @@ def process_iframe(iframe):
 
 def process_table(table):
     headers = get_table_headers(table)
-    table_width = len(headers)
     rows = get_table_rows(table)
-    header_line = "|".join(headers)
-    header_underline = "-" + ("|-" * (table_width - 1))
-    rows_concatenated = "\n".join(rows)
+    # reddit table rows cannot have variable widths
+    # the table width here is set to the width of the row with the most items
+    table_width = len(headers)
+    for row in rows:
+        rlen = len(row)
+        if rlen > table_width:
+            table_width = rlen
+    header_underline = "-|" * table_width
+    row_lines = []
+    # add additional dividers on the end if this row is shorter than the rest of the table
+    for row in rows:
+        row_lines.append("|".join(row) + "|" + "|" * (table_width - len(row)))
+    # same thing for the header
+    header_line = "|".join(headers) + "|" + "|" * (table_width - len(headers))
+    rows_concatenated = "\n".join(row_lines)
     return header_line + "\n" + header_underline + "\n" + rows_concatenated + "\n\n"
 
 def get_table_headers(table):
@@ -177,7 +188,7 @@ def get_table_rows(table):
     for tag in table.children:
         if tag.name == "tr":
             items = get_table_row_items(tag)
-            output.append("|".join(items))
+            output.append(items)
         if tag.name == "tbody":
             output += (get_table_rows(tag))
     return output
