@@ -20,11 +20,9 @@ def start_threads(r):
                                                  args=(job_queue, close_event))
     t_produce_check_msgs_jobs = threading.Thread(group=None, target=produce_check_messages_jobs,
                                                  args=(job_queue, close_event))
-    # t_close_monitor           = threading.Thread(group=None, target=wait_for_close, args=(job_queue, close_event))
     t_consumer.start()
     t_produce_main_jobs.start()
     t_produce_check_msgs_jobs.start()
-    # t_close_monitor.start()
 
     # wait for a system signal to stop the bot
     def close_handler(sig, frame):
@@ -33,6 +31,9 @@ def start_threads(r):
         job_queue.put(None)
         # signal other threads to halt
         close_event.set()
+        t_consumer.join()
+        t_produce_main_jobs.join()
+        t_produce_check_msgs_jobs.join()
 
 
     signal.signal(signal.SIGINT, close_handler)
