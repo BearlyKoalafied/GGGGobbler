@@ -2,6 +2,7 @@ import unittest
 import os
 from util import filepather
 from GGGGobbler import htmltomd
+from GGGGobbler import markdown as md
 from test.testdata import data
 
 
@@ -60,11 +61,6 @@ class ConvertTestCase(unittest.TestCase):
         html, expected_output = self.load_values('blockquote')
         self.assertEqual(expected_output, htmltomd.convert(html))
 
-    def test_quote(self):
-        md_input = "line of md 1\n\nline of md 2\n\nline of md 3\n\n"
-        md_output = "> line of md 1\n>\n> line of md 2\n>\n> line of md 3\n>\n"
-        self.assertEqual(md_output, htmltomd.quote_boxify(md_input))
-
     def test_nested_level_util(self):
         line1 = "level 0"
         expected1 = 0
@@ -78,12 +74,7 @@ class ConvertTestCase(unittest.TestCase):
 
     def test_nested_quote(self):
         html, expected_output = self.load_values('nested_quote')
-        self.assertEqual(expected_output, htmltomd.quote_boxify(htmltomd.convert(html)))
-
-    def test_quote_lists(self):
-        md_input = "* bullet 1\n\n* bullet2\n\n* bullet3\n\n"
-        md_output = "> * bullet 1\n>\n> * bullet2\n>\n> * bullet3\n>\n"
-        self.assertEqual(md_output, htmltomd.quote_boxify(md_input))
+        self.assertEqual(expected_output, (htmltomd.convert(html)))
 
     def test_iframe_basic(self):
         html, expected_output = self.load_values('iframe_basic')
@@ -107,22 +98,19 @@ class ConvertTestCase(unittest.TestCase):
 
     def test_quote_challenge_titles(self):
         html, expected_output = self.load_values_v2('challenge_quote')
-        self.assertEqual(expected_output, htmltomd.quote_boxify(htmltomd.convert(html)))
+        self.assertEqual(expected_output, htmltomd.convert(html))
 
     def test_code_quoteboxed(self):
         html, expected_output = self.load_values_v2('code_quoteboxed')
-        md = htmltomd.convert(html)
-        q = htmltomd.quote_boxify_pre(md)
-        self.outputfile(q)
-        self.assertEqual(expected_output, htmltomd.quote_boxify_pre(htmltomd.convert(html)))
+        self.assertEqual(expected_output, htmltomd.convert(html))
 
     def test_complex(self):
-        html, expected_output = self.load_values('complex')
-        self.assertEqual(expected_output, htmltomd.quote_boxify(htmltomd.convert(html)))
+        html, expected_output = self.load_values_v2('complex')
+        self.assertEqual(expected_output, htmltomd.convert(html))
 
     def test_complex_2(self):
-        html, expected_output = self.load_values('complex_2')
-        self.assertEqual(expected_output, htmltomd.quote_boxify(htmltomd.convert(html)))
+        html, expected_output = self.load_values_v2('complex_2')
+        self.assertEqual(expected_output, htmltomd.convert(html))
 
     def test_raw_embedded_video(self):
         html, expected_output = self.load_values('raw_embedded_video')
@@ -138,14 +126,10 @@ class ConvertTestCase(unittest.TestCase):
         return html, expected_output
 
     def load_values_v2(self, data_name):
-        path = filepather.relative_file_path(__file__, "testdata")
+        path = filepather.relative_file_path(__file__, os.path.join("testdata", "convert"))
         with open(os.path.join(path, data_name + "_input.html"), 'r') as f:
             # cut off the trailing \n
             html = f.read()[:-1]
         with open(os.path.join(path, data_name + "_output.md"), 'r') as f:
             expected_output = f.read()[:-1]
         return html, expected_output
-
-    def outputfile(self, string):
-        with open('output.txt', 'w')as f:
-            f.write(string)

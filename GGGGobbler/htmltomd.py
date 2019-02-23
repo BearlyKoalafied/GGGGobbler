@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup, NavigableString, Tag
 import re
 
+from GGGGobbler import markdown as md
+
 ITEM_SEPARATOR = "\n\n"
 
 def convert(html, parser='html.parser'):
@@ -8,7 +10,9 @@ def convert(html, parser='html.parser'):
     html = re.sub("<br\s*>", "<br/>", html)
     # remove whitespace from between tags
     soup = BeautifulSoup(re.sub(">\s*<", "><", html), parser)
-    return process_tag(soup)
+    comment = md.MarkdownDocument()
+    comment.add(process_tag(soup))
+    return str(comment)
 
 
 def process_tag(tag):
@@ -16,9 +20,9 @@ def process_tag(tag):
     # convert children
     for child in tag.children:
         if isinstance(child, NavigableString):
-            output += process_string(child)
+            output.append(process_string(child))
         else:
-            output += convert_tag(child)
+            output.append(str(convert_tag(child)))
     return "".join(output)
 
 
@@ -26,7 +30,7 @@ def convert_tag(tag):
     content_inside_this_tag = process_tag(tag)
     # tags that don't auto insert newline are processed first
     if tag.name == "a" and tag.has_attr("href"):
-        return "[" + content_inside_this_tag + "]" + "(" + tag["href"] + ")"
+        return md.MarkdownLink(content_inside_this_tag, tag["href"])
     elif tag.name == "a":
         return content_inside_this_tag
     # these can be handled the same as far as I can tell
@@ -43,37 +47,42 @@ def convert_tag(tag):
     elif tag.name == "table":
         return process_table(tag)
     elif tag.name == "ul":
-        return ITEM_SEPARATOR + content_inside_this_tag
+        temp = ITEM_SEPARATOR + content_inside_this_tag
+        if len(temp) > 2 and temp[-2:] != "\n\n":
+            temp += "\n"
+        return temp
+    elif tag.name == "br":
+        return "\n\n"
     elif is_excluded_tag(tag):
         return ""
 
     # tags below here insert a newline if not already inserted by previous call to convert_tag
     if tag.name == "p":
-        output = content_inside_this_tag
+        output = md.MarkdownParagraph(content_inside_this_tag)
     elif tag.name == "div":
-        output = content_inside_this_tag
+        output = md.MarkdownParagraph(content_inside_this_tag)
     elif tag.name == "h2":
-        output = "## " + content_inside_this_tag
+        output = md.MarkdownHeader(content_inside_this_tag, 2)
     elif tag.name == "h3":
-        output = "### " + content_inside_this_tag
+        output = md.MarkdownHeader(content_inside_this_tag, 3)
     elif tag.name == "li":
-        output = "* " + content_inside_this_tag
+        output = md.MarkdownListItem(content_inside_this_tag)
     elif tag.name == "blockquote":
-        output = process_quote_box(tag)
+        output = process_quote_box(tag, content_inside_this_tag)
     elif tag.name == "iframe":
         output = process_iframe(tag)
     elif tag.name == "video":
         if tag.has_attr("src"):
-            output = linkify("Embedded Video", tag["src"])
+            output = str(md.MarkdownLink("Embedded Video", tag["src"])) + ITEM_SEPARATOR
         elif tag.children is not None and tag.find("source").has_attr("src"):
-            output = linkify("Embedded Video", tag.find("source")["src"])
+            output = str(md.MarkdownLink("Embedded Video", tag.find("source")["src"])) + ITEM_SEPARATOR
         else:
-            output = content_inside_this_tag
+            output = md.MarkdownParagraph(content_inside_this_tag)
     else:
         # default case should be fine for remaining tags
         output = content_inside_this_tag
-    if output[-len(ITEM_SEPARATOR):] != ITEM_SEPARATOR and output[-3:] != "\n>\n":
-        output += ITEM_SEPARATOR
+    #if isinstance(output, md.MarkdownQuotebox) and len(output.items) == 3 and "Level 1 Cast when" in output.items[0]:
+    #    print(output.items)
     return output
 
 
@@ -81,54 +90,32 @@ def process_string(nav_string):
     return nav_string
 
 def process_strong(content):
-    # get leading whitespace
-    leading_whitespace = content[:len(content)-len(content.lstrip())]
-    # get trailing whitespace
-    trailing_whitespace = content[len(content.rstrip()):]
-    return leading_whitespace + "**" + content.strip() + "**" + trailing_whitespace
+    return md.MarkdownStrong(content)
 
 def process_italics(content):
-    # get leading whitespace
-    leading_whitespace = content[:len(content)-len(content.lstrip())]
-    # get trailing whitespace
-    trailing_whitespace = content[len(content.rstrip()):]
-    return leading_whitespace + "*" + content.strip() + "*" + trailing_whitespace
+    return md.MarkdownItalics(content)
 
 def process_img(img):
-    text = "Image Link"
     # use alt text instead if available
     if img.has_attr("alt") and img["alt"]:
         text = img["alt"]
+    else:
+        text = "Image Link"
     link = img["src"]
-    return linkify(text, link)
+    return md.MarkdownLink(text, link)
 
 def process_code(tag):
     content = process_tag(tag)
-    split_content = content.split("\n")
+    split_content = content.splitlines()
     if len(split_content) > 1:
-        # add 4 spaces to each line
-        out = []
-        for line in split_content:
-            if line.strip() != "":
-                out.append("    " + line + "\n")
-        content_with_four_spaces = "".join(out)
-        # add newlines either end if not present
-        if content_with_four_spaces[0] != "\n":
-            content_with_four_spaces = "\n" + content_with_four_spaces
-        if content_with_four_spaces[-1] != "\n":
-            content_with_four_spaces = content_with_four_spaces + "\n"
-        return "```" + content_with_four_spaces + "```\n\n"
+        return md.MarkdownCodeBlock(content)
     else:
-        return "`" + content + "`"
+        return md.MarkdownCodeSpan(content)
 
-def process_quote_box(quotebox):
-    for child in quotebox:
-        if child.has_attr("class") and child["class"] == 'top':
-            # author_info = "> " + child.find("a").
-            pass
-        elif child.has_attr("class") and child["class"] == 'bot':
-            return quote_boxify(process_tag(child))
-    return quote_boxify(process_tag(quotebox))
+def process_quote_box(quotebox, content):
+    md_quote = md.MarkdownQuotebox()
+    md_quote.add(content)
+    return md_quote
 
 def process_iframe(iframe):
     # these are used for youtube videos.  I'll make the text something else
@@ -149,27 +136,12 @@ def process_iframe(iframe):
         link = "https://www.youtube.com/watch?v=" + video_id
     else:
         link = src
-    return linkify(text, link)
+    return str(md.MarkdownLink(text, link)) + ITEM_SEPARATOR
 
 def process_table(table):
     headers = get_table_headers(table)
     rows = get_table_rows(table)
-    # reddit table rows cannot have variable widths
-    # the table width here is set to the width of the row with the most items
-    table_width = len(headers)
-    for row in rows:
-        rlen = len(row)
-        if rlen > table_width:
-            table_width = rlen
-    header_underline = "-|" * table_width
-    row_lines = []
-    # add additional dividers on the end if this row is shorter than the rest of the table
-    for row in rows:
-        row_lines.append("|".join(row) + "|" + "|" * (table_width - len(row)))
-    # same thing for the header
-    header_line = "|".join(headers) + "|" + "|" * (table_width - len(headers))
-    rows_concatenated = "\n".join(row_lines)
-    return header_line + "\n" + header_underline + "\n" + rows_concatenated + "\n\n"
+    return md.MarkdownTable(rows, headers)
 
 def get_table_headers(table):
     output = []
