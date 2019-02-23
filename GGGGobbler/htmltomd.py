@@ -172,45 +172,10 @@ def get_table_row_items(tr):
         output.append(tag.text)
     return output
 
-def quote_boxify(md):
-    output = []
-    for line in md.replace('\n>\n', ITEM_SEPARATOR).split(ITEM_SEPARATOR):
-        line = line.strip()
-        if line:
-            blockquote_char_count = int(nested_level_of_line(line) + 1)
-            newline_builder = []
-            for i in range(blockquote_char_count):
-                newline_builder.append("> ")
-            newline_builder.append(line.strip('>').strip() + "\n")
-            for i in range(blockquote_char_count):
-                newline_builder.append("> ")
-            # cut off extraneous space for compatibility
-            newline_builder.pop()
-            newline_builder.append(">\n")
-            output.append("".join(newline_builder))
-    return "".join(output)
-
-def quote_boxify_pre(pre):
-    # specific function for quote boxifying pre tags that use 1 \n to divide items
-    output = []
-    for line in pre.split("\n"):
-        blockquote_char_count = int(nested_level_of_line(line) + 1)
-        newline_builder = []
-        for i in range(blockquote_char_count):
-            newline_builder.append("> ")
-        newline_builder.append(line.strip('>') + "\n")
-        output.append("".join(newline_builder))
-    return "".join(output)
-
-def linkify(text, link):
-    link = clear_leading_slashes_of_links(link)
-    link_builder = list(link)
-    escaped = ["(", ")"]
-    for i in range(len(link_builder) - 1, -1, -1):
-        if link_builder[i] in escaped:
-            link_builder.insert(i, '\\')
-
-    return "[" + text + "](" + "".join(link_builder) + ")"
+def quote_boxify(content):
+    quotebox = md.MarkdownQuotebox()
+    quotebox.add(content)
+    return str(quotebox)
 
 def contains_tags(tag):
     for child in tag:
