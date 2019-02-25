@@ -257,6 +257,8 @@ class GGGGobblerBot:
         markdown = "> **Posted by " + post.author + "** on " + post.date + " UTC\n>\n"
         # body text
         body = post.md_text
+        # remove extraneous whitespace to ensure footer is inside the bigger quotebox
+        body = body.rstrip() + "\n"
         markdown += body
         # post separator
         footer = "> ***\n>\n"
