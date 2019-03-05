@@ -11,7 +11,7 @@ from requests.exceptions import ConnectionError, HTTPError, ReadTimeout
 from db import db
 from GGGGobbler import forum_parse as fparse
 from log import gobblogger
-from config import settings, messaging
+from config import settings
 
 POE_URL = "pathofexile.com/forum/view-thread"
 TIMEOUT_SECONDS = 300
@@ -184,48 +184,54 @@ class GGGGobblerBot:
         return comments
 
     def send_replies(self, submission, comments_to_post):
-        if self.anomaly_detected(comments_to_post):
-            raise AnomalousCommentsException
-        num_new_comments = len(comments_to_post)
-        if num_new_comments == 0:
-            return
-        existing_comment_ids = self.dao.get_comment_ids_by_thread(submission.id)
-        num_existing_comments = len(existing_comment_ids)
+        try:
+            if self.anomaly_detected(comments_to_post):
+                raise AnomalousCommentsException
+            num_new_comments = len(comments_to_post)
+            if num_new_comments == 0:
+                return
+            existing_comment_ids = self.dao.get_comment_ids_by_thread(submission.id)
+            num_existing_comments = len(existing_comment_ids)
 
-        if num_existing_comments == 0:
-            new_comments = []
-            # create new comments for thread
-            top_level_comment = submission.reply(comments_to_post[0])
-            self.sticky_comment(submission, top_level_comment)
-            time.sleep(settings.TIME_BETWEEN_COMMENTS)
-            comments_to_post.remove(comments_to_post[0])
-            new_comments.append(top_level_comment.id)
-            for comment in comments_to_post:
-                top_level_comment = top_level_comment.reply(comment)
+            if num_existing_comments == 0:
+                new_comments = []
+                # create new comments for thread
+                top_level_comment = submission.reply(comments_to_post[0])
+                self.sticky_comment(submission, top_level_comment)
+                time.sleep(settings.TIME_BETWEEN_COMMENTS)
+                comments_to_post.remove(comments_to_post[0])
                 new_comments.append(top_level_comment.id)
-                time.sleep(settings.TIME_BETWEEN_COMMENTS)
-            self.dao.add_comments(submission.id, new_comments)
+                for comment in comments_to_post:
+                    top_level_comment = top_level_comment.reply(comment)
+                    new_comments.append(top_level_comment.id)
+                    time.sleep(settings.TIME_BETWEEN_COMMENTS)
+                self.dao.add_comments(submission.id, new_comments)
 
-        elif num_new_comments == num_existing_comments:
-            for i in range(num_existing_comments):
-                comment = self.get_comment_by_id(submission, existing_comment_ids[i])
-                comment.edit(comments_to_post[i])
-                time.sleep(settings.TIME_BETWEEN_COMMENTS)
+            elif num_new_comments == num_existing_comments:
+                for i in range(num_existing_comments):
+                    comment = self.get_comment_by_id(submission, existing_comment_ids[i])
+                    comment.edit(comments_to_post[i])
+                    time.sleep(settings.TIME_BETWEEN_COMMENTS)
 
-        elif num_new_comments > num_existing_comments:
-            for i in range(num_existing_comments):
-                comment = self.get_comment_by_id(submission, existing_comment_ids[i])
-                comment.edit(comments_to_post[i])
-                time.sleep(settings.TIME_BETWEEN_COMMENTS)
-            # num_existing_comments is guaranteed to be greater than 0 so the loop is
-            # guaranteed to run at least 1 time
-            new_comments = []
-            # create new comments after existing ones
-            for i in range(num_existing_comments, num_new_comments):
-                comment = comment.reply(comments_to_post[i])
-                new_comments.append(comment.id)
-                time.sleep(settings.TIME_BETWEEN_COMMENTS)
-            self.dao.add_comments(submission.id, new_comments)
+            elif num_new_comments > num_existing_comments:
+                for i in range(num_existing_comments):
+                    comment = self.get_comment_by_id(submission, existing_comment_ids[i])
+                    comment.edit(comments_to_post[i])
+                    time.sleep(settings.TIME_BETWEEN_COMMENTS)
+                # num_existing_comments is guaranteed to be greater than 0 so the loop is
+                # guaranteed to run at least 1 time
+                new_comments = []
+                # create new comments after existing ones
+                for i in range(num_existing_comments, num_new_comments):
+                    comment = comment.reply(comments_to_post[i])
+                    new_comments.append(comment.id)
+                    time.sleep(settings.TIME_BETWEEN_COMMENTS)
+                self.dao.add_comments(submission.id, new_comments)
+        except HTTPError as httperr:
+            if httperr.code == 403:
+                raise BannedException(Exception)
+            else:
+                raise
 
     def anomaly_detected(self, comments):
         if len(comments) > 40:
@@ -295,4 +301,7 @@ class GGGGobblerBot:
         print("Finished force update all")
 
 class AnomalousCommentsException(Exception):
+    pass
+
+class BannedException(Exception):
     pass
