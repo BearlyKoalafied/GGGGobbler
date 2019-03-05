@@ -11,7 +11,7 @@ from requests.exceptions import ConnectionError, HTTPError, ReadTimeout
 from db import db
 from GGGGobbler import forum_parse as fparse
 from log import gobblogger
-from config import settings
+from config import settings, messaging
 
 POE_URL = "pathofexile.com/forum/view-thread"
 TIMEOUT_SECONDS = 300
@@ -168,7 +168,7 @@ class GGGGobblerBot:
                 if cur_comment == "":
                     cur_comment = cont_preamble
                 chars_to_split_off = settings.COMMENT_CHAR_LIMIT - len(cur_comment)
-                index_to_split_at = section[:chars_to_split_off].rfind("\n>\n") + 2
+                index_to_split_at = section[:chars_to_split_off].rfind("\n")
                 part = cur_comment + section[:index_to_split_at]
                 cur_comment = ""
                 parts.append(part)
@@ -176,7 +176,7 @@ class GGGGobblerBot:
             if section != "":
                 if len(cont_preamble + section) > settings.COMMENT_CHAR_LIMIT:
                     chars_to_split_off = settings.COMMENT_CHAR_LIMIT - len(cont_preamble)
-                    index_to_split_at = section[:chars_to_split_off].rfind("\n>\n") + 2
+                    index_to_split_at = section[:chars_to_split_off].rfind("\n")
                     parts.extend([cont_preamble + section[:index_to_split_at], section[index_to_split_at:]])
                 else:
                     parts.append(cont_preamble + section)
@@ -184,6 +184,8 @@ class GGGGobblerBot:
         return comments
 
     def send_replies(self, submission, comments_to_post):
+        if self.anomaly_detected(comments_to_post):
+            raise AnomalousCommentsException
         num_new_comments = len(comments_to_post)
         if num_new_comments == 0:
             return
@@ -224,6 +226,10 @@ class GGGGobblerBot:
                 new_comments.append(comment.id)
                 time.sleep(settings.TIME_BETWEEN_COMMENTS)
             self.dao.add_comments(submission.id, new_comments)
+
+    def anomaly_detected(self, comments):
+        if len(comments) > 40:
+            return True
 
     def sticky_comment(self, submission, comment):
         # code to sticky comments (shelved)
@@ -287,3 +293,6 @@ class GGGGobblerBot:
             submission = self.r.submission(thread[0])
             self.parse_submission(submission)
         print("Finished force update all")
+
+class AnomalousCommentsException(Exception):
+    pass
