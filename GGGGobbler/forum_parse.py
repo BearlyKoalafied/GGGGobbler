@@ -110,16 +110,18 @@ def get_post_author_from_row(post_row):
     # news posts are weird, author info is stored in a separate row
     if "newsPost" in post_row["class"]:
         info_row = post_row.parent.find("tr", class_="newsPostInfo")
-        tag_contents = info_row.find("td") \
+        profile_link = info_row.find("td") \
             .find("div", class_="posted-by") \
-            .find("span", class_="profile-link") \
-            .find("a").contents
+            .find("span", class_="profile-link")
     else:
-        tag_contents = post_row.find("td", class_="post_info") \
+        profile_link = post_row.find("td", class_="post_info") \
             .find("div") \
             .find("div", class_="posted-by") \
-            .find("span", class_="profile-link") \
-            .find("a").contents
+            .find("span", class_="profile-link")
+    # check for deleted profile link
+    if profile_link.find("span" , class_="deleted") is not None:
+        return "Deleted"
+    tag_contents = profile_link.find("a").contents
     # The challenges count image is in this <a> tag, but is missing if the user has zero challenges
     # Checking for that here
     if len(tag_contents) == 1:

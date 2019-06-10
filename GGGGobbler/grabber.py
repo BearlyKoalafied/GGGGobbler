@@ -234,7 +234,7 @@ class GGGGobblerBot:
                 raise
 
     def anomaly_detected(self, comments):
-        if len(comments) > 40:
+        if len(comments) > 30:
             return True
 
     def sticky_comment(self, submission, comment):
