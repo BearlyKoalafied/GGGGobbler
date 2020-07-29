@@ -146,7 +146,7 @@ def process_table(table):
 def get_table_headers(table):
     output = []
     for tag in table.children:
-        if tag.name == "th":
+        if tag.name == "th" or tag.name == "td":
             output.append(process_string(tag.text))
         else:
             output += (get_table_headers(tag))
