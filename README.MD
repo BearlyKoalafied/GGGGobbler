@@ -6,7 +6,24 @@ Instructions to run
 ```
 2\. Setup OAuth on the reddit account to be used.  Follow the instructions here in the Authorisation URL section http://praw.readthedocs.io/en/latest/getting_started/authentication.html
 
-3\. Create a file called settings.py and specify the following variables:
+3\. In the GGGGobbler subfolder, create a file called oauth.ini like this:
+
+```
+[app]
+scope = identity,edit,flair,history,mysubreddits,privatemessages,read,report,save,submit,subscribe,vote,wikiedit,wikiread
+user_agent= User-Agent: ...
+client_id = abcdefg
+client_secret = hijklmnop
+
+[token]
+refresh_token = 11111111-abc-dfg
+
+```
+client_id, client_secret, and refresh token are the information kept from step 2 to run the bot.
+
+4\. In the config folder, create the following files: 
+
+One Called settings.py and specify the following variables:
 ```	
 	# Reddit account to PM errors to
 	REDDIT_ACC_OWNER = "redditusername"
@@ -30,22 +47,28 @@ Instructions to run
 	LOGFILE_NAME = "GGGGobblerVomit.log"
 ```
 
-4\. Create a file called oauth.ini like this:
+One called remote_config.ini:
+```
+[features]
+currently_running = True
+error_reddit_messaging = on
+
+[thread_delays]
+wait_time_main = 300
+wait_time_check_messages = 10
+wait_time_manager = 30
+
+[errors]
+retry_cap = 15
+```
+
+5\. Run the tests 
 
 ```
-[app]
-scope = identity,edit,flair,history,mysubreddits,privatemessages,read,report,save,submit,subscribe,vote,wikiedit,wikiread
-user_agent= User-Agent: ...
-client_id = abcdefg
-client_secret = hijklmnop
-
-[token]
-refresh_token = 11111111-abc-dfg
-
+    python test/run.py
 ```
-client_id, client_secret, and refresh token are the information kept from step 2 to run the bot.  
 
-5\. Do
+6\. Do
 ```
 	python grabber.py
 ```
