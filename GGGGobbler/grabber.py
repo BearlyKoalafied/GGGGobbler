@@ -4,7 +4,7 @@ import logging
 import re
 import tenacity
 
-from praw.exceptions import APIException, ClientException
+from praw.exceptions import RedditAPIException, ClientException
 from prawcore.exceptions import RequestException, ResponseException, ServerError
 from requests.exceptions import ConnectionError, HTTPError, ReadTimeout
 
@@ -17,7 +17,7 @@ POE_URL = "pathofexile.com/forum/view-thread"
 TIMEOUT_SECONDS = 300
 CSS_MAGIC_PREPEND = """#####&#009;\n\n######&#009;\n\n####&#009;\n\n"""
 
-RECOVERABLE_EXCEPTIONS = (APIException,
+RECOVERABLE_EXCEPTIONS = (RedditAPIException,
                           ClientException,
                           ConnectionError,
                           HTTPError,
