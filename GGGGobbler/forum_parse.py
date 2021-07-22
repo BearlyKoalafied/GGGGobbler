@@ -12,7 +12,9 @@ def get_page_soup(page_url):
     """
     returns the soup object of the linked forum thread
     """
-    page = requests.get(page_url)
+    session = requests.Session()
+    session.headers.update({'User-Agent': 'GGGGobbler-reddit-bot-2021-01-19'})
+    page = session.get(page_url)
     soup = bs4.BeautifulSoup(page.content.decode("utf-8", "ignore"), "html5lib")
     if forum_is_down(soup):
         raise PathofexileDownException("pathofexile.com is down for maintenance")
